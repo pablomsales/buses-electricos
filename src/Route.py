@@ -85,11 +85,14 @@ class Route:
         # que se esta manejando y la siguiente. Recordar manejar el caso
         # de la ultima fila para que no cree una Section sin final.
 
-        for i, row in df.iloc[1, :].iterrows():
+        for i, row in df.iloc[0, 1].iterrows():
             # crear objeto Section() tal que:
             #   - inicio_Section: df[i, :]
             #   - fin_Section: df[i+1, :]
-            pass
+            start_section = df[i, :]
+            end_section = df[i + 1, :]
+            print(start_section)
+            print(end_section)
 
     def plot(self):
         """

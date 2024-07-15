@@ -3,7 +3,7 @@ from Route import Route
 
 def main():
 
-    data = "/home/pablosales/Downloads/chuchulaura.csv"
+    data = "/home/pablosales/Downloads/datos_test.csv"
     route = Route(data)
 
 

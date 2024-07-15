@@ -9,12 +9,8 @@ class Route:
 
     def __init__(self, filepath):
         if filepath:
-            self.data = self._load_data(filepath)
-            self.sections = self._process_sections(self.data)
-
-    @property
-    def sections(self):
-        return self.sections
+            self._data = self._load_data(filepath)
+            self.sections = self._process_sections(self._data)
 
     def _load_data(self, filepath: str):
         """
@@ -80,19 +76,33 @@ class Route:
         """
         Groups the data in the corresponding road sections
         """
-        # procesar los datos por pares, es decir, iterar por el DataFrame
-        # de tal modo que se cree un objeto de tipo Section() con la fila
-        # que se esta manejando y la siguiente. Recordar manejar el caso
-        # de la ultima fila para que no cree una Section sin final.
+        sections = []
+        # create one section for each two rows
+        for i in range(df.shape[0] - 1):
+            # select the two rows
+            start_section = df.iloc[i, :]
+            end_section = df.iloc[i + 1, :]
 
-        for i, row in df.iloc[0, 1].iterrows():
-            # crear objeto Section() tal que:
-            #   - inicio_Section: df[i, :]
-            #   - fin_Section: df[i+1, :]
-            start_section = df[i, :]
-            end_section = df[i + 1, :]
-            print(start_section)
-            print(end_section)
+            # obtain timestamps
+            start_time = start_section[1]
+            end_time = end_section[1]
+            timestamps = (start_time, end_time)
+
+            # obtain speed
+            start_speed = start_section[6]
+            end_speed = end_section[6]
+            speeds = (start_speed, end_speed)
+
+            # obtain coordinates (Lat, Long, Alt)
+            start_coord = (start_section[2], start_section[3], start_section[4])
+            end_coord = (end_section[2], end_section[3], end_section[4])
+            coordinates = (start_coord, end_coord)
+
+            # create Section object and append to the rest of sections
+            section = Section(coordinates, speeds, timestamps)
+            sections.append(section)
+
+        return sections
 
     def plot(self):
         """

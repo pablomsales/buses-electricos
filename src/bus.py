@@ -8,6 +8,6 @@ class Bus:
         return self._mass
 
     @mass.setter
-    def mass(self, valor):
-        if valor > 0:
-            self._mass += valor
+    def mass(self, value):
+        if value > 0:
+            self._mass += value

@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-import Section
+from section import Section
 
 
 class Route:
@@ -115,7 +114,6 @@ class Route:
 
             # create Section object and append to the rest of sections
             section = Section(coordinates, speeds, timestamps)
-            ### APPEND DE UN OBJETO DE LA CLASE SECTION ??? ###
             sections.append(section)
 
         return sections

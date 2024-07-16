@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import Section
+from section import Section
 
 
 class Route:
@@ -101,14 +101,13 @@ class Route:
             end_speed = end_section['speed']
             speeds = (start_speed, end_speed)
 
-            # obtain coordinates (Lat, Long, Alt)
+            # obtain coordinates (latitude, longitude, altitude)
             start_coord = (start_section['latitude'], start_section['longitude'], start_section['altitude'])
             end_coord = (end_section['latitude'], end_section['longitude'], end_section['altitude'])
             coordinates = (start_coord, end_coord)
 
             # create Section object and append to the rest of sections
             section = Section(coordinates, speeds, timestamps)
-            ### APPEND DE UN OBJETO DE LA CLASE SECTION ??? ###
             sections.append(section)
 
         return sections

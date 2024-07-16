@@ -74,23 +74,15 @@ class Route:
         start_coords = self.sections[0].start_coordinates
         mapa = folium.Map(location=[start_coords[0], start_coords[1]], zoom_start=14)
 
-        # Add points to the map
+        # Add lines to the map
         for section in self.sections:
             start_coords = section.start_coordinates
             end_coords = section.end_coordinates
-            folium.Marker(
-                location=[start_coords[0], start_coords[1]],
-                popup=f"Start Time: {section._timestamps[0]} sec<br>Speed: {section._speeds[0]} km/h",
-                tooltip=f"Lat: {start_coords[0]}, Lon: {start_coords[1]}"
-            ).add_to(mapa)
-            folium.Marker(
-                location=[end_coords[0], end_coords[1]],
-                popup=f"End Time: {section._timestamps[1]} sec<br>Speed: {section._speeds[1]} km/h",
-                tooltip=f"Lat: {end_coords[0]}, Lon: {end_coords[1]}"
-            ).add_to(mapa)
             folium.PolyLine(
                 locations=[[start_coords[0], start_coords[1]], [end_coords[0], end_coords[1]]],
-                color="blue"
+                color="blue",
+                weight=2.5,
+                opacity=1
             ).add_to(mapa)
 
         # Save the map to an HTML file

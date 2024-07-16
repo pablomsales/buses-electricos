@@ -8,32 +8,21 @@ class Section:
 
     @property
     def start_coordinates(self):
-        """
-        Gets first element in coordinates tuple
-        """
         return self._coordinates[0]
 
     @property
     def end_coordinates(self):
-        """
-        Gets 2nd element in coordinates tuple
-        """
         return self._coordinates[1]
 
     @property
     def start_speed(self):
-        """
-        Gets speed at starting point
-        """
-        return self._coordinates[0]
+        return self._speeds[0]
 
     @property
     def end_speed(self):
-        """
-        Gets speed at ending point
-        """
-        return self._coordinates[1]
+        return self._speeds[1]
 
-
-
-    # ¿DEFINIR MÉTODO STR?
+    def __str__(self):
+        return (f"Section from {self.start_coordinates} to {self.end_coordinates}, "
+                f"Speeds: {self.start_speed} to {self.end_speed}, "
+                f"Time: {self._timestamps[0]} to {self._timestamps[1]}")

@@ -70,11 +70,12 @@ class Route:
         # rename columns
         df.columns = ['time', 'latitude', 'longitude', 'altitude', 'distance', 'speed']
 
-        # if n first rows took data at 0.00s, remove n-1 first rows
-        ### COMPROBAR ###
-        # for i in range(df.shape[0] - 1):
-        #     if df['time'].iloc[0] == 0:
-        #         df = df.iloc[1:, :]
+        # check if the first row's 'time' column is 0 and remove subsequent rows with 'time' = 0
+        if df.iloc[0]['time'] == 0:
+            # Find the first row where 'time' is not 0 after the first row
+            first_non_zero_index = df[df['time'] != 0].index[0]
+            # Keep all rows starting from the first row with 'time' not equal to 0
+            df = df.iloc[first_non_zero_index - 1:]
 
         print(df)
         return df

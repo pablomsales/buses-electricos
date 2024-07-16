@@ -7,10 +7,14 @@ import Section
 
 class Route:
 
-    def __init__(self, filepath):
+    def __init__(self, filepath = None):
         if filepath:
             self._data = self._load_data(filepath)
             self.sections = self._process_sections(self._data)
+        else:
+            raise ValueError(
+                "No file path provided. Please provide a file path to load data."
+            )
 
     def _load_data(self, filepath: str):
         """
@@ -63,16 +67,19 @@ class Route:
         # select columns
         df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
 
-        # lowercase headers
-        df.columns = map(str.lower, df.columns)
+        # rename columns
+        df.columns = ['time', 'latitude', 'longitude', 'altitude', 'distance', 'speed']
 
-        # if 2 first rows took data at 0.00s, remove first row
-        if df.iloc[1, 0] == 0:
-            df = df.drop([0])
+        # if n first rows took data at 0.00s, remove n-1 first rows
+        ### COMPROBAR ###
+        # for i in range(df.shape[0] - 1):
+        #     if df['time'].iloc[0] == 0:
+        #         df = df.iloc[1:, :]
 
+        print(df)
         return df
 
-    def _process_sections(self, df):
+    def _process_sections(self, df: pd.DataFrame):
         """
         Groups the data in the corresponding road sections
         """
@@ -84,22 +91,23 @@ class Route:
             end_section = df.iloc[i + 1, :]
 
             # obtain timestamps
-            start_time = start_section[1]
-            end_time = end_section[1]
+            start_time = start_section['time']
+            end_time = end_section['time']
             timestamps = (start_time, end_time)
 
             # obtain speed
-            start_speed = start_section[6]
-            end_speed = end_section[6]
+            start_speed = start_section['speed']
+            end_speed = end_section['speed']
             speeds = (start_speed, end_speed)
 
             # obtain coordinates (Lat, Long, Alt)
-            start_coord = (start_section[2], start_section[3], start_section[4])
-            end_coord = (end_section[2], end_section[3], end_section[4])
+            start_coord = (start_section['latitude'], start_section['longitude'], start_section['altitude'])
+            end_coord = (end_section['latitude'], end_section['longitude'], end_section['altitude'])
             coordinates = (start_coord, end_coord)
 
             # create Section object and append to the rest of sections
             section = Section(coordinates, speeds, timestamps)
+            ### APPEND DE UN OBJETO DE LA CLASE SECTION ??? ###
             sections.append(section)
 
         return sections
@@ -109,3 +117,4 @@ class Route:
         Plots the route in 3D using matplotlib
         """
         pass
+

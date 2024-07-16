@@ -4,7 +4,6 @@ class Section:
         self._coordinates = coordinates
         self._speeds = speeds
         self._timestamps = timestamps
-        self._mass = 0
         self._motion_resistance = 0
 
     @property
@@ -35,11 +34,6 @@ class Section:
         """
         return self._coordinates[1]
 
-    @property
-    def mass(self):
-        return self._mass
 
-    @mass.setter
-    def mass(self, valor):
-        if valor > 0:
-            self._mass += valor
+
+    # ¿DEFINIR MÉTODO STR?

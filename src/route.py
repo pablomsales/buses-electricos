@@ -2,7 +2,9 @@ import folium
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from section import Section
+
 
 class Route:
 
@@ -29,10 +31,10 @@ class Route:
     def _process_csv(self, filepath):
         df = pd.read_csv(filepath)
         df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
-        df.columns = ['time', 'latitude', 'longitude', 'altitude', 'distance', 'speed']
-        if df.iloc[0]['time'] == 0:
-            first_non_zero_index = df[df['time'] != 0].index[0]
-            df = df.iloc[first_non_zero_index - 1:]
+        df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
+        if df.iloc[0]["time"] == 0:
+            first_non_zero_index = df[df["time"] != 0].index[0]
+            df = df.iloc[first_non_zero_index - 1 :]
         return df
 
     def _process_sections(self, df: pd.DataFrame):
@@ -41,16 +43,24 @@ class Route:
             start_section = df.iloc[i, :]
             end_section = df.iloc[i + 1, :]
 
-            start_time = start_section['time']
-            end_time = end_section['time']
+            start_time = start_section["time"]
+            end_time = end_section["time"]
             timestamps = (start_time, end_time)
 
-            start_speed = start_section['speed']
-            end_speed = end_section['speed']
+            start_speed = start_section["speed"]
+            end_speed = end_section["speed"]
             speeds = (start_speed, end_speed)
 
-            start_coord = (start_section['latitude'], start_section['longitude'], start_section['altitude'])
-            end_coord = (end_section['latitude'], end_section['longitude'], end_section['altitude'])
+            start_coord = (
+                start_section["latitude"],
+                start_section["longitude"],
+                start_section["altitude"],
+            )
+            end_coord = (
+                end_section["latitude"],
+                end_section["longitude"],
+                end_section["altitude"],
+            )
             coordinates = (start_coord, end_coord)
 
             section = Section(coordinates, speeds, timestamps)
@@ -63,7 +73,7 @@ class Route:
         """
         pass
 
-    def plot_map(self, output_file='mapa_secciones.html'):
+    def plot_map(self, output_file="mapa_secciones.html"):
         """
         Plots the route on an interactive map using folium.
         """
@@ -81,16 +91,19 @@ class Route:
             folium.Marker(
                 location=[start_coords[0], start_coords[1]],
                 popup=f"Start Time: {section._timestamps[0]} sec<br>Speed: {section._speeds[0]} km/h",
-                tooltip=f"Lat: {start_coords[0]}, Lon: {start_coords[1]}"
+                tooltip=f"Lat: {start_coords[0]}, Lon: {start_coords[1]}",
             ).add_to(mapa)
             folium.Marker(
                 location=[end_coords[0], end_coords[1]],
                 popup=f"End Time: {section._timestamps[1]} sec<br>Speed: {section._speeds[1]} km/h",
-                tooltip=f"Lat: {end_coords[0]}, Lon: {end_coords[1]}"
+                tooltip=f"Lat: {end_coords[0]}, Lon: {end_coords[1]}",
             ).add_to(mapa)
             folium.PolyLine(
-                locations=[[start_coords[0], start_coords[1]], [end_coords[0], end_coords[1]]],
-                color="blue"
+                locations=[
+                    [start_coords[0], start_coords[1]],
+                    [end_coords[0], end_coords[1]],
+                ],
+                color="blue",
             ).add_to(mapa)
 
         # Save the map to an HTML file

@@ -23,6 +23,8 @@ class Section:
         return self._speeds[1]
 
     def __str__(self):
-        return (f"Section from {self.start_coordinates} to {self.end_coordinates}, "
-                f"Speeds: {self.start_speed} to {self.end_speed}, "
-                f"Time: {self._timestamps[0]} to {self._timestamps[1]}")
+        return (
+            f"Section from {self.start_coordinates} to {self.end_coordinates}, "
+            f"Speeds: {self.start_speed} to {self.end_speed}, "
+            f"Time: {self._timestamps[0]} to {self._timestamps[1]}"
+        )

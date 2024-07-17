@@ -103,7 +103,7 @@ class Route:
                 locations=[
                     [start_coords[0], start_coords[1]],
                     [end_coords[0], end_coords[1]],
-                ],
+                    ],
                 color="blue",
                 weight=2.5,
                 opacity=1,

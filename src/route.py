@@ -10,16 +10,16 @@ class Route:
 
     def __init__(self, filepath=None):
         if filepath:
-            self._data = self._load_data(filepath)
-            self.sections = self._process_sections(self._data)
+            self._data = self.__load_data(filepath)
+            self.sections = self.__process_sections(self._data)
         else:
             raise ValueError(
                 "No file path provided. Please provide a file path to load data."
             )
 
-    def _load_data(self, filepath: str):
+    def __load_data(self, filepath: str):
         if filepath.endswith(".csv"):
-            data = self._process_csv(filepath)
+            data = self.__process_csv(filepath)
         elif filepath.endswith(".gpx"):
             data = self._process_gpx(filepath)
         else:
@@ -28,7 +28,7 @@ class Route:
             )
         return data
 
-    def _process_csv(self, filepath):
+    def __process_csv(self, filepath):
         df = pd.read_csv(filepath)
         df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
         df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
@@ -37,7 +37,12 @@ class Route:
             df = df.iloc[first_non_zero_index - 1 :]
         return df
 
-    def _process_sections(self, df: pd.DataFrame):
+    def __process_sections(self, df: pd.DataFrame):
+        #
+        # NECESITAMOS LA MASA DEL VEHÍCULO EN CADA MOMENTO
+        # 
+        masses = [0] * df.shape[0] ### NECESARIO
+
         sections = []
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -63,7 +68,9 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            section = Section(coordinates, speeds, timestamps)
+            mass = masses[i] ### ??? NECESARIO
+
+            section = Section(coordinates, speeds, timestamps, mass) ### mass NECESARIO
             sections.append(section)
         return sections
 
@@ -81,13 +88,13 @@ class Route:
         if not self.sections:
             raise ValueError("No sections available to plot on the map.")
 
-        start_coords = self.sections[0].start_coordinates
+        start_coords = self.sections[0].start_coord
         mapa = folium.Map(location=[start_coords[0], start_coords[1]], zoom_start=14)
 
         # Add lines to the map
         for section in self.sections:
-            start_coords = section.start_coordinates
-            end_coords = section.end_coordinates
+            start_coords = section.start_coord
+            end_coords = section.end_coord
             folium.PolyLine(
                 locations=[
                     [start_coords[0], start_coords[1]],

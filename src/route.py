@@ -1,31 +1,25 @@
 import folium
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
+import math
 
 from section import Section
 
-
 class Route:
-
-    def __init__(self, filepath=None):
+    def __init__(self, filepath, bus):
         if filepath:
             self._data = self.__load_data(filepath)
+            self.bus = bus
             self.sections = self.__process_sections(self._data)
         else:
-            raise ValueError(
-                "No file path provided. Please provide a file path to load data."
-            )
+            raise ValueError("No file path provided. Please provide a file path to load data.")
 
     def __load_data(self, filepath: str):
         if filepath.endswith(".csv"):
             data = self.__process_csv(filepath)
         elif filepath.endswith(".gpx"):
-            data = self._process_gpx(filepath)
+            data = self.__process_gpx(filepath)
         else:
-            raise ValueError(
-                "Unsupported file format. Only .csv and .gpx are supported."
-            )
+            raise ValueError("Unsupported file format. Only .csv and .gpx are supported.")
         return data
 
     def __process_csv(self, filepath):
@@ -38,11 +32,6 @@ class Route:
         return df
 
     def __process_sections(self, df: pd.DataFrame):
-        #
-        # NECESITAMOS LA MASA DEL VEHÍCULO EN CADA MOMENTO
-        # 
-        masses = [0] * df.shape[0] ### NECESARIO
-
         sections = []
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -68,11 +57,24 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            mass = masses[i] ### ??? NECESARIO
+            grade_angle = self._calculate_grade_angle(
+                start_section["altitude"],
+                end_section["altitude"],
+                start_section["distance"],
+                end_section["distance"]
+                )
 
-            section = Section(coordinates, speeds, timestamps, mass) ### mass NECESARIO
+            section = Section(coordinates, speeds, timestamps, self.bus, grade_angle)
             sections.append(section)
         return sections
+
+    def _calculate_grade_angle(self, start_altitude, end_altitude, start_distance, end_distance):
+        delta_altitude = end_altitude - start_altitude
+        delta_distance = end_distance - start_distance
+        if delta_distance == 0:
+            return 0
+        grade_angle = math.degrees(math.atan(delta_altitude / delta_distance))
+        return grade_angle
 
     def plot(self):
         """

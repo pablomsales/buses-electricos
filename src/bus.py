@@ -1,5 +1,4 @@
 class Bus:
-
     def __init__(self, mass, drag_coefficient, frontal_area, rolling_resistance_coefficient):
         self._mass = mass
         self._drag_coefficient = drag_coefficient

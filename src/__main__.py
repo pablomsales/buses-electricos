@@ -7,7 +7,7 @@ from route import Route
 
 def main():
     start_time = time()
-    data = os.path.join("data", "linea_d2.csv")
+    data = os.path.join("data", "linea_D1_parcial.csv")
     bus_instance = Bus(
         mass=12000,
         drag_coefficient=0.65,
@@ -21,7 +21,7 @@ def main():
         for section in route_instance.sections:
             print(section)
 
-        route_instance.plot_map(output_file="linea_D2.html")
+        route_instance.plot_map(output_file="linea_D1_parcial.html")
         print(f"Tiempo ejecucion: {time() - start_time}")
 
     except ValueError as e:

@@ -1,4 +1,4 @@
-import math
+import os
 
 import folium
 import pandas as pd
@@ -99,5 +99,5 @@ class Route:
             ).add_to(mapa)
 
         # Save the map to an HTML file
-        mapa.save(output_file)
+        mapa.save(os.path.join("maps_plots", output_file))
         print(f"Map saved to {output_file}")

@@ -1,5 +1,7 @@
 import math
 
+from geopy.distance import geodesic
+
 
 class Section:
     def __init__(self, coordinates, speeds, timestamps, bus, grade_angle):
@@ -29,6 +31,19 @@ class Section:
     @property
     def end_coord(self):
         return self._coordinates[1]
+
+    @property
+    def length(self):
+        # obtain latitude & longitude of start coord
+        lat_0 = self.start_coord[0]
+        long_0 = self.start_coord[1]
+
+        # obtain latitude & longitude of end coord
+        lat_1 = self.end_coord[0]
+        long_1 = self.end_coord[1]
+
+        # compute the geodesic distance between them in meters
+        return geodesic((lat_0, long_0), (lat_1, long_1)).meters
 
     @property
     def start_speed(self):

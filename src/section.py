@@ -62,9 +62,17 @@ class Section:
 
     @property
     def duration_time(self):
-        x_0, x_1 = 0, self.length
-        v_0, v_1 = self.start_speed, self.end_speed
+        """
+        Despejamos el tiempo a partir de las ecuaciones:
+
+            v_t = v_0 + a · t
+            x_t = x_0 + v_0 · t + (1/2 · a · t²)
+        """
+        x_0, x_t = 0, self.length
+        v_0, v_t = self.start_speed, self.end_speed
         # despejar t
+        t = (2 * x_t) / (v_0 + v_t)
+        return t
 
     @property
     def grade_angle(self):
@@ -139,7 +147,7 @@ class Section:
     @property
     def instant_power(self):
         # P = E/t
-        return self.work / self.duration_time
+        return self.work / self.duration_time  # Watts
 
     def __str__(self):
         return (
@@ -154,4 +162,6 @@ class Section:
             f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
             f"\nRolling Resistance: {self.rolling_resistance:.2f} N, "
             f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
+            f"\nWork: {self.work:.2f} J\n"
+            f"\nInstant Power: {self.instant_power:.2f} W\n"
         )

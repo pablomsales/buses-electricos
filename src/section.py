@@ -62,7 +62,7 @@ class Section:
             * self.air_density
             * self.bus.drag_coefficient
             * self.bus.frontal_area
-            * self._average_speed**2
+            * self._average_speed**2 ### se debe calcular la velocidad media o la velocidad en función del tiempo ???
         )
 
     def _calculate_inertia(self):
@@ -72,7 +72,7 @@ class Section:
         return self.bus.mass * g * math.sin(math.radians(self.grade_angle))
 
     def _calculate_rolling_resistance(self):
-        return self.bus.rolling_resistance_coefficient * self.bus.mass * self.gravity
+        return self.bus.rolling_resistance_coefficient * self.bus.mass * g
 
     def _calculate_total_resistance(self):
         return (

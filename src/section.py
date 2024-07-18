@@ -61,6 +61,12 @@ class Section:
         return self._timestamps[1]
 
     @property
+    def duration_time(self):
+        x_0, x_1 = 0, self.length
+        v_0, v_1 = self.start_speed, self.end_speed
+        # despejar t
+
+    @property
     def grade_angle(self):
         delta_altitude = self.end_coord[2] - self.start_coord[2]
         if self.length == 0:
@@ -126,9 +132,14 @@ class Section:
     def work(self):
         force = self.total_resistance  # (Newtons)
         distance = self.length  # (meters)
-        # calculate Work (J)
+        # calculate Work = F·d·cos(θ)
         work = force * distance * math.cos(self.grade_angle)
         return work
+
+    @property
+    def instant_power(self):
+        # P = E/t
+        return self.work / self.duration_time
 
     def __str__(self):
         return (

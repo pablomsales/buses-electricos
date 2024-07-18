@@ -10,7 +10,7 @@ class Section:
         self.bus = bus
 
         self.grade_angle = grade_angle
-        self.air_density = 1.225  # kg/m^3, air density at sea level
+        self.air_density = 1.225
 
         self._average_speed = self._calculate_average_speed()
         self._acceleration = self._calculate_acceleration()
@@ -60,7 +60,7 @@ class Section:
             * self.air_density
             * self.bus.drag_coefficient
             * self.bus.frontal_area
-            * self._average_speed**2 ### se debe calcular la velocidad media o la velocidad en función del tiempo ???
+            * self._average_speed**2
         )
 
     def _calculate_inertia(self):

@@ -1,5 +1,7 @@
 import math
 
+from scipy.constants import gravitational_constant as g
+
 
 class Section:
     def __init__(self, coordinates, speeds, timestamps, bus, grade_angle):
@@ -11,7 +13,6 @@ class Section:
 
         self.grade_angle = grade_angle
         self.air_density = 1.225  # kg/m^3, air density at sea level
-        self.gravity = 9.81
 
         self._average_speed = self._calculate_average_speed()
         self._acceleration = self._calculate_acceleration()
@@ -68,7 +69,7 @@ class Section:
         return self.bus.mass * self._acceleration
 
     def _calculate_grade_resistance(self):
-        return self.bus.mass * self.gravity * math.sin(math.radians(self.grade_angle))
+        return self.bus.mass * g * math.sin(math.radians(self.grade_angle))
 
     def _calculate_rolling_resistance(self):
         return self.bus.rolling_resistance_coefficient * self.bus.mass * self.gravity

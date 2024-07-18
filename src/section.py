@@ -4,14 +4,13 @@ from geopy.distance import geodesic
 
 
 class Section:
-    def __init__(self, coordinates, speeds, timestamps, bus, grade_angle):
+    def __init__(self, coordinates, speeds, timestamps, bus):
         self._coordinates = coordinates
         self._speeds = speeds
         self._timestamps = timestamps
 
         self.bus = bus
 
-        self.grade_angle = grade_angle
         self.air_density = 1.225
 
         self._average_speed = self._calculate_average_speed()
@@ -60,6 +59,14 @@ class Section:
     @property
     def end_timestamp(self):
         return self._timestamps[1]
+
+    @property
+    def grade_angle(self):
+        delta_altitude = self.end_coord[2] - self.start_coord[2]
+        if self.length == 0:
+            return 0
+        grade_angle = math.degrees(math.atan(delta_altitude / self.length))
+        return grade_angle
 
     def _calculate_average_speed(self):
         return (self.start_speed + self.end_speed) / 2
@@ -114,6 +121,14 @@ class Section:
     @property
     def total_resistance(self):
         return self._total_resistance
+
+    @property
+    def work(self):
+        force = self.total_resistance  # (Newtons)
+        distance = self.length  # (meters)
+        # calculate Work (J)
+        work = force * distance * math.cos(self.grade_angle)
+        return work
 
     def __str__(self):
         return (

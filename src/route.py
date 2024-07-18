@@ -13,7 +13,9 @@ class Route:
             self.bus = bus
             self.sections = self.__process_sections(self._data)
         else:
-            raise ValueError("No file path provided. Please provide a file path to load data.")
+            raise ValueError(
+                "No file path provided. Please provide a file path to load data."
+            )
 
     def __load_data(self, filepath: str):
         if filepath.endswith(".csv"):
@@ -21,7 +23,9 @@ class Route:
         elif filepath.endswith(".gpx"):
             data = self.__process_gpx(filepath)
         else:
-            raise ValueError("Unsupported file format. Only .csv and .gpx are supported.")
+            raise ValueError(
+                "Unsupported file format. Only .csv and .gpx are supported."
+            )
         return data
 
     def __process_csv(self, filepath):
@@ -59,24 +63,9 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            grade_angle = self._calculate_grade_angle(
-                start_section["altitude"],
-                end_section["altitude"],
-                start_section["distance"],
-                end_section["distance"]
-                )
-
-            section = Section(coordinates, speeds, timestamps, self.bus, grade_angle)
+            section = Section(coordinates, speeds, timestamps, self.bus)
             sections.append(section)
         return sections
-
-    def _calculate_grade_angle(self, start_altitude, end_altitude, start_distance, end_distance):
-        delta_altitude = end_altitude - start_altitude
-        delta_distance = end_distance - start_distance
-        if delta_distance == 0:
-            return 0
-        grade_angle = math.degrees(math.atan(delta_altitude / delta_distance))
-        return grade_angle
 
     def plot(self):
         """
@@ -103,7 +92,7 @@ class Route:
                 locations=[
                     [start_coords[0], start_coords[1]],
                     [end_coords[0], end_coords[1]],
-                    ],
+                ],
                 color="blue",
                 weight=2.5,
                 opacity=1,

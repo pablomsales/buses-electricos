@@ -79,8 +79,7 @@ class Section:
         delta_altitude = self.end_coord[2] - self.start_coord[2]
         if self.length == 0:
             return 0
-        grade_angle = math.degrees(math.atan(delta_altitude / self.length))
-        return grade_angle
+        return math.degrees(math.atan(delta_altitude / self.length))
 
     def _calculate_average_speed(self):
         return (self.start_speed + self.end_speed) / 2
@@ -140,14 +139,12 @@ class Section:
     def work(self):
         force = self.total_resistance  # (Newtons)
         distance = self.length  # (meters)
-        # calculate Work = F·d·cos(θ)
-        work = force * distance * math.cos(self.grade_angle)
-        return work
+        return force * distance * math.cos(math.radians(self.grade_angle))
 
     @property
     def instant_power(self):
-        # P = E/t
-        return self.work / self.duration_time  # Watts
+        raw_power = self.work / self.duration_time  # Watts
+        return self.bus.engine.power_output(raw_power)
 
     def __str__(self):
         return (

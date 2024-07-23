@@ -60,6 +60,7 @@ class Section:
     def end_timestamp(self):
         return self._timestamps[1]
 
+    # FIXME: por algun motivo a veces no coincide con el tiempo entre timestamps
     @property
     def duration_time(self):
         """
@@ -143,10 +144,24 @@ class Section:
 
     @property
     def instant_power(self):
-        raw_power = self.work / self.duration_time  # Watts
-        return self.bus.engine.power_output(raw_power)
+        return self.work / self.duration_time  # Watts
+
+    @property
+    def consumption(self):
+        # convert seconds to hours
+        hours = self.duration_time / 3600
+        consumption = self.bus.engine.consumption(
+            desired_power=self.instant_power, hours=hours
+        )
+        return consumption
 
     def __str__(self):
+        # Codigo provisional para especificar las unidades
+        if self.bus.engine.engine_type == "electric":
+            consumption_units = "Wh"
+        elif self.bus.engine.engine_type == "combustion":
+            consumption_units = "L/km"
+
         return (
             f"\n---------------------------------------------------"
             f"\nSection from {self.start_coord[0]} º, {self.start_coord[1]} º, {round(self.start_coord[2], 2)} m "
@@ -159,6 +174,8 @@ class Section:
             f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
             f"\nRolling Resistance: {self.rolling_resistance:.2f} N, "
             f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
-            f"\nWork: {self.work:.2f} J\n"
-            f"\nInstant Power: {self.instant_power:.2f} W\n"
+            f"\nWork: {self.work:.2f} J"
+            f"\nDesired Power: {self.instant_power:.2f} W"
+            f"\nApplied Power: {self.bus.engine.required_power(self.instant_power)} W"
+            f"\nConsumption: {self.consumption} {consumption_units}"
         )

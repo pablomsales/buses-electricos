@@ -100,4 +100,6 @@ class Route:
 
         # Save the map to an HTML file
         mapa.save(os.path.join("maps_plots", output_file))
-        print(f"Map saved to {output_file}")
+        print(
+            f"\n---------------------------------------------------\nMap saved to {output_file}"
+        )

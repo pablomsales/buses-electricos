@@ -1,18 +1,25 @@
 class Engine:
-    def __init__(self, type, max_power, max_torque, efficiency):
-        self._type = type  # "combustion" or "electric"
+    def __init__(self, engine_type, fuel, max_power, max_torque, efficiency):
+        self._engine_type = engine_type  # "combustion" or "electric"
+        self._fuel = fuel
         self._max_power = max_power  # in Watts
         self._max_torque = max_torque  # in Newton meters
         self._efficiency = efficiency  # between 0 and 1
 
     @property
-    def type(self):
-        return self._type
+    def engine_type(self):
+        return self._engine_type
 
-    @type.setter
-    def type(self, value):
+    @engine_type.setter
+    def engine_type(self, value):
         if value in ["combustion", "electric"]:
-            self._type = value
+            self._engine_type = value
+        else:
+            raise ValueError("Engine type must be either 'combustion' or 'electric'")
+
+    @property
+    def fuel(self):
+        return self._fuel
 
     @property
     def max_power(self):
@@ -41,12 +48,37 @@ class Engine:
         if 0 < value <= 1:
             self._efficiency = value
 
-    def power_output(self, required_power):
-        """Calculate the actual power output considering the efficiency."""
-        if required_power <= self._max_power:
-            return required_power * self._efficiency
+    ## TODO: ver con razmik si hace falta este metodo igualmente aun teniendo el de abajo
+    # def power_output(self, required_power):
+    #     """Calculate the actual power output considering the efficiency."""
+    #     if required_power <= self._max_power:
+    #         return required_power * self._efficiency
+    #     else:
+    #         return self._max_power * self._efficiency
+
+    def required_power(self, desired_power):
+        """Computes overall needed power (Watts) considering the efficiency."""
+        if desired_power <= self._max_power:
+            effective_power = desired_power * self._efficiency
         else:
-            return self._max_power * self._efficiency
+            effective_power = self._max_power * self._efficiency
+
+        additional_power = desired_power - effective_power
+        return desired_power + additional_power
+
+    def consumption(self, desired_power, hours=None, kilometers=None):
+        """Calculate the overall energy consumption."""
+        total_power = self.required_power(desired_power)
+
+        if self.fuel == "electric":
+            return total_power * hours  # Wh
+        # TODO: manejar bien para obtener L/km empleando el PCI (poder calorifico inferior)
+        # TODO: crear clase Fuel ?? asi no se hace este if eterno y se accede al pci como un atributo -> fuel.pci
+        elif self.fuel == "gasolina":
+            pass
+        elif self.fuel == "diesel":
+            pass
+        ...
 
     def torque_output(self, required_torque):
         """Calculate the actual torque output considering the efficiency."""

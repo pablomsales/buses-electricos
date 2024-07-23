@@ -2,8 +2,8 @@ import os
 from time import time
 
 from bus import Bus
-from route import Route
 from engine import Engine
+from route import Route
 
 
 def main():
@@ -12,10 +12,11 @@ def main():
 
     # Crear una instancia de Engine
     engine_instance = Engine(
-        type='electric',  # Puede ser 'combustion' o 'electric'
+        engine_type="electric",  # Puede ser 'combustion' o 'electric'
+        fuel="electricity",
         max_torque=400,  # Nm
         max_power=200,  # kW
-        efficiency=0.9  # 0 a 1
+        efficiency=0.9,  # 0 a 1
     )
 
     # Crear una instancia de Bus con el motor
@@ -24,7 +25,7 @@ def main():
         drag_coefficient=0.65,
         frontal_area=8.0,
         rolling_resistance_coefficient=0.01,
-        engine=engine_instance  # Pasar la instancia de Engine
+        engine=engine_instance,  # Pasar la instancia de Engine
     )
 
     try:

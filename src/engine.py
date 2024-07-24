@@ -60,14 +60,6 @@ class Engine:
         if 0 < value <= 1:
             self._efficiency = value
 
-    ## TODO: ver con razmik si hace falta este metodo igualmente aun teniendo el de abajo
-    # def power_output(self, required_power):
-    #     """Calculate the actual power output considering the efficiency."""
-    #     if required_power <= self._max_power:
-    #         return required_power * self._efficiency
-    #     else:
-    #         return self._max_power * self._efficiency
-
     def required_power(self, desired_power):
         """Computes overall needed power (Watts) considering the efficiency."""
         if desired_power <= self._max_power:

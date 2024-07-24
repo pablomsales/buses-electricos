@@ -1,10 +1,17 @@
+from fuel import Fuel
+
+
 class Engine:
-    def __init__(self, engine_type, fuel, max_power, max_torque, efficiency):
+    def __init__(self, engine_type, max_power, max_torque, efficiency, fuel=None):
         self._engine_type = engine_type  # "combustion" or "electric"
-        self._fuel = fuel
         self._max_power = max_power  # in Watts
         self._max_torque = max_torque  # in Newton meters
         self._efficiency = efficiency  # between 0 and 1
+        if engine_type != "electric":
+            if fuel:
+                self._fuel = fuel  # Fuel instance
+            else:
+                raise ValueError("Fuel parameter expected for engine_type='combustion'")
 
     @property
     def engine_type(self):
@@ -20,6 +27,11 @@ class Engine:
     @property
     def fuel(self):
         return self._fuel
+
+    @fuel.setter
+    def fuel(self, value):
+        if isinstance(value, Fuel):
+            self._fuel = value
 
     @property
     def max_power(self):
@@ -66,19 +78,24 @@ class Engine:
         additional_power = desired_power - effective_power
         return desired_power + additional_power
 
-    def consumption(self, desired_power, hours=None, kilometers=None):
-        """Calculate the overall energy consumption."""
+    def consumption(self, desired_power, time, kilometers=None):
+        """Calculate the overall energy or fuel consumption."""
         total_power = self.required_power(desired_power)
 
-        if self.fuel == "electric":
-            return total_power * hours  # Wh
-        # TODO: manejar bien para obtener L/km empleando el PCI (poder calorifico inferior)
-        # TODO: crear clase Fuel ?? asi no se hace este if eterno y se accede al pci como un atributo -> fuel.pci
-        elif self.fuel == "gasolina":
-            pass
-        elif self.fuel == "diesel":
-            pass
-        ...
+        if self.engine_type == "electric":
+            hours = time / 3600  # convert seconds to hours
+            consumption = total_power * hours  # compute Wh
+
+        else:
+            if kilometers:
+                pci = self.fuel.pci  # obtain selected fuel PCI
+                energy = total_power * time  # compute amount of energy
+                litres = energy / pci  # obtain the spent litres of fuel
+                consumption = litres / kilometers  # finally, compute L/km
+            else:
+                raise ValueError("Kilometers parameter expected")
+
+        return consumption
 
     def torque_output(self, required_torque):
         """Calculate the actual torque output considering the efficiency."""

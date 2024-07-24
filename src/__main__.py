@@ -3,6 +3,7 @@ from time import time
 
 from bus import Bus
 from engine import Engine
+from fuel import Fuel
 from route import Route
 
 
@@ -10,13 +11,16 @@ def main():
     start_time = time()
     data = os.path.join("data", "linea_d2.csv")
 
-    # Crear una instancia de Engine
+    # Crear una instancia de Fuel
+    fuel_instance = Fuel(fuel_type="diesel")
+
+    # Crear una instancia de Engine con el fuel
     engine_instance = Engine(
-        engine_type="electric",  # Puede ser 'combustion' o 'electric'
-        fuel="electricity",
+        engine_type="combustion",  # Puede ser 'combustion' o 'electric'
+        fuel=fuel_instance,
         max_torque=400,  # Nm
         max_power=200,  # kW
-        efficiency=0.9,  # 0 a 1
+        efficiency=0.35,  # 0 a 1
     )
 
     # Crear una instancia de Bus con el motor
@@ -25,7 +29,7 @@ def main():
         drag_coefficient=0.65,
         frontal_area=8.0,
         rolling_resistance_coefficient=0.01,
-        engine=engine_instance,  # Pasar la instancia de Engine
+        engine=engine_instance,
     )
 
     try:

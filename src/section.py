@@ -148,12 +148,19 @@ class Section:
 
     @property
     def consumption(self):
-        # convert seconds to hours
-        hours = self.duration_time / 3600
-        consumption = self.bus.engine.consumption(
-            desired_power=self.instant_power, hours=hours
-        )
-        return consumption
+        if self.bus.engine.engine_type == "electric":
+            return self.bus.engine.consumption(
+                desired_power=self.instant_power,
+                time=self.duration_time,
+            )
+        else:
+            # if engine_type is "combustion", include km in consumption
+            kilometers = self.length / 1000
+            return self.bus.engine.consumption(
+                desired_power=self.instant_power,
+                time=self.duration_time,
+                kilometers=kilometers,
+            )
 
     def __str__(self):
         # Codigo provisional para especificar las unidades

@@ -18,7 +18,6 @@ def main():
     engine_instance = Engine(
         engine_type="combustion",  # Puede ser 'combustion' o 'electric'
         fuel=fuel_instance,
-        max_torque=400,  # Nm
         max_power=200,  # kW
         efficiency=0.35,  # 0 a 1
     )

@@ -1,6 +1,5 @@
 from fuel import Fuel
 
-
 class Engine:
     def __init__(self, engine_type, max_power, max_torque, efficiency, fuel=None):
         self._engine_type = engine_type  # "combustion" or "electric"

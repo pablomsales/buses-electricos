@@ -5,12 +5,12 @@ import pandas as pd
 
 from section import Section
 
-
 class Route:
-    def __init__(self, filepath, bus):
+    def __init__(self, filepath, bus, emissions):
         if filepath:
             self._data = self.__load_data(filepath)
             self.bus = bus
+            self.emissions = emissions
             self.sections = self.__process_sections(self._data)
         else:
             raise ValueError(
@@ -63,7 +63,7 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            section = Section(coordinates, speeds, timestamps, self.bus)
+            section = Section(coordinates, speeds, timestamps, self.bus, self.emissions)
             sections.append(section)
         return sections
 

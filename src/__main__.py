@@ -5,7 +5,7 @@ from bus import Bus
 from engine import Engine
 from fuel import Fuel
 from route import Route
-
+from emissions import Emissions
 
 def main():
     start_time = time()
@@ -32,18 +32,21 @@ def main():
         engine=engine_instance,
     )
 
+    # Crear una instancia de Emissions con el estándar EURO deseado
+    euro_standard = "EURO_6"
+    emissions_instance = Emissions(euro_standard)
+
     try:
-        route_instance = Route(filepath=data, bus=bus_instance)
+        route_instance = Route(filepath=data, bus=bus_instance, emissions=emissions_instance)
 
         for section in route_instance.sections:
             print(section)
 
-        route_instance.plot_map(output_file="linea_D2.html")
+        # route_instance.plot_map(output_file="linea_D2.html")
         print(f"Tiempo ejecucion: {time() - start_time}")
 
     except ValueError as e:
         print(f"Error: {e}")
-
 
 if __name__ == "__main__":
     main()

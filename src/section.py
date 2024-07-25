@@ -1,15 +1,13 @@
 import math
-
 from geopy.distance import geodesic
 
-
 class Section:
-    def __init__(self, coordinates, speeds, timestamps, bus):
+    def __init__(self, coordinates, speeds, timestamps, bus, emissions):
         self._coordinates = coordinates
         self._speeds = speeds
         self._timestamps = timestamps
-
         self.bus = bus
+        self.emissions = emissions
 
         self.air_density = 1.225
 
@@ -174,12 +172,21 @@ class Section:
                 kilometers=kilometers,
             )
 
+    @property
+    def section_emissions(self):
+        power_kw = self.instant_power / 1000  # Convertir W a kW
+        return self.emissions.calculate_emissions(power_kw)
+
     def __str__(self):
-        # Codigo provisional para especificar las unidades
+        # Código provisional para especificar las unidades
         if self.bus.engine.engine_type == "electric":
             consumption_units = "Wh"
         elif self.bus.engine.engine_type == "combustion":
             consumption_units = "L/km"
+
+        emissions_str = "\n".join(
+            [f"{k}: {v:.6f} g/s" for k, v in self.section_emissions.items()]
+        )
 
         return (
             f"\n---------------------------------------------------"
@@ -197,6 +204,7 @@ class Section:
             f"\nDesired Power: {self.instant_power:.2f} W"
             f"\nApplied Power: {self.bus.engine.required_power(self.instant_power)} W"
             f"\nConsumption: {self.consumption} {consumption_units}"
+            f"\n\nEmissions:\n{emissions_str}"
             f"\n\nSection.duration_time():\t{self.duration_time}"
-            f"\nDuracion entre timestamps:\t{self.end_timestamp - self.start_timestamp}"
+            f"\n"
         )

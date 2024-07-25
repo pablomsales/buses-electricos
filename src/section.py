@@ -45,6 +45,18 @@ class Section:
         return geodesic((lat_0, long_0), (lat_1, long_1)).meters
 
     @property
+    def analytical_expression(self):
+        """
+        y = mx + n
+        """
+        x_0, x_1 = self.start_coord[0], self.end_coord[0]
+        y_0, y_1 = self.start_coord[1], self.end_coord[1]
+
+        m = (y_1 - y_0) / (x_1 - x_0)
+        n = y_0 - m * x_0
+        return m, n
+
+    @property
     def start_speed(self):
         return self._speeds[0]
 
@@ -60,7 +72,7 @@ class Section:
     def end_timestamp(self):
         return self._timestamps[1]
 
-    # FIXME: por algun motivo a veces no coincide con el tiempo entre timestamps
+    # FIXME: con datos de autobuses a veces no coincide con el tiempo entre timestamps
     @property
     def duration_time(self):
         """
@@ -174,8 +186,8 @@ class Section:
             f"\nSection from {self.start_coord[0]} º, {self.start_coord[1]} º, {round(self.start_coord[2], 2)} m "
             f"to\n{' ' * (len('Section from ')-1)} {self.end_coord[0]} º, {self.end_coord[1]} º, {round(self.end_coord[2], 2)} m"
             f"\n---------------------------------------------------"
+            f"\nAnalytical Expression: y = {round(self.analytical_expression[0], 2)}·x + {round(self.analytical_expression[1], 2)}"
             f"\nSpeeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s, "
-            f"\nTime: {round(self.start_timestamp, 2)} s to {round(self.end_timestamp, 2)} s, "
             f"\nAir Resistance: {self.air_resistance:.2f} N, "
             f"\nInertia: {self.inertia:.2f} N, "
             f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
@@ -185,4 +197,6 @@ class Section:
             f"\nDesired Power: {self.instant_power:.2f} W"
             f"\nApplied Power: {self.bus.engine.required_power(self.instant_power)} W"
             f"\nConsumption: {self.consumption} {consumption_units}"
+            f"\n\nSection.duration_time():\t{self.duration_time}"
+            f"\nDuracion entre timestamps:\t{self.end_timestamp - self.start_timestamp}"
         )

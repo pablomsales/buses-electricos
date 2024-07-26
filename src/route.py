@@ -6,6 +6,9 @@ import pandas as pd
 from section import Section
 
 class Route:
+    '''
+    Class to represent a route with multiple sections.
+    '''
     def __init__(self, filepath, bus, emissions):
         if filepath:
             self._data = self.__load_data(filepath)
@@ -18,6 +21,9 @@ class Route:
             )
 
     def __load_data(self, filepath: str):
+        '''
+        Load data from a file.
+        '''
         if filepath.endswith(".csv"):
             data = self.__process_csv(filepath)
         elif filepath.endswith(".gpx"):
@@ -29,6 +35,9 @@ class Route:
         return data
 
     def __process_csv(self, filepath):
+        '''
+        Process the CSV file.
+        '''
         df = pd.read_csv(filepath)
         df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
         df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
@@ -38,6 +47,9 @@ class Route:
         return df
 
     def __process_sections(self, df: pd.DataFrame):
+        '''
+        Process the sections of the route.
+        '''
         sections = []
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -68,15 +80,15 @@ class Route:
         return sections
 
     def plot(self):
-        """
+        '''
         Plots the route in 3D using matplotlib
-        """
+        '''
         pass
 
     def plot_map(self, output_file="mapa_secciones.html"):
-        """
+        '''
         Plots the route on an interactive map using folium.
-        """
+        '''
         # Create a folium map centered on the first coordinate
         if not self.sections:
             raise ValueError("No sections available to plot on the map.")

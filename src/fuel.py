@@ -1,5 +1,7 @@
 class Fuel:
-    # Class-level dictionary with predefined fuels and their PCI values in J/L
+    '''
+    Class representing a fuel type.
+    '''
     _fuel_data = {
         "gasoline": 3.1536e7,  # J/L
         "diesel": 3.58e7,  # J/L
@@ -21,8 +23,14 @@ class Fuel:
 
     @property
     def fuel_type(self):
+        '''
+        Fuel type.
+        '''
         return self._fuel_type
 
     @property
     def pci(self):
+        '''
+        Potential Calorific Value (PCV) of the fuel in J/L.
+        '''
         return self._pci

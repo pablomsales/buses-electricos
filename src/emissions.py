@@ -1,6 +1,9 @@
 from _euro_standards import euro_standards
 
 class Emissions:
+    '''
+    Class to calculate emissions based on the EURO standard.
+    '''
     def __init__(self, euro_standard):
         if euro_standard not in euro_standards:
             raise ValueError(f"Invalid EURO standard: {euro_standard}")

@@ -242,7 +242,19 @@ class Section:
         Emissions of the section.
         """
         power_kw = self.instant_power / 1000  # Convertir W a kW
-        return self.emissions.calculate_emissions(power_kw)
+
+        if self.bus.engine.engine_type == "electric":
+            return self.emissions.calculate_emissions(power_kw)
+        else:
+            # first get the litres consumed in 1 second
+            # FIXME: cuando se utilice el modulo de estimacion esto
+            # esta bien, pero cuando se utilizan las velocidades
+            # reales para contrastar, hay que usar el tiempo entre timestamps
+            litres_per_second = self.consumption / self.duration_time
+            # get emissions including the L/s
+            return self.emissions.calculate_emissions(
+                power_kw, fuel_litres_per_second=litres_per_second
+            )
 
     def __str__(self):
         emissions_str = "\n".join(

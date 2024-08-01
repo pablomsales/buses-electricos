@@ -246,6 +246,7 @@ class Section:
 
     def __str__(self):
         # Código provisional para especificar las unidades
+        # FIXME: no contempla L/h
         if self.bus.engine.engine_type == "electric":
             consumption_units = "Wh"
         elif self.bus.engine.engine_type == "combustion":

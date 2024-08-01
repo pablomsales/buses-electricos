@@ -89,7 +89,7 @@ class Engine:
             if kilometers:
                 consumption = litres / kilometers  # finally, compute L/km
             else:
-                consumption = litres / time
+                consumption = litres / time  # L/h
 
         return consumption
 

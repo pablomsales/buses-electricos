@@ -1,8 +1,9 @@
 class Fuel:
-    '''
+    """
     Class representing a fuel type.
-    '''
-    _fuel_data = {
+    """
+
+    _fuels_lhv = {
         "gasoline": 3.1536e7,  # J/L
         "diesel": 3.58e7,  # J/L
         "propane": 2.5e7,  # J/L
@@ -11,26 +12,26 @@ class Fuel:
         "E100": 2.68e7,  # J/L
     }
 
-    def __init__(self, fuel_type, pci=None):
+    def __init__(self, fuel_type, lhv=None):
         self._fuel_type = fuel_type
-        if fuel_type in Fuel._fuel_data:
-            self._pci = Fuel._fuel_data[fuel_type]
+        if fuel_type in Fuel._fuels_lhv:
+            self._pci = Fuel._fuels_lhv[fuel_type]
         else:
-            if pci:
-                self._pci = pci
+            if lhv:
+                self._lhv = lhv
             else:
-                raise ValueError("You must provide the PCI for this fuel type")
+                raise ValueError("You must provide the LHV for this fuel type")
 
     @property
     def fuel_type(self):
-        '''
+        """
         Fuel type.
-        '''
+        """
         return self._fuel_type
 
     @property
-    def pci(self):
-        '''
-        Potential Calorific Value (PCV) of the fuel in J/L.
-        '''
-        return self._pci
+    def lhv(self):
+        """
+        Lower Heating Volume of the fuel in J/L.
+        """
+        return self._lhv

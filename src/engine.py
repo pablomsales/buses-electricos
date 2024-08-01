@@ -1,9 +1,11 @@
 from fuel import Fuel
 
+
 class Engine:
-    '''
+    """
     Engine class represents the engine of a vehicle. It can be either combustion or electric.
-    '''
+    """
+
     def __init__(self, engine_type, max_power, efficiency, fuel=None):
         self._engine_type = engine_type  # "combustion" or "electric"
         self._max_power = max_power  # in Watts
@@ -16,9 +18,9 @@ class Engine:
 
     @property
     def engine_type(self):
-        '''
+        """
         Engine type object.
-        '''
+        """
         return self._engine_type
 
     @engine_type.setter
@@ -30,9 +32,9 @@ class Engine:
 
     @property
     def fuel(self):
-        '''
+        """
         Fuel object representing the fuel used by the engine.
-        '''
+        """
         return self._fuel
 
     @fuel.setter
@@ -42,9 +44,9 @@ class Engine:
 
     @property
     def max_power(self):
-        '''
+        """
         Maximum power of the engine in Watts.
-        '''
+        """
         return self._max_power
 
     @max_power.setter
@@ -54,9 +56,9 @@ class Engine:
 
     @property
     def efficiency(self):
-        '''
+        """
         Efficiency of the engine in the range [0, 1].
-        '''
+        """
         return self._efficiency
 
     @efficiency.setter
@@ -64,36 +66,24 @@ class Engine:
         if 0 < value <= 1:
             self._efficiency = value
 
-    def required_power(self, desired_power):
-        '''
-        Computes overall needed power (Watts) considering the efficiency.
-        '''
-        if desired_power <= self._max_power:
-            effective_power = desired_power * self._efficiency
-        else:
-            effective_power = self._max_power * self._efficiency
-
-        additional_power = desired_power - effective_power
-        return desired_power + additional_power
-
-    def consumption(self, desired_power, time, kilometers=None):
-        '''
+    def consumption(self, power, time, kilometers=None):
+        """
         Calculate the overall energy or fuel consumption.
-        '''
-        total_power = self.required_power(desired_power)
+        """
 
         if self.engine_type == "electric":
             hours = time / 3600  # convert seconds to hours
-            consumption = total_power * hours  # compute Wh
+            consumption = power * hours  # compute Wh
 
-        else:
+        else:  # (enginte_type == 'combustion')
+            lhv = self.fuel.lhv  # obtain selected fuel PCI
+            energy = (power * time) / self.efficiency  # compute amount of energy
+            litres = energy / lhv  # obtain the spent litres of fuel
+
             if kilometers:
-                pci = self.fuel.pci  # obtain selected fuel PCI
-                energy = total_power * time  # compute amount of energy
-                litres = energy / pci  # obtain the spent litres of fuel
                 consumption = litres / kilometers  # finally, compute L/km
             else:
-                raise ValueError("Kilometers parameter expected")
+                consumption = litres / time
 
         return consumption
 

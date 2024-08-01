@@ -80,6 +80,7 @@ class Engine:
         if self.engine_type == "electric":
             hours = time / 3600  # convert seconds to hours
             consumption = power * hours  # compute Wh
+            self._consumption_units = "Wh"
 
         else:  # (enginte_type == 'combustion')
             lhv = self.fuel.lhv  # obtain selected fuel PCI
@@ -88,10 +89,16 @@ class Engine:
 
             if kilometers:
                 consumption = litres / kilometers  # finally, compute L/km
+                self._consumption_units = "L/km"
             else:
                 consumption = litres / time  # L/h
+                self._consumption_units = "L/h"
 
         return consumption
+
+    @property
+    def consumption_units(self):
+        return self._consumption_units
 
     def __str__(self):
         return (

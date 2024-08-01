@@ -245,13 +245,6 @@ class Section:
         return self.emissions.calculate_emissions(power_kw)
 
     def __str__(self):
-        # Código provisional para especificar las unidades
-        # FIXME: no contempla L/h
-        if self.bus.engine.engine_type == "electric":
-            consumption_units = "Wh"
-        elif self.bus.engine.engine_type == "combustion":
-            consumption_units = "L/km"
-
         emissions_str = "\n".join(
             [f"{k}: {v:.6f} g/s" for k, v in self.section_emissions.items()]
         )
@@ -269,7 +262,7 @@ class Section:
             f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
             f"\nWork: {self.work:.2f} J"
             f"\nRequired Power: {self.instant_power:.2f} W"
-            f"\nConsumption: {self.consumption} {consumption_units}"
+            f"\nConsumption: {self.consumption} {self.bus.engine.consumption_units}"
             f"\n\nEmissions:\n{emissions_str}"
             f"\n\nSection.duration_time():\t{self.duration_time}"
             f"\n"

@@ -15,7 +15,7 @@ class Fuel:
     def __init__(self, fuel_type, lhv=None):
         self._fuel_type = fuel_type
         if fuel_type in Fuel._fuels_lhv:
-            self._pci = Fuel._fuels_lhv[fuel_type]
+            self._lhv = Fuel._fuels_lhv[fuel_type]
         else:
             if lhv:
                 self._lhv = lhv

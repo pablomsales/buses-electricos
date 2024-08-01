@@ -71,6 +71,12 @@ class Engine:
         Calculate the overall energy or fuel consumption.
         """
 
+        # check if required power is lower than the max power the engine can apply
+        if power <= self._max_power:
+            power = power * self._efficiency
+        else:
+            power = self._max_power * self._efficiency
+
         if self.engine_type == "electric":
             hours = time / 3600  # convert seconds to hours
             consumption = power * hours  # compute Wh

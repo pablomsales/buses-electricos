@@ -9,7 +9,7 @@ from route import Route
 
 def main():
     start_time = time()
-    data = os.path.join("data", "linea_d2_turbomegarecortada.csv")
+    data = os.path.join("data", "linea_d2_1_16.csv")
 
     # Crear una instancia de Fuel
     fuel_instance = Fuel(fuel_type="diesel")

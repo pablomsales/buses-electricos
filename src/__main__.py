@@ -2,14 +2,14 @@ import os
 from time import time
 
 from bus import Bus
+from emissions import Emissions
 from engine import Engine
 from fuel import Fuel
 from route import Route
-from emissions import Emissions
 
 def main():
     start_time = time()
-    data = os.path.join("data", "linea_d2.csv")
+    data = os.path.join("data", "linea_d2_1_16.csv")
 
     # Crear una instancia de Fuel
     fuel_instance = Fuel(fuel_type="diesel")
@@ -43,6 +43,9 @@ def main():
 
         # route_instance.plot_map(output_file="linea_D2.html")
         print(f"Tiempo ejecucion: {time() - start_time}")
+
+        route_instance.combined_profiles_plot()
+
 
     except ValueError as e:
         print(f"Error: {e}")

@@ -1,6 +1,8 @@
 import os
 
 import folium
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from section import Section
@@ -79,11 +81,224 @@ class Route:
             sections.append(section)
         return sections
 
-    def plot(self):
+    def altitude_profile_plot(self):
         '''
-        Plots the route in 3D using matplotlib
+        Plots the altitude profile of the route based on distance.
         '''
-        pass
+        # Lists to store the distances and altitudes
+        distances = []
+        altitudes = []
+        markers_distance = []
+        markers_altitude = []
+
+        # Variable to track the accumulated distance
+        accumulated_distance = 0
+
+        # Process each section
+        for section in self.sections:
+            start_coords, end_coords = section._coordinates
+
+            start_altitude = start_coords[2]
+            end_altitude = end_coords[2]
+
+            # Add the start and end distances and altitudes to the lists
+            distances.append(accumulated_distance)
+            altitudes.append(start_altitude)
+            distances.append(accumulated_distance + section.length)
+            altitudes.append(end_altitude)
+
+            # Add the start and end distances and altitudes to the markers lists
+            markers_distance.append(accumulated_distance)
+            markers_altitude.append(start_altitude)
+            markers_distance.append(accumulated_distance + section.length)
+            markers_altitude.append(end_altitude)
+
+            # Update the accumulated distance
+            accumulated_distance += section.length
+
+        # Crear el gráfico
+        plt.figure(figsize=(10, 5))
+        plt.plot(distances, altitudes, label="Recorrido") # Add the line plot
+        plt.scatter(markers_distance, markers_altitude, color='red', marker="|", label="Sección")  # Add the markers
+
+        # Añadir etiquetas y título
+        plt.xlabel('Distancia recorrida (m)')
+        plt.ylabel('Altitud (m)')
+        plt.title('Perfil de altitud en función de la distancia recorrida')
+        plt.legend()
+
+        # Mostrar el gráfico
+        plt.grid(True)
+        plt.show()
+
+    def speed_profile_plot(self):
+        '''
+        Plots the speed profile of the route based on distance.
+        '''
+        # Lists to store the distances and speeds
+        distances = []
+        speeds = []
+        markers_distance = []
+        markers_speed = []
+
+        # Variable to track the accumulated distance
+        accumulated_distance = 0
+
+        # Process each section
+        for section in self.sections:
+
+            start_speed = section._speeds[0]  # Assuming _speeds is a tuple (start_speed, end_speed)
+            end_speed = section._speeds[1]
+
+            # Add the start and end distances and speeds to the lists
+            distances.append(accumulated_distance)
+            speeds.append(start_speed)
+            distances.append(accumulated_distance + section.length)
+            speeds.append(end_speed)
+
+            # Add the start and end distances and speeds to the markers lists
+            markers_distance.append(accumulated_distance)
+            markers_speed.append(start_speed)
+            markers_distance.append(accumulated_distance + section.length)
+            markers_speed.append(end_speed)
+
+            # Update the accumulated distance
+            accumulated_distance += section.length
+
+        # Create the plot
+        plt.figure(figsize=(10, 5))
+        plt.plot(distances, speeds, label="Recorrido")  # Add the line plot
+        plt.scatter(markers_distance, markers_speed, color='red', marker="|", label="Sección")  # Add the markers
+
+        # Add labels and title
+        plt.xlabel('Distancia recorrida (m)')
+        plt.ylabel('Velocidad (m/s)')
+        plt.title('Perfil de velocidad en función de la distancia recorrida')
+        plt.legend()
+
+        # Show the plot
+        plt.grid(True)
+        plt.show()
+
+    def acceleration_profile_plot(self):
+        '''
+        Plots the acceleration profile of the route based on distance.
+        '''
+        # Lists to store the distances and accelerations
+        distances = []
+        accelerations = []
+        markers_distance = []
+        markers_acceleration = []
+
+        # Variable to track the accumulated distance
+        accumulated_distance = 0
+
+        # Process each section
+        for section in self.sections:
+
+            # Assuming _acceleration is a constant value for each section
+            acceleration = section._acceleration
+
+            # Add the start and end distances and accelerations to the lists
+            distances.append(accumulated_distance)
+            accelerations.append(acceleration)
+            distances.append(accumulated_distance + section.length)
+            accelerations.append(acceleration)
+
+            # Add the start and end distances and accelerations to the markers lists
+            markers_distance.append(accumulated_distance)
+            markers_acceleration.append(acceleration)
+            markers_distance.append(accumulated_distance + section.length)
+            markers_acceleration.append(acceleration)
+
+            # Update the accumulated distance
+            accumulated_distance += section.length
+
+        # Create the plot
+        plt.figure(figsize=(10, 5))
+        plt.plot(distances, accelerations, label="Recorrido")  # Add the line plot
+        plt.scatter(markers_distance, markers_acceleration, color='red', marker="|", label="Sección")  # Add the markers
+
+        # Add labels and title
+        plt.xlabel('Distancia recorrida (m)')
+        plt.ylabel('Aceleración (m/s²)')
+        plt.title('Perfil de aceleración en función de la distancia recorrida')
+        plt.legend()
+
+        # Show the plot
+        plt.grid(True)
+        plt.show()
+
+    def combined_profiles_plot(self):
+        '''
+        Combines the altitude, speed, and acceleration profiles in a single plot.
+        '''
+        # Lists to store the data
+        distances = []
+        altitudes = []
+        speeds = []
+        accelerations = []
+        markers_distance = []
+        markers_altitude = []
+        markers_acceleration = []
+
+        # Variable to track the accumulated distance
+        accumulated_distance = 0
+
+        # Process each section
+        for section in self.sections:
+            # Altitude
+            start_altitude = section._coordinates[0][2]
+            end_altitude = section._coordinates[1][2]
+            distances.extend([accumulated_distance, accumulated_distance + section.length])
+            altitudes.extend([start_altitude, end_altitude])
+            markers_distance.extend([accumulated_distance, accumulated_distance + section.length])
+            markers_altitude.extend([start_altitude, end_altitude])
+
+            # Speed
+            start_speed = section._speeds[0]
+            end_speed = section._speeds[1]
+            speeds.extend([start_speed, end_speed])
+
+            # Acceleration
+            acceleration = section._acceleration
+            accelerations.extend([acceleration, acceleration])
+            markers_acceleration.extend([acceleration, acceleration])
+
+            # Update the accumulated distance
+            accumulated_distance += section.length
+
+        # Create the figure and axes for the subplots
+        _, axs = plt.subplots(3, 1, figsize=(10, 15), sharex=True)
+
+        # Plot altitude profile
+        axs[0].plot(distances, altitudes, label="Recorrido")
+        axs[0].scatter(markers_distance, markers_altitude, color='red', marker="|", label="Sección")
+        axs[0].set_ylabel('Altitud (m)')
+        axs[0].set_title('Perfil de altitud en función de la distancia recorrida')
+        axs[0].legend()
+        axs[0].grid(True)
+
+        # Plot speed profile
+        axs[1].plot(distances, speeds, label="Recorrido")
+        axs[1].scatter(markers_distance, speeds, color='red', marker="|", label="Sección")
+        axs[1].set_ylabel('Velocidad (m/s)')
+        axs[1].set_title('Perfil de velocidad en función de la distancia recorrida')
+        axs[1].legend()
+        axs[1].grid(True)
+
+        # Plot acceleration profile
+        axs[2].plot(distances, accelerations, label="Recorrido")
+        axs[2].scatter(markers_distance, markers_acceleration, color='red', marker="|", label="Sección")
+        axs[2].set_xlabel('Distancia recorrida (m)')
+        axs[2].set_ylabel('Aceleración (m/s²)')
+        axs[2].set_title('Perfil de aceleración en función de la distancia recorrida')
+        axs[2].legend()
+        axs[2].grid(True)
+
+        # Show the plot
+        plt.tight_layout()
+        plt.show()
 
     def plot_map(self, output_file="mapa_secciones.html"):
         '''

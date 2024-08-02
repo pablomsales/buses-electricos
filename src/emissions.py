@@ -26,7 +26,7 @@ class Emissions:
             # 1L gasoil --> 2.64kg CO2
             co2_kg = fuel_litres_per_second * 2.64
             co2_g = co2_kg * 1000
-            emissions["CO2"] = co2_kg
+            emissions["CO2"] = co2_g
 
         return emissions
 

@@ -51,6 +51,6 @@ def calculate_precision(csv_file):
     return precision
 
 # Ejemplo de uso
-csv_file = 'data\datos_test.csv'
+csv_file = 'data\prueba_tren.csv'
 precision = calculate_precision(csv_file)
 print(f'Índice de precisión: {precision:.2f}')

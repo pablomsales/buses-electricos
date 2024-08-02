@@ -40,7 +40,6 @@ def main():
 
         for section in route_instance.sections:
             print(section)
-            print(f"Aceleración: {section._acceleration}")
 
         # route_instance.plot_map(output_file="linea_D2.html")
         print(f"Tiempo ejecucion: {time() - start_time}")

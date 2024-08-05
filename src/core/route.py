@@ -2,10 +2,9 @@ import os
 
 import folium
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
-from section import Section
+from core.section.old_section import Section
 
 
 class Route:
@@ -13,42 +12,10 @@ class Route:
     Class to represent a route with multiple sections.
     """
 
-    def __init__(self, filepath, bus, emissions):
-        if filepath:
-            self._data = self.__load_data(filepath)
-            self.bus = bus
-            self.emissions = emissions
-            self.sections = self.__process_sections(self._data)
-        else:
-            raise ValueError(
-                "No file path provided. Please provide a file path to load data."
-            )
-
-    def __load_data(self, filepath: str):
-        """
-        Load data from a file.
-        """
-        if filepath.endswith(".csv"):
-            data = self.__process_csv(filepath)
-        elif filepath.endswith(".gpx"):
-            data = self.__process_gpx(filepath)
-        else:
-            raise ValueError(
-                "Unsupported file format. Only .csv and .gpx are supported."
-            )
-        return data
-
-    def __process_csv(self, filepath):
-        """
-        Process the CSV file.
-        """
-        df = pd.read_csv(filepath)
-        df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
-        df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
-        if df.iloc[0]["time"] == 0:
-            first_non_zero_index = df[df["time"] != 0].index[0]
-            df = df.iloc[first_non_zero_index - 1 :]
-        return df
+    def __init__(self, data, bus, emissions):
+        self.sections = self.__process_sections(data)
+        self.bus = bus
+        self.emissions = emissions
 
     def __process_sections(self, df: pd.DataFrame):
         """
@@ -83,7 +50,7 @@ class Route:
             sections.append(section)
         return sections
 
-    def altitude_profile_plot(self):
+    def plot_altitude_profile(self):
         """
         Plots the altitude profile of the route based on distance.
         """
@@ -135,7 +102,7 @@ class Route:
         plt.grid(True)
         self._save_plot("altitude_profile.png")
 
-    def speed_profile_plot(self):
+    def plot_speed_profile(self):
         """
         Plots the speed profile of the route based on distance.
         """
@@ -188,7 +155,7 @@ class Route:
         plt.grid(True)
         self._save_plot("speed_profile.png")
 
-    def acceleration_profile_plot(self):
+    def plot_acceleration_profile(self):
         """
         Plots the acceleration profile of the route based on distance.
         """
@@ -243,7 +210,7 @@ class Route:
         plt.grid(True)
         self._save_plot("acceleration_profile.png")
 
-    def combined_profiles_plot(self):
+    def plot_combined_profiles(self):
         """
         Combines the altitude, speed, and acceleration profiles in a single plot.
         """

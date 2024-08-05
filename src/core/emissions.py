@@ -1,4 +1,4 @@
-from utils.euro_standards import euro_standards
+from utils.constants import euro_standards
 
 
 class Emissions:

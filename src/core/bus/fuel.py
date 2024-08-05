@@ -1,21 +1,15 @@
+from utils.constants import fuels_lhv
+
+
 class Fuel:
     """
     Class representing a fuel type.
     """
 
-    _fuels_lhv = {
-        "gasoline": 3.1536e7,  # J/L
-        "diesel": 3.58e7,  # J/L
-        "propane": 2.5e7,  # J/L
-        "natural_gas": 3.6e7,  # J/L
-        "E85": 2.4e7,  # J/L
-        "E100": 2.68e7,  # J/L
-    }
-
     def __init__(self, fuel_type, lhv=None):
         self._fuel_type = fuel_type
-        if fuel_type in Fuel._fuels_lhv:
-            self._lhv = Fuel._fuels_lhv[fuel_type]
+        if fuel_type in fuels_lhv:
+            self._lhv = fuels_lhv[fuel_type]
         else:
             if lhv:
                 self._lhv = lhv

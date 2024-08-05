@@ -1,9 +1,18 @@
+fuels_lhv = {
+    "gasoline": 3.1536e7,  # J/L
+    "diesel": 3.58e7,
+    "propane": 2.5e7,
+    "natural_gas": 3.6e7,
+    "E85": 2.4e7,
+    "E100": 2.68e7,
+}
+
 euro_standards = {
     "EURO_1": {
-        "NOx": 8.0,    # g/kWh
-        "CO": 4.5,     # g/kWh
-        "HC": 1.1,     # g/kWh
-        "PM": 0.36,    # g/kWh
+        "NOx": 8.0,  # g/kWh
+        "CO": 4.5,  # g/kWh
+        "HC": 1.1,  # g/kWh
+        "PM": 0.36,  # g/kWh
     },
     "EURO_2": {
         "NOx": 7.0,

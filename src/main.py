@@ -1,11 +1,12 @@
 import os
 from time import time
 
-from bus import Bus
-from emissions import Emissions
-from engine import Engine
-from fuel import Fuel
-from route import Route
+from models.model_real import RealModel
+from src.core.bus.bus import Bus
+from src.core.bus.engine import Engine
+from src.core.bus.fuel import Fuel
+from src.core.emissions import Emissions
+
 
 def main():
     start_time = time()
@@ -36,19 +37,21 @@ def main():
     emissions_instance = Emissions(euro_standard)
 
     try:
-        route_instance = Route(filepath=data, bus=bus_instance, emissions=emissions_instance)
+        real_model = RealModel(
+            filepath=data, bus=bus_instance, emissions=emissions_instance
+        )
 
-        for section in route_instance.sections:
+        for section in real_model.route.sections:
             print(section)
 
-        # route_instance.plot_map(output_file="linea_D2.html")
+        # real_model.route.plot_map(output_file="linea_D2.html")
         print(f"Tiempo ejecucion: {time() - start_time}")
 
-        route_instance.combined_profiles_plot()
-
+        real_model.route.combined_profiles_plot()
 
     except ValueError as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     main()

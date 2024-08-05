@@ -2,6 +2,8 @@ import math
 
 from geopy.distance import geodesic
 
+# TODO: mudar lo necesario a BaseSection
+
 
 class Section:
     """
@@ -28,14 +30,14 @@ class Section:
         self._total_resistance = self._calculate_total_resistance()
 
     @property
-    def start_coord(self):
+    def start(self):
         """
         Start coordinates of the section.
         """
         return self._coordinates[0]
 
     @property
-    def end_coord(self):
+    def end(self):
         """
         End coordinates of the section.
         """
@@ -47,12 +49,12 @@ class Section:
         Length of the section in meters.
         """
         # obtain latitude & longitude of start coord
-        lat_0 = self.start_coord[0]
-        long_0 = self.start_coord[1]
+        lat_0 = self.start[0]
+        long_0 = self.start[1]
 
         # obtain latitude & longitude of end coord
-        lat_1 = self.end_coord[0]
-        long_1 = self.end_coord[1]
+        lat_1 = self.end[0]
+        long_1 = self.end[1]
 
         # compute the geodesic distance between them in meters
         return geodesic((lat_0, long_0), (lat_1, long_1)).meters
@@ -85,7 +87,6 @@ class Section:
         """
         return self._timestamps[1]
 
-    # FIXME: con datos de autobuses a veces no coincide con el tiempo entre timestamps
     @property
     def duration_time(self):
         """
@@ -106,7 +107,7 @@ class Section:
         """
         Grade angle of the section in degrees.
         """
-        delta_altitude = self.end_coord[2] - self.start_coord[2]
+        delta_altitude = self.end[2] - self.start[2]
         if self.length == 0:
             return 0
         return math.degrees(math.atan(delta_altitude / self.length))
@@ -263,8 +264,8 @@ class Section:
 
         return (
             f"\n---------------------------------------------------"
-            f"\nSection from {self.start_coord[0]} º, {self.start_coord[1]} º, {round(self.start_coord[2], 2)} m "
-            f"to\n{' ' * (len('Section from ')-1)} {self.end_coord[0]} º, {self.end_coord[1]} º, {round(self.end_coord[2], 2)} m"
+            f"\nSection from {self.start[0]} º, {self.start[1]} º, {round(self.start[2], 2)} m "
+            f"to\n{' ' * (len('Section from ')-1)} {self.end[0]} º, {self.end[1]} º, {round(self.end[2], 2)} m"
             f"\n---------------------------------------------------"
             f"\nSpeeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s, "
             f"\nAir Resistance: {self.air_resistance:.2f} N, "

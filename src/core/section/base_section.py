@@ -3,7 +3,7 @@ import math
 from geopy.distance import geodesic
 
 
-class Section:
+class BaseSection:
     """
     Class to represent a section of a route.
     """

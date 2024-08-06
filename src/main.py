@@ -1,11 +1,11 @@
 import os
 from time import time
 
-from models.real_model import RealModel
 from src.core.bus.bus import Bus
 from src.core.bus.engine import Engine
 from src.core.bus.fuel import Fuel
 from src.core.emissions import Emissions
+from src.core.model import Model
 
 
 def main():
@@ -37,8 +37,11 @@ def main():
     emissions_instance = Emissions(euro_standard)
 
     try:
-        real_model = RealModel(
-            filepath=data, bus=bus_instance, emissions=emissions_instance
+        real_model = Model(
+            filepath=data,
+            bus=bus_instance,
+            emissions=emissions_instance,
+            mode="real",
         )
 
         for section in real_model.route.sections:

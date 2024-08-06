@@ -12,15 +12,24 @@ class Route:
     Class to represent a route with multiple sections.
     """
 
-    def __init__(self, data, bus, emissions):
-        self.sections = self.__process_sections(data)
+    def __init__(self, data, bus, emissions, mode):
+        self._mode = mode
+        self.sections = self._create_sections(data)
         self.bus = bus
         self.emissions = emissions
 
-    def __process_sections(self, df: pd.DataFrame):
+    def _create_sections(self, df: pd.DataFrame):
         """
-        Process the sections of the route.
+        Process the sections of the route based on the mode.
         """
+        if self._mode == "real":
+            return self._process_real_sections(df)
+        elif self._mode == "estimation":
+            return self._process_estimated_sections(df)
+        else:
+            raise ValueError("Invalid mode. Mode should be 'real' or 'estimation'.")
+
+    def _process_real_sections(self, df: pd.DataFrame):
         sections = []
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -49,6 +58,10 @@ class Route:
             section = Section(coordinates, speeds, timestamps, self.bus, self.emissions)
             sections.append(section)
         return sections
+
+    def _process_estimated_sections(self, df: pd.DataFrame):
+        # IMPLEMENTAR LOGICA
+        pass
 
     def plot_altitude_profile(self):
         """

@@ -1,7 +1,7 @@
 import os
 from time import time
 
-from models.model_real import RealModel
+from models.real_model import RealModel
 from src.core.bus.bus import Bus
 from src.core.bus.engine import Engine
 from src.core.bus.fuel import Fuel

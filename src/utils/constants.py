@@ -1,3 +1,5 @@
+air_density = 1.225
+
 fuels_lhv = {
     "gasoline": 3.1536e7,  # J/L
     "diesel": 3.58e7,

@@ -2,6 +2,8 @@ import math
 
 from geopy.distance import geodesic
 
+from utils.constants import air_density
+
 
 class BaseSection:
     """
@@ -14,8 +16,6 @@ class BaseSection:
 
         self.bus = bus
         self.emissions = emissions
-
-        self.air_density = 1.225
 
         self._average_speed = self._calculate_average_speed()
         self._acceleration = self._calculate_acceleration()
@@ -81,7 +81,7 @@ class BaseSection:
         """
         return (
             0.5
-            * self.air_density
+            * air_density
             * self.bus.drag_coefficient
             * self.bus.frontal_area
             * self._average_speed**2

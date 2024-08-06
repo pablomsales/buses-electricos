@@ -2,7 +2,7 @@ import math
 
 from geopy.distance import geodesic
 
-from utils.constants import air_density
+from core.resistance_calculator import ResistanceCalculator
 
 
 class BaseSection:
@@ -19,13 +19,14 @@ class BaseSection:
 
         self._average_speed = self._calculate_average_speed()
         self._acceleration = self._calculate_acceleration()
+        self._grade_angle = self.grade_angle
 
-        self._air_resistance = self._calculate_air_resistance()
-        self._inertia = self._calculate_inertia()
-        self._grade_resistance = self._calculate_grade_resistance()
-        self._rolling_resistance = self._calculate_rolling_resistance()
-
-        self._total_resistance = self._calculate_total_resistance()
+        self.resistance_calculator = ResistanceCalculator(
+            self.bus,
+            self._average_speed,
+            self._acceleration,
+            self._grade_angle,
+        )
 
     @property
     def start(self):
@@ -40,13 +41,11 @@ class BaseSection:
         """
         Length of the section in meters.
         """
-        # obtain latitude & longitude of start coord
-        lat_0 = self.start[0]
-        long_0 = self.start[1]
 
+        # obtain latitude & longitude of start coord
+        lat_0, long_0 = self.start[0], self.start[1]
         # obtain latitude & longitude of end coord
-        lat_1 = self.end[0]
-        long_1 = self.end[1]
+        lat_1, long_1 = self.end[0], self.end[1]
 
         # compute the geodesic distance between them in meters
         return geodesic((lat_0, long_0), (lat_1, long_1)).meters
@@ -57,9 +56,11 @@ class BaseSection:
         Grade angle of the section in degrees.
         """
         delta_altitude = self.end[2] - self.start[2]
-        if self.length == 0:
-            return 0
-        return math.degrees(math.atan(delta_altitude / self.length))
+        return (
+            math.degrees(math.atan(delta_altitude / self.length))
+            if self.length != 0
+            else 0
+        )
 
     def _calculate_average_speed(self):
         """
@@ -75,81 +76,25 @@ class BaseSection:
         delta_t = self.duration_time
         return delta_v / delta_t if delta_t != 0 else 0
 
-    def _calculate_air_resistance(self):
-        """
-        Calculate the air resistance of the section.
-        """
-        return (
-            0.5
-            * air_density
-            * self.bus.drag_coefficient
-            * self.bus.frontal_area
-            * self._average_speed**2
-        )
-
-    def _calculate_inertia(self):
-        """
-        Calculate the inertia of the section.
-        """
-        return self.bus.mass * self._acceleration
-
-    def _calculate_grade_resistance(self):
-        """
-        Calculate the grade resistance of the section.
-        """
-        return self.bus.mass * 9.81 * math.sin(math.radians(self.grade_angle))
-
-    def _calculate_rolling_resistance(self):
-        """
-        Calculate the rolling resistance of the section.
-        """
-        return self.bus.rolling_resistance_coefficient * self.bus.mass * 9.81
-
-    def _calculate_total_resistance(self):
-        """
-        Calculate the total resistance of the section.
-        """
-        return (
-            self._air_resistance
-            + self._inertia
-            + self._grade_resistance
-            + self._rolling_resistance
-        )
-
     @property
     def air_resistance(self):
-        """
-        Air resistance of the section.
-        """
-        return self._air_resistance
+        return self.resistance_calculator.air_resistance
 
     @property
     def inertia(self):
-        """
-        Inertia of the section.
-        """
-        return self._inertia
+        return self.resistance_calculator.inertia
 
     @property
     def grade_resistance(self):
-        """
-        Grade resistance of the section.
-        """
-        return self._grade_resistance
+        return self.resistance_calculator.grade_resistance
 
     @property
     def rolling_resistance(self):
-        """
-        Rolling resistance of the section.
-        """
-        return self._rolling_resistance
+        return self.resistance_calculator.rolling_resistance
 
     @property
     def total_resistance(self):
-        """
-        Total resistance of the section.
-        """
-        return self._total_resistance
+        return self.resistance_calculator.total_resistance
 
     @property
     def work(self):
@@ -173,18 +118,29 @@ class BaseSection:
         Consumption of the section.
         """
         if self.bus.engine.engine_type == "electric":
-            return self.bus.engine.consumption(
-                power=self.instant_power,
-                time=self.duration_time,
-            )
+            return self._electric_consumption()
         else:
-            # if engine_type is "combustion", include km in consumption
-            kilometers = self.length / 1000
-            return self.bus.engine.consumption(
-                power=self.instant_power,
-                time=self.duration_time,
-                kilometers=kilometers,
-            )
+            return self._fuel_consumption()
+
+    def _electric_consumption(self):
+        """
+        Calculate consumption for electric engine.
+        """
+        return self.bus.engine.consumption(
+            power=self.instant_power,
+            time=self.duration_time,
+        )
+
+    def _fuel_consumption(self):
+        """
+        Calculate consumption for fuel engine.
+        """
+        kilometers = self.length / 1000
+        return self.bus.engine.consumption(
+            power=self.instant_power,
+            time=self.duration_time,
+            kilometers=kilometers,
+        )
 
     @property
     def section_emissions(self):
@@ -194,14 +150,24 @@ class BaseSection:
         power_kw = self.instant_power / 1000  # Convertir W a kW
 
         if self.bus.engine.engine_type == "electric":
-            return self.emissions.calculate_emissions(power_kw)
+            return self._electric_emissions(power_kw)
         else:
-            # first get the litres consumed in 1 second
-            litres_per_second = self.consumption / self.duration_time
-            # get emissions including the L/s
-            return self.emissions.calculate_emissions(
-                power_kw, fuel_litres_per_second=litres_per_second
-            )
+            return self._fuel_emissions(power_kw)
+
+    def _electric_emissions(self, power_kw):
+        """
+        Calculate emissions for electric engine.
+        """
+        return self.emissions.calculate_emissions(power_kw)
+
+    def _fuel_emissions(self, power_kw):
+        """
+        Calculate emissions for fuel engine.
+        """
+        consumption_rate = self.consumption / self.duration_time
+        return self.emissions.calculate_emissions(
+            power_kw, fuel_consumption_rate=consumption_rate
+        )
 
     def __str__(self):
         emissions_str = "\n".join(

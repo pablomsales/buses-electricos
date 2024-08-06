@@ -1,4 +1,6 @@
-air_density = 1.225
+AIR_DENSITY = 1.225
+CO2_CONVERSION_FACTOR = 2.64
+GRAVITY = 9.81
 
 fuels_lhv = {
     "gasoline": 3.1536e7,  # J/L

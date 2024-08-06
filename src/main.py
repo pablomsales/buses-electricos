@@ -10,18 +10,14 @@ def main():
 
     data = os.path.join("data", "sandbox", "linea_d2_1_16.csv")
 
-    try:
-        real_model = Model(
-            filepath=data,
-            bus=bus_instance,
-            emissions=emissions_instance,
-            mode="real",
-        )
+    real_model = Model(
+        filepath=data,
+        bus=bus_instance,
+        emissions=emissions_instance,
+        mode="real",
+    )
 
-        real_model.consumption_and_emissions
-
-    except ValueError as e:
-        print(f"Error: {e}")
+    real_model.consumption_and_emissions
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

@@ -10,7 +10,7 @@ from src.core.emissions import Emissions
 
 def main():
     start_time = time()
-    data = os.path.join("data", "linea_d2_1_16.csv")
+    data = os.path.join("data", "linea_d2_algoritmo.csv")
 
     # Crear una instancia de Fuel
     fuel_instance = Fuel(fuel_type="diesel")

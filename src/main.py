@@ -1,7 +1,7 @@
 import os
 from time import time
 
-from config import bus_instance, emissions_instance, engine_instance, fuel_instance
+from config import bus_instance, emissions_instance
 from core.model import Model
 
 

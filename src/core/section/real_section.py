@@ -1,7 +1,7 @@
-from src.core.section import BaseSection
+from core.section import base_section
 
 
-class RealSection(BaseSection):
+class RealSection(base_section):
     def __init__(self, coordinates, speeds, timestamps, bus, emissions):
         super().__init__(coordinates, bus, emissions)
 

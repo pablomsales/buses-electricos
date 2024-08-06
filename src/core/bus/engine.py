@@ -1,4 +1,4 @@
-from fuel import Fuel
+from core.bus.fuel import Fuel
 
 
 class Engine:

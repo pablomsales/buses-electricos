@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.core.route import Route
+from core.route import Route
 
 
 class Model:
@@ -9,22 +9,22 @@ class Model:
         self._validate_filepath(filepath)
 
         self._mode = mode
-        self._data = self._load_data(filepath)
-        self.route = Route(data=self._data, bus=bus, emissions=emissions)
+        self._data = self._load_data(filepath, mode)
+        self.route = Route(
+            data=self._data, bus=bus, emissions=emissions, mode=self._mode
+        )
 
     @property
-    def consumption(self):
-        if self._mode == "real":
-            return self.route.section.calculate_real_consumption()
-        if self._mode == "estimation":
-            return self.route.section.calculate_estimated_consumption()
+    def consumption_and_emissions(self):
+        for section in self.route.sections:
+            print(section)
+        # sustituir lo de arriba para manejar el guardado en un csv de outputs
 
-    @property
-    def emissions(self):
-        if self._mode == "real":
-            return self.route.section.calculate_real_emissions()
-        if self._mode == "estimation":
-            return self.route.section.calculate_estimated_emissions()
+    def combined_profiles_plot(self):
+        return self.route.plot_combined_profiles()
+
+    def plot_map(self):
+        return self.route.plot_map(output_file="linea_D2.html")
 
     @staticmethod
     def _validate_mode(mode):

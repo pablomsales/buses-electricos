@@ -4,7 +4,8 @@ import folium
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from core.section.old_section import Section
+from core.section.estimated_section import EstimatedSection
+from core.section.real_section import RealSection
 
 
 class Route:
@@ -14,9 +15,9 @@ class Route:
 
     def __init__(self, data, bus, emissions, mode):
         self._mode = mode
-        self.sections = self._create_sections(data)
         self.bus = bus
         self.emissions = emissions
+        self.sections = self._create_sections(data)
 
     def _create_sections(self, df: pd.DataFrame):
         """
@@ -55,7 +56,9 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            section = Section(coordinates, speeds, timestamps, self.bus, self.emissions)
+            section = RealSection(
+                coordinates, speeds, timestamps, self.bus, self.emissions
+            )
             sections.append(section)
         return sections
 

@@ -29,11 +29,11 @@ class BaseSection:
 
     @property
     def start(self):
-        return self._coordinates[0]
+        return self._start
 
     @property
     def end(self):
-        return self._coordinates[1]
+        return self._end
 
     @property
     def length(self):
@@ -72,7 +72,7 @@ class BaseSection:
         Calculate the acceleration of the section.
         """
         delta_v = self.end_speed - self.start_speed
-        delta_t = self.end_timestamp - self.start_timestamp
+        delta_t = self.duration_time
         return delta_v / delta_t if delta_t != 0 else 0
 
     def _calculate_air_resistance(self):
@@ -223,6 +223,5 @@ class BaseSection:
             f"\nRequired Power: {self.instant_power:.2f} W"
             f"\nConsumption: {self.consumption} {self.bus.engine.consumption_units}"
             f"\n\nEmissions:\n{emissions_str}"
-            f"\n\nSection.duration_time():\t{self.duration_time}"
             f"\n"
         )

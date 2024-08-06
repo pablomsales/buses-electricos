@@ -1,10 +1,19 @@
-from engine import Engine
+from core.bus.engine import Engine
+
 
 class Bus:
-    '''
+    """
     Class to represent a bus.
-    '''
-    def __init__(self, mass, drag_coefficient, frontal_area, rolling_resistance_coefficient, engine):
+    """
+
+    def __init__(
+        self,
+        mass,
+        drag_coefficient,
+        frontal_area,
+        rolling_resistance_coefficient,
+        engine,
+    ):
         self._mass = mass
         self._drag_coefficient = drag_coefficient
         self._frontal_area = frontal_area
@@ -13,9 +22,9 @@ class Bus:
 
     @property
     def mass(self):
-        '''
+        """
         Mass of the bus in kg
-        '''
+        """
         return self._mass
 
     @mass.setter
@@ -25,9 +34,9 @@ class Bus:
 
     @property
     def drag_coefficient(self):
-        '''
+        """
         Drag coefficient of the bus
-        '''
+        """
         return self._drag_coefficient
 
     @drag_coefficient.setter
@@ -37,9 +46,9 @@ class Bus:
 
     @property
     def frontal_area(self):
-        '''
+        """
         Frontal area of the bus in m²
-        '''
+        """
         return self._frontal_area
 
     @frontal_area.setter
@@ -49,9 +58,9 @@ class Bus:
 
     @property
     def rolling_resistance_coefficient(self):
-        '''
+        """
         Rolling resistance coefficient of the bus
-        '''
+        """
         return self._rolling_resistance_coefficient
 
     @rolling_resistance_coefficient.setter
@@ -61,9 +70,9 @@ class Bus:
 
     @property
     def engine(self):
-        '''
+        """
         Engine object representing the bus engine
-        '''
+        """
         return self._engine
 
     @engine.setter

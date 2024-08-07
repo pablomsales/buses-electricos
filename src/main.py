@@ -18,9 +18,9 @@ def main():
         mode="real",
     )
 
-    model.consumption_and_emissions
-    model.plot_combined_profiles()
-    model.plot_map()
+    model.consumption_and_emissions()
+    # model.plot_combined_profiles()
+    # model.plot_map()
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

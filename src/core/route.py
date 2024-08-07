@@ -45,14 +45,14 @@ class Route:
             speeds = (start_speed, end_speed)
 
             start_coord = (
-                start_section["latitude"],
-                start_section["longitude"],
-                start_section["altitude"],
+                float(start_section["latitude"]),
+                float(start_section["longitude"]),
+                float(start_section["altitude"]),
             )
             end_coord = (
-                end_section["latitude"],
-                end_section["longitude"],
-                end_section["altitude"],
+                float(end_section["latitude"]),
+                float(end_section["longitude"]),
+                float(end_section["altitude"]),
             )
             coordinates = (start_coord, end_coord)
 
@@ -240,8 +240,8 @@ class Route:
         # Process each section
         for section in self.sections:
             # Altitude
-            start_altitude = section._coordinates[0][2]
-            end_altitude = section._coordinates[1][2]
+            start_altitude = section.start[2]
+            end_altitude = section.end[2]
             distances.extend(
                 [accumulated_distance, accumulated_distance + section.length]
             )

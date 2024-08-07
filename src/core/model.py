@@ -1,3 +1,4 @@
+import csv
 import os
 
 import pandas as pd
@@ -18,11 +19,45 @@ class Model:
             data=self._data, bus=bus, emissions=emissions, mode=self._mode
         )
 
-    @property
     def consumption_and_emissions(self):
-        for section in self.route.sections:
-            print(section)
-        # sustituir lo de arriba para manejar el guardado en un csv de outputs
+        filename = os.path.join(self._output_dir, "output.csv")
+
+        # Prepare header and data rows
+        header = [
+            "start",
+            "end",
+            "start_speed",
+            "end_speed",
+            "Wh",
+            "L/h",
+            "L/km",
+            "NOx",
+            "CO",
+            "HC",
+            "PM",
+            "CO2",
+        ]
+        rows = []
+
+        for sect in self.route.sections:
+            emissions = [float(value) for value in sect.section_emissions.values()]
+            consumption = [float(value) for value in sect.consumption.values()]
+
+            row = [
+                sect.start,
+                sect.end,
+                sect.start_speed,
+                sect.end_speed,
+                *consumption,
+                *emissions,
+            ]
+            rows.append(row)
+
+        # Write to CSV file
+        with open(filename, "w", newline="") as f:
+            writer = csv.writer(f, delimiter=";")
+            writer.writerow(header)
+            writer.writerows(rows)
 
     def plot_combined_profiles(self):
         return self.route.plot_combined_profiles(output_dir=self._output_dir)

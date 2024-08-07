@@ -117,29 +117,38 @@ class BaseSection:
         """
         Consumption of the section.
         """
+        consumption = {"Wh": 0, "L/h": 0, "L/km": 0}
+
         if self.bus.engine.engine_type == "electric":
-            return self._electric_consumption()
-        else:
-            return self._fuel_consumption()
+            consumption["Wh"] = self._electric_consumption()
+
+        if self.bus.engine.engine_type == "combustion":
+            consumption["L/h"] = self._fuel_consumption()
+            consumption["L/km"] = self._fuel_consumption(by_km=True)
+
+        return consumption
 
     def _electric_consumption(self):
         """
         Calculate consumption for electric engine.
         """
-        return self.bus.engine.consumption(
+        return self.bus.engine.electric_consumption(
             power=self.instant_power,
             time=self.duration_time,
         )
 
-    def _fuel_consumption(self):
+    def _fuel_consumption(self, by_km: bool = False):
         """
         Calculate consumption for fuel engine.
+
+        :param by_km: If True, returns consumption per kilometer. If False, returns consumption per hour.
+        :return: Fuel consumption in liters per hour or per kilometer.
         """
-        kilometers = self.length / 1000
-        return self.bus.engine.consumption(
+        km = self.length / 1000 if by_km else None
+        return self.bus.engine.fuel_consumption(
             power=self.instant_power,
             time=self.duration_time,
-            kilometers=kilometers,
+            km=km,
         )
 
     @property
@@ -164,7 +173,7 @@ class BaseSection:
         """
         Calculate emissions for fuel engine.
         """
-        consumption_rate = self.consumption / self.duration_time
+        consumption_rate = self.consumption["L/km"] / self.duration_time
         return self.emissions.calculate_emissions(
             power_kw, fuel_consumption_rate=consumption_rate
         )
@@ -187,7 +196,7 @@ class BaseSection:
             f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
             f"\nWork: {self.work:.2f} J"
             f"\nRequired Power: {self.instant_power:.2f} W"
-            f"\nConsumption: {self.consumption} {self.bus.engine.consumption_units}"
+            f"\nConsumption: {self.consumption}"
             f"\n\nEmissions:\n{emissions_str}"
             f"\n"
         )

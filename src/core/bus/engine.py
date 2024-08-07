@@ -66,39 +66,52 @@ class Engine:
         if 0 < value <= 1:
             self._efficiency = value
 
+    def _adjust_power(self, power):
+        """
+        Adjust power based on max power and efficiency.
+        """
+        if power <= self._max_power:
+            return power * self._efficiency
+        else:
+            return self._max_power * self._efficiency
+
     def consumption(self, power, time, kilometers=None):
         """
         Calculate the overall energy or fuel consumption.
         """
-
-        # check if required power is lower than the max power the engine can apply
-        if power <= self._max_power:
-            power = power * self._efficiency
-        else:
-            power = self._max_power * self._efficiency
+        power = self._adjust_power(power)
 
         if self.engine_type == "electric":
-            hours = time / 3600  # convert seconds to hours
-            consumption = power * hours  # compute Wh
-            self._consumption_units = "Wh"
+            return self._electric_consumption(power, time)
 
-        else:  # (enginte_type == 'combustion')
-            lhv = self.fuel.lhv  # obtain selected fuel PCI
-            energy = (power * time) / self.efficiency  # compute amount of energy
-            litres = energy / lhv  # obtain the spent litres of fuel
+        if self.engine_type == "combustion":
+            return self.calculate_combustion_consumption(power, time, kilometers)
 
-            if kilometers:
-                consumption = litres / kilometers  # finally, compute L/km
-                self._consumption_units = "L/km"
-            else:
-                consumption = litres / time  # L/h
-                self._consumption_units = "L/h"
-
+    def electric_consumption(self, power, time):
+        """
+        Calculate electric consumption in Wh.
+        """
+        power = self._adjust_power(power)
+        hours = time / 3600  # convert seconds to hours
+        consumption = power * hours
         return consumption
 
-    @property
-    def consumption_units(self):
-        return self._consumption_units
+    def fuel_consumption(self, power, time, km=None):
+        """
+        Calculate fuel consumption.
+        """
+        power = self._adjust_power(power)
+        lhv = self.fuel.lhv  # obtain selected fuel LHV (Lower Heating Value)
+
+        energy = (power * time) / self._efficiency  # compute amount of energy
+        litres = energy / lhv  # obtain the spent litres of fuel
+
+        if km:
+            consumption = litres / km  # compute L/km
+        else:
+            consumption = litres / time  # compute L/h
+
+        return consumption
 
     def __str__(self):
         return (

@@ -8,10 +8,10 @@ from core.model import Model
 def main():
     start_time = time()
 
-    data = os.path.join("data", "sandbox", "linea_d2_1_16.csv")
+    data = os.path.join("data", "linea_d2_algoritmo.csv")
 
     model = Model(
-        name="linea_d2_1_16",
+        name="linea_d2_algoritmo",
         filepath=data,
         bus=bus_instance,
         emissions=emissions_instance,

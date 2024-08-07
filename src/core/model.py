@@ -1,12 +1,16 @@
+import os
+
 import pandas as pd
 
 from core.route import Route
 
 
 class Model:
-    def __init__(self, filepath, bus, emissions, mode):
+    def __init__(self, name, filepath, bus, emissions, mode):
+        self.name = name
         self._validate_mode(mode)
         self._validate_filepath(filepath)
+        self._output_dir = self._create_output_dir(name)
 
         self._mode = mode
         self._data = self._load_data(filepath, mode)
@@ -20,11 +24,11 @@ class Model:
             print(section)
         # sustituir lo de arriba para manejar el guardado en un csv de outputs
 
-    def combined_profiles_plot(self):
-        return self.route.plot_combined_profiles()
+    def plot_combined_profiles(self):
+        return self.route.plot_combined_profiles(output_dir=self._output_dir)
 
     def plot_map(self):
-        return self.route.plot_map(output_file="linea_D2.html")
+        return self.route.plot_map(output_dir=self._output_dir)
 
     @staticmethod
     def _validate_mode(mode):
@@ -66,3 +70,8 @@ class Model:
     def _process_estimation_data(df):
         # Add estimation logic here
         pass
+
+    def _create_output_dir(self, dir_name):
+        final_path = os.path.join("outputs", dir_name)
+        os.makedirs(final_path, exist_ok=True)
+        return final_path

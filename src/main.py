@@ -10,14 +10,17 @@ def main():
 
     data = os.path.join("data", "sandbox", "linea_d2_1_16.csv")
 
-    real_model = Model(
+    model = Model(
+        name="linea_d2_1_16",
         filepath=data,
         bus=bus_instance,
         emissions=emissions_instance,
         mode="real",
     )
 
-    real_model.consumption_and_emissions
+    model.consumption_and_emissions
+    model.plot_combined_profiles()
+    model.plot_map()
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

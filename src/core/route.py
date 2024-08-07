@@ -66,7 +66,7 @@ class Route:
         # IMPLEMENTAR LOGICA
         pass
 
-    def plot_altitude_profile(self):
+    def plot_altitude_profile(self, output_dir):
         """
         Plots the altitude profile of the route based on distance.
         """
@@ -81,10 +81,8 @@ class Route:
 
         # Process each section
         for section in self.sections:
-            start_coords, end_coords = section._coordinates
-
-            start_altitude = start_coords[2]
-            end_altitude = end_coords[2]
+            start_altitude = section.start[2]
+            end_altitude = section.end[2]
 
             # Add the start and end distances and altitudes to the lists
             distances.append(accumulated_distance)
@@ -116,9 +114,9 @@ class Route:
 
         # Mostrar el gráfico
         plt.grid(True)
-        self._save_plot("altitude_profile.png")
+        plt.savefig(os.path.join(output_dir, "altitude_profile.png"))
 
-    def plot_speed_profile(self):
+    def plot_speed_profile(self, output_dir):
         """
         Plots the speed profile of the route based on distance.
         """
@@ -134,10 +132,8 @@ class Route:
         # Process each section
         for section in self.sections:
 
-            start_speed = section._speeds[
-                0
-            ]  # Assuming _speeds is a tuple (start_speed, end_speed)
-            end_speed = section._speeds[1]
+            start_speed = section.start_speed
+            end_speed = section.end_speed
 
             # Add the start and end distances and speeds to the lists
             distances.append(accumulated_distance)
@@ -169,9 +165,9 @@ class Route:
 
         # Show the plot
         plt.grid(True)
-        self._save_plot("speed_profile.png")
+        plt.savefig(os.path.join(output_dir, "speed_profile.png"))
 
-    def plot_acceleration_profile(self):
+    def plot_acceleration_profile(self, output_dir):
         """
         Plots the acceleration profile of the route based on distance.
         """
@@ -222,11 +218,10 @@ class Route:
         plt.title("Perfil de aceleración en función de la distancia recorrida")
         plt.legend()
 
-        # Show the plot
         plt.grid(True)
-        self._save_plot("acceleration_profile.png")
+        plt.savefig(os.path.join(output_dir, "acceleration_profile.png"))
 
-    def plot_combined_profiles(self):
+    def plot_combined_profiles(self, output_dir):
         """
         Combines the altitude, speed, and acceleration profiles in a single plot.
         """
@@ -257,8 +252,8 @@ class Route:
             markers_altitude.extend([start_altitude, end_altitude])
 
             # Speed
-            start_speed = section._speeds[0]
-            end_speed = section._speeds[1]
+            start_speed = section.start_speed
+            end_speed = section.end_speed
             speeds.extend([start_speed, end_speed])
 
             # Acceleration
@@ -309,25 +304,9 @@ class Route:
 
         # Save the plot
         plt.tight_layout()
-        self._save_plot("combined_profiles.png")
+        plt.savefig(os.path.join(output_dir, "combined_profiles.png"))
 
-    def _save_plot(self, filename):
-        # Obtener la ruta absoluta del directorio donde está el script actual
-        this_script_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Construir la ruta relativa al directorio de destino
-        output_dir = os.path.join(this_script_dir, "..", "maps_plots")
-
-        # Crear el directorio si no existe
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Construir la ruta completa del archivo de salida
-        output_path = os.path.join(output_dir, filename)
-
-        # Guardar la imagen
-        plt.savefig(output_path)
-
-    def plot_map(self, output_file="mapa_secciones.html"):
+    def plot_map(self, output_dir):
         """
         Plots the route on an interactive map using folium.
         """
@@ -335,13 +314,13 @@ class Route:
         if not self.sections:
             raise ValueError("No sections available to plot on the map.")
 
-        start_coords = self.sections[0].start_coord
+        start_coords = self.sections[0].start
         mapa = folium.Map(location=[start_coords[0], start_coords[1]], zoom_start=14)
 
         # Add lines to the map
         for section in self.sections:
-            start_coords = section.start_coord
-            end_coords = section.end_coord
+            start_coords = section.start
+            end_coords = section.end
             folium.PolyLine(
                 locations=[
                     [start_coords[0], start_coords[1]],
@@ -353,7 +332,4 @@ class Route:
             ).add_to(mapa)
 
         # Save the map to an HTML file
-        mapa.save(os.path.join("maps_plots", output_file))
-        print(
-            f"\n---------------------------------------------------\nMap saved to {output_file}"
-        )
+        mapa.save(os.path.join(output_dir, "2D_map.html"))

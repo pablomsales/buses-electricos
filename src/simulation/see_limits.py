@@ -3,8 +3,8 @@ import pandas as pd
 import folium
 
 # Leer el archivo CSV
-# src\simulation\limits\limits_linea_d2_algoritmo.csv
-df = pd.read_csv(os.path.join('src', 'simulation', 'limits', 'limits_linea_d2_algoritmo.csv'))
+name = 'limits_linea_d2_algoritmo_new'
+df = pd.read_csv(os.path.join('src', 'simulation', 'limits', f'{name}.csv'))
 
 # Crear un mapa centrado en el promedio de las coordenadas
 m = folium.Map(location=[df['Latitud'].mean(), df['Longitud'].mean()], zoom_start=14)
@@ -31,4 +31,4 @@ for _, row in df.iterrows():
     ).add_to(m)
 
 # Guardar el mapa en un archivo HTML
-m.save(os.path.join('src', 'simulation', 'maps', 'limits_linea_d2_algoritmo.html'))
+m.save(os.path.join('src', 'simulation', 'maps', f'{name}.html'))

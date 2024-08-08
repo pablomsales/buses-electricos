@@ -7,7 +7,15 @@ from core.route import Route
 
 
 class Model:
-    def __init__(self, name, filepath, bus, emissions, mode):
+    def __init__(self, name: str, filepath: str, bus, emissions, mode: str):
+        """¡
+        Args:
+            name (str): The name of the model.
+            filepath (str): Path to the input data CSV file.
+            bus: Instance of the Bus class.
+            emissions: Instance of the Emissions class.
+            mode (str): Mode of operation, either 'real' or 'estimation'.
+        """
         self.name = name
         self._validate_mode(mode)
         self._validate_filepath(filepath)
@@ -19,7 +27,10 @@ class Model:
             data=self._data, bus=bus, emissions=emissions, mode=self._mode
         )
 
-    def consumption_and_emissions(self):
+    def consumption_and_emissions(self) -> None:
+        """
+        Calculate and save the consumption and emissions data to an output CSV file.
+        """
         filename = os.path.join(self._output_dir, "output.csv")
 
         # Prepare header and data rows
@@ -60,18 +71,24 @@ class Model:
             writer.writerows(rows)
 
     def plot_combined_profiles(self):
+        """
+        Plot and save combined profiles for the route.
+        """
         return self.route.plot_combined_profiles(output_dir=self._output_dir)
 
     def plot_map(self):
+        """
+        Plot and save the map for the route.
+        """
         return self.route.plot_map(output_dir=self._output_dir)
 
     @staticmethod
-    def _validate_mode(mode):
+    def _validate_mode(mode: str) -> None:
         if mode not in {"real", "estimation"}:
             raise ValueError("Expected parameter mode as 'real' or 'estimation'.")
 
     @staticmethod
-    def _validate_filepath(filepath):
+    def _validate_filepath(filepath: str) -> None:
         if not filepath:
             raise ValueError(
                 "No file path provided. Please provide a file path to load data."
@@ -79,9 +96,13 @@ class Model:
         if not filepath.endswith(".csv"):
             raise ValueError("Unsupported file format. Only .csv is supported.")
 
-    def _load_data(self, filepath: str, mode: str):
+    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
         """
         Load and process data from a CSV file based on the mode.
+
+        Returns
+        --------
+        pd.DataFrame: Processed data as a DataFrame.
         """
         df = pd.read_csv(filepath)
         if mode == "real":
@@ -90,7 +111,10 @@ class Model:
             return self._process_estimation_data(df)
 
     @staticmethod
-    def _process_real_data(df):
+    def _process_real_data(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process data to work in real mode, so it gets real values for speed & time
+        """
         df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
         df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
 
@@ -102,7 +126,9 @@ class Model:
         return df
 
     @staticmethod
-    def _process_estimation_data(df):
+    def _process_estimation_data(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process data to work in estimation mode, i. e., not receiving speed & time"""
         # Add estimation logic here
         pass
 

@@ -2,7 +2,28 @@ from core.section.base_section import BaseSection
 
 
 class RealSection(BaseSection):
-    def __init__(self, coordinates, speeds, timestamps, bus, emissions):
+    """
+    Class to represent a real section of a route, inheriting from BaseSection.
+    """
+
+    def __init__(
+        self,
+        coordinates: tuple[tuple[float, float, float], tuple[float, float, float]],
+        speeds: tuple[float, float],
+        timestamps: tuple[float, float],
+        bus,
+        emissions,
+    ):
+        """
+        Initialize a RealSection with coordinates, speeds, timestamps, bus, and emissions.
+
+        Args:
+            coordinates (tuple): A tuple containing start and end coordinates.
+            speeds (tuple): A tuple containing start and end speeds.
+            timestamps (tuple): A tuple containing start and end times.
+            bus: Instance of the Bus class.
+            emissions: Instance of the Emissions class.
+        """
         self._coordinates = coordinates
 
         self._start_speed = speeds[0]

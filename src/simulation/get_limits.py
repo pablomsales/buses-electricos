@@ -65,6 +65,6 @@ results = process_csv(csv_file_path, radius)
 
 # Optionally, save the results to a new CSV file
 results_df = pd.DataFrame(results)
-results_df.to_csv(os.path.join("src", "simulation", "limits", "limits_linea_d2_algoritmo_new.csv"), index=False)
+results_df.to_csv(os.path.join("src", "simulation", "limits", "limits_linea_d2_algoritmo.csv"), index=False)
 
 print("Processing completed.")

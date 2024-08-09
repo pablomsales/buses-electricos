@@ -3,7 +3,7 @@ import pandas as pd
 import folium
 
 # Leer el archivo CSV
-name = 'limits_linea_d2_algoritmo_new'
+name = 'limits_linea_d2_algoritmo'
 df = pd.read_csv(os.path.join('src', 'simulation', 'limits', f'{name}.csv'))
 
 # Crear un mapa centrado en el promedio de las coordenadas

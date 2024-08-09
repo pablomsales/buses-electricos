@@ -13,15 +13,33 @@ class Route:
     Class to represent a route with multiple sections.
     """
 
-    def __init__(self, data, bus, emissions, mode):
+    def __init__(self, data: pd.DataFrame, bus, emissions, mode: str):
+        """
+        Initialize the Route with provided data, bus, emissions, and mode.
+
+        Args:
+            data (pd.DataFrame): DataFrame containing route information.
+            bus: Instance of the Bus class.
+            emissions: Instance of the Emissions class.
+            mode (str): Mode of operation, either 'real' or 'estimation'.
+        """
         self._mode = mode
         self.bus = bus
         self.emissions = emissions
         self.sections = self._create_sections(data)
 
-    def _create_sections(self, df: pd.DataFrame):
+    def _create_sections(self, df: pd.DataFrame) -> list:
         """
-        Process the sections of the route based on the mode.
+        Creates the sections of the route based on the mode.
+
+        Args:
+            df (pd.DataFrame): DataFrame containing route information.
+
+        Returns:
+            list: A list of sections created for the route.
+
+        Raises:
+            ValueError: If the mode is invalid.
         """
         if self._mode == "real":
             return self._process_real_sections(df)
@@ -30,7 +48,10 @@ class Route:
         else:
             raise ValueError("Invalid mode. Mode should be 'real' or 'estimation'.")
 
-    def _process_real_sections(self, df: pd.DataFrame):
+    def _process_real_sections(self, df: pd.DataFrame) -> list:
+        """
+        Process sections when working in real mode
+        """
         sections = []
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -63,12 +84,21 @@ class Route:
         return sections
 
     def _process_estimated_sections(self, df: pd.DataFrame):
+        """
+        Process sections when working in real mode
+        """
         # IMPLEMENTAR LOGICA
         pass
 
-    def plot_altitude_profile(self, output_dir):
+    def plot_altitude_profile(self, output_dir: str):
         """
         Plots the altitude profile of the route based on distance.
+        Saves the plots in the output directory.
+
+        Args
+        --------
+        output_dir: str
+            The output directory
         """
         # Lists to store the distances and altitudes
         distances = []
@@ -116,10 +146,17 @@ class Route:
         plt.grid(True)
         plt.savefig(os.path.join(output_dir, "altitude_profile.png"))
 
-    def plot_speed_profile(self, output_dir):
+    def plot_speed_profile(self, output_dir: str):
         """
         Plots the speed profile of the route based on distance.
+        Saves the plots in the output directory.
+
+        Args
+        --------
+        output_dir: str
+            The output directory
         """
+
         # Lists to store the distances and speeds
         distances = []
         speeds = []
@@ -167,9 +204,15 @@ class Route:
         plt.grid(True)
         plt.savefig(os.path.join(output_dir, "speed_profile.png"))
 
-    def plot_acceleration_profile(self, output_dir):
+    def plot_acceleration_profile(self, output_dir: str):
         """
         Plots the acceleration profile of the route based on distance.
+        Saves the plots in the output directory.
+
+        Args
+        --------
+        output_dir: str
+            The output directory
         """
         # Lists to store the distances and accelerations
         distances = []
@@ -221,7 +264,7 @@ class Route:
         plt.grid(True)
         plt.savefig(os.path.join(output_dir, "acceleration_profile.png"))
 
-    def plot_combined_profiles(self, output_dir):
+    def plot_combined_profiles(self, output_dir: str):
         """
         Combines the altitude, speed, and acceleration profiles in a single plot.
         """

@@ -1,3 +1,4 @@
+import os
 import srtm
 import pandas as pd
 
@@ -51,6 +52,6 @@ def calculate_precision(csv_file):
     return precision
 
 # Ejemplo de uso
-csv_file = 'data\prueba_tren.csv'
+csv_file = os.path.join('data', 'linea_d2.csv')
 precision = calculate_precision(csv_file)
 print(f'Índice de precisión: {precision:.2f}')

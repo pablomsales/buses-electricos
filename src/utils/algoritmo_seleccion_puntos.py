@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 from geopy.distance import geodesic
 
 # Cargar el CSV en un DataFrame
-df = pd.read_csv('data\linea_d2.csv')
+df = pd.read_csv(os.path.join('data', 'linea_d2.csv'))
 
 # Función para calcular la distancia entre dos puntos geográficos
 def calcular_distancia(lat1, lon1, lat2, lon2):
@@ -18,7 +19,7 @@ for index, row in df.iterrows():
     lat = row['Latitud']
     lon = row['Longitud']
     distancia = calcular_distancia(ultima_lat, ultima_lon, lat, lon)
-    if distancia >= 100:
+    if distancia >= 25:
         puntos_seleccionados.append(row)
         ultima_lat = lat
         ultima_lon = lon
@@ -27,4 +28,4 @@ for index, row in df.iterrows():
 df_filtrado = pd.DataFrame(puntos_seleccionados)
 
 # Guardar el nuevo DataFrame en un nuevo archivo CSV
-df_filtrado.to_csv('data\linea_d2_algoritmo.csv', index=False)
+df_filtrado.to_csv(os.path.join('data', 'linea_d2_algoritmo.csv', index=False))

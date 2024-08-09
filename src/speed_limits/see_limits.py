@@ -4,7 +4,7 @@ import folium
 
 # Leer el archivo CSV
 name = 'limits_linea_d2_algoritmo'
-df = pd.read_csv(os.path.join('src', 'simulation', 'limits', f'{name}.csv'))
+df = pd.read_csv(os.path.join('src', 'speed_limits', 'limits', f'{name}.csv'))
 
 # Crear un mapa centrado en el promedio de las coordenadas
 m = folium.Map(location=[df['Latitud'].mean(), df['Longitud'].mean()], zoom_start=14)
@@ -12,9 +12,9 @@ m = folium.Map(location=[df['Latitud'].mean(), df['Longitud'].mean()], zoom_star
 # Función para seleccionar la imagen correspondiente al valor
 def get_icon_image(limit):
     if limit == 30:
-        return os.path.join('src', 'simulation', 'icons', 'speed_30.png')
+        return os.path.join('src', 'speed_limits', 'icons', 'speed_30.png')
     elif limit == 50:
-        return os.path.join('src', 'simulation', 'icons', 'speed_50.png')
+        return os.path.join('src', 'speed_limits', 'icons', 'speed_50.png')
 
 # Añadir las coordenadas y las imágenes al mapa
 for _, row in df.iterrows():
@@ -31,4 +31,4 @@ for _, row in df.iterrows():
     ).add_to(m)
 
 # Guardar el mapa en un archivo HTML
-m.save(os.path.join('src', 'simulation', 'maps', f'{name}.html'))
+m.save(os.path.join('src', 'speed_limits', 'maps', f'{name}.html'))

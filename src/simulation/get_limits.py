@@ -32,8 +32,8 @@ def get_closest_speed_limit(coordinates, radius):
                 # Cap the speed limit at 50 km/h
                 speed_limit = min(speed_limit, 50)
             except ValueError:
-                road_type = closest_road.tags.get("residential", None)
-                speed_limit = 30 if road_type in ["living_street"] else 50
+                road_type = closest_road.tags.get("highway", None)
+                speed_limit = 30 if road_type in ["residential", "living_street"] else 50
             return speed_limit
     
     return 30  # Default if no road is found

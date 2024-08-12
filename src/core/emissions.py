@@ -16,15 +16,18 @@ class Emissions:
         if euro_standard not in euro_standards:
             raise ValueError(f"Invalid EURO standard: {euro_standard}")
 
-    def calculate_emissions(self, power_kw, fuel_consumption_rate=None):
+    def calculate_emissions(self, power_kw, fuel_consumption_rate):
         """
         Calculate emissions based on the given power in kW.
-        Returns a dictionary with the emissions for NOx, CO, HC, and PM in grams per second.
+        Returns a dictionary with the emissions for NOx, CO, HC, PM, and CO2 in grams per second.
         """
         emissions = self._calculate_pollutant_emissions(power_kw)
 
-        if fuel_consumption_rate:
+        # add CO2 emissions
+        if fuel_consumption_rate != 0:
             emissions["CO2"] = self._calculate_co2_emissions(fuel_consumption_rate)
+        else:
+            emissions["CO2"] = 0
 
         return emissions
 

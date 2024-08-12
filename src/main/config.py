@@ -1,5 +1,6 @@
 from core.bus.bus import Bus
-from core.bus.engine import Engine
+from core.bus.engine.electrical_engine import ElectricalEngine
+from core.bus.engine.fuel_engine import FuelEngine
 from core.bus.fuel import Fuel
 from core.emissions import Emissions
 
@@ -7,8 +8,7 @@ from core.emissions import Emissions
 fuel_instance = Fuel(fuel_type="diesel")
 
 # Crear una instancia de Engine con el fuel
-engine_instance = Engine(
-    engine_type="combustion",  # Puede ser 'combustion' o 'electric'
+engine_instance = FuelEngine(
     fuel=fuel_instance,
     max_power=200,  # kW
     efficiency=0.35,  # 0 a 1

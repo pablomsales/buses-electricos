@@ -124,44 +124,14 @@ class BaseSection:
     @property
     def consumption(self) -> dict[str, float]:
         """
-        Calculate emissions of the section.
-
+        Calculate the consumption of the section.
         Returns:
-            dict: A dictionary with emission values in grams per second.
+            dict: A dictionary with consumption values.
         """
-
-        consumption = {"Wh": 0, "L/h": 0, "L/km": 0}
-
-        if self.bus.engine.engine_type == "electric":
-            consumption["Wh"] = self._electric_consumption()
-
-        if self.bus.engine.engine_type == "combustion":
-            consumption["L/h"] = self._fuel_consumption()
-            consumption["L/km"] = self._fuel_consumption(by_km=True)
-
-        return consumption
-
-    def _electric_consumption(self) -> float:
-        """
-        Calculate consumption for electric engine.
-        """
-        return self.bus.engine.electric_consumption(
+        return self.bus.engine.consumption(
             power=self.instant_power,
             time=self.duration_time,
-        )
-
-    def _fuel_consumption(self, by_km: bool = False) -> float:
-        """
-        Calculate consumption for fuel engine.
-
-        :param by_km: If True, returns consumption per kilometer. If False, returns consumption per hour.
-        :return: Fuel consumption in liters per hour or per kilometer.
-        """
-        km = self.length / 1000 if by_km else None
-        return self.bus.engine.fuel_consumption(
-            power=self.instant_power,
-            time=self.duration_time,
-            km=km,
+            km=self.length / 1000,
         )
 
     @property
@@ -175,24 +145,11 @@ class BaseSection:
 
         power_kw = self.instant_power / 1000  # Convertir W a kW
 
-        if self.bus.engine.engine_type == "electric":
-            return self._electric_emissions(power_kw)
-        else:
-            return self._fuel_emissions(power_kw)
+        # gonna be 0 when ElectricalEngine, so will not interfere
+        fuel_consumption_rate = self.consumption["L/km"] / self.duration_time
 
-    def _electric_emissions(self, power_kw: float) -> dict[str, float]:
-        """
-        Calculate emissions for electric engine.
-        """
-        return self.emissions.calculate_emissions(power_kw)
-
-    def _fuel_emissions(self, power_kw: float) -> dict[str, float]:
-        """
-        Calculate emissions for fuel engine.
-        """
-        consumption_rate = self.consumption["L/km"] / self.duration_time
         return self.emissions.calculate_emissions(
-            power_kw, fuel_consumption_rate=consumption_rate
+            power_kw, fuel_consumption_rate=fuel_consumption_rate
         )
 
     def __str__(self):

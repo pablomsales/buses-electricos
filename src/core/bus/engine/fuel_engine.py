@@ -47,12 +47,12 @@ class FuelEngine(BaseEngine):
 
         # Calculate the energy used
         energy = (power * time) / self._efficiency
-
         # Calculate fuel consumption in liters
         litres = energy / lhv
 
         consumption = {
             "Wh": 0,  # always 0 for combustion engines
+            "Ah": 0,  # ""    ""  ""  ""          ""
             "L/h": litres / (time / 3600),  # Convert time from seconds to hours
             "L/km": litres / km,
         }

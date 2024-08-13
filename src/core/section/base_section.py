@@ -143,13 +143,14 @@ class BaseSection:
             dict: A dictionary with emission values in grams per second.
         """
 
-        power_kw = self.instant_power / 1000  # Convertir W a kW
+        power_kw = self.instant_power / 1000  # Convert W to kW
 
         # gonna be 0 when ElectricalEngine, so will not interfere
         fuel_consumption_rate = self.consumption["L/km"] / self.duration_time
 
         return self.emissions.calculate_emissions(
-            power_kw, fuel_consumption_rate=fuel_consumption_rate
+            power_kw,
+            fuel_consumption_rate=fuel_consumption_rate,
         )
 
     def __str__(self):

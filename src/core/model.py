@@ -40,6 +40,7 @@ class Model:
             "start_speed",
             "end_speed",
             "Wh",
+            "Ah",
             "L/h",
             "L/km",
             "NOx",

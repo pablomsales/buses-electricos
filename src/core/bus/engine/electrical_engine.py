@@ -8,7 +8,7 @@ class ElectricalEngine(BaseEngine):
 
     def __init__(self, max_power, efficiency, battery):
         super().__init__(max_power, efficiency)
-        self.battery = battery  # TODO: mirar si usar battery dentro de ElectricalEngine (creo que si)
+        self.battery = battery  # TODO: mirar si usar battery dentro de ElectricalEngine
 
     def consumption(self, power, time, km=None):
         """
@@ -16,9 +16,17 @@ class ElectricalEngine(BaseEngine):
         """
         power = self._adjust_power(power)
         hours = time / 3600  # convert seconds to hours
-        consumption = power * hours
 
-        return {"Wh": consumption, "L/h": 0, "L/km": 0}
+        # Compute consumption in Wh and Ah
+        watts_hour = power * hours
+        ampers_hour = watts_hour / self.battery.voltage
+
+        return {
+            "Wh": watts_hour,
+            "Ah": ampers_hour,
+            "L/h": 0,  # 0 for ElectricalEngine
+            "L/km": 0,  # "" "" ""
+        }
 
     def __str__(self):
         return "Engine Type: Electric\n" + super().__str__()

@@ -13,6 +13,8 @@ m = folium.Map(location=[df['Latitud'].mean(), df['Longitud'].mean()], zoom_star
 def get_icon_image(limit):
     if limit == 30:
         return os.path.join('src', 'simulation', 'speed_limits', 'icons', 'speed_30.png')
+    elif limit == 20:
+        return os.path.join('src', 'simulation', 'speed_limits', 'icons', 'speed_20.png')
     elif limit == 40:
         return os.path.join('src', 'simulation', 'speed_limits', 'icons', 'speed_40.png')
     elif limit == 50:

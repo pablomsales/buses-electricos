@@ -19,7 +19,7 @@ for index, row in df.iterrows():
     lat = row['Latitud']
     lon = row['Longitud']
     distancia = calcular_distancia(ultima_lat, ultima_lon, lat, lon)
-    if distancia >= 25:
+    if distancia >= 25: # Distancia deseada en metros
         puntos_seleccionados.append(row)
         ultima_lat = lat
         ultima_lon = lon
@@ -28,4 +28,4 @@ for index, row in df.iterrows():
 df_filtrado = pd.DataFrame(puntos_seleccionados)
 
 # Guardar el nuevo DataFrame en un nuevo archivo CSV
-df_filtrado.to_csv(os.path.join('data', 'linea_d2_algoritmo.csv', index=False))
+df_filtrado.to_csv(os.path.join('data', 'linea_d2_algoritmo.csv'), index=False)

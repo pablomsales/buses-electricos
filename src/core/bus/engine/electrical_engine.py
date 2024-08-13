@@ -8,7 +8,7 @@ class ElectricalEngine(BaseEngine):
 
     def __init__(self, max_power, efficiency, battery):
         super().__init__(max_power, efficiency)
-        self.battery = battery  # TODO: mirar si usar battery dentro de ElectricalEngine
+        self.battery = battery
 
     def consumption(self, power, time, km=None):
         """

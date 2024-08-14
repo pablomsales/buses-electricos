@@ -48,11 +48,13 @@ def process_csv(file_path, radius):
     for _, row in df.iterrows():
         lat = row['Latitud']
         lon = row['Longitud']
+        alt = row['Altitud(m)']
         coordinates = (lat, lon)
         speed_limit = get_closest_speed_limit(coordinates, radius)
         results.append({
             'Latitud': lat,
             'Longitud': lon,
+            'Altitud': alt,
             'Limite': speed_limit
         })
 

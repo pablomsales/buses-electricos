@@ -26,7 +26,7 @@ for _, row in df.iterrows():
     
     icon = folium.CustomIcon(
         icon_image,
-        icon_size=(25, 25),  # Tamaño de la imagen
+        icon_size=(20, 20),  # Tamaño de la imagen
     )
     
     folium.Marker(

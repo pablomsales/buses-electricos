@@ -14,7 +14,7 @@ class Model:
             filepath (str): Path to the input data CSV file.
             bus: Instance of the Bus class.
             emissions: Instance of the Emissions class.
-            mode (str): Mode of operation, either 'real' or 'estimation'.
+            mode (str): Mode of operation, either 'real' or 'simulation'.
         """
         self.name = name
         self._validate_mode(mode)
@@ -84,8 +84,8 @@ class Model:
 
     @staticmethod
     def _validate_mode(mode: str) -> None:
-        if mode not in {"real", "estimation"}:
-            raise ValueError("Expected parameter mode as 'real' or 'estimation'.")
+        if mode not in {"real", "simulation"}:
+            raise ValueError("Expected parameter mode as 'real' or 'simulation'.")
 
     @staticmethod
     def _validate_filepath(filepath: str) -> None:
@@ -107,8 +107,8 @@ class Model:
         df = pd.read_csv(filepath)
         if mode == "real":
             return self._process_real_data(df)
-        elif mode == "estimation":
-            return self._process_estimation_data(df)
+        elif mode == "simulation":
+            return self._process_simulation_data(df)
 
     @staticmethod
     def _process_real_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -126,10 +126,10 @@ class Model:
         return df
 
     @staticmethod
-    def _process_estimation_data(df: pd.DataFrame) -> pd.DataFrame:
+    def _process_simulation_data(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Process data to work in estimation mode, i. e., not receiving speed & time"""
-        # Add estimation logic here
+        Process data to work in simulation mode, i. e., not receiving speed & time"""
+        # Add simulation logic here
         pass
 
     def _create_output_dir(self, dir_name):

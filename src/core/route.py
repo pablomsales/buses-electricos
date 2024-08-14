@@ -4,7 +4,7 @@ import folium
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from core.section.estimated_section import EstimatedSection
+from core.section.simulated_section import SimulatedSection
 from core.section.real_section import RealSection
 
 
@@ -21,7 +21,7 @@ class Route:
             data (pd.DataFrame): DataFrame containing route information.
             bus: Instance of the Bus class.
             emissions: Instance of the Emissions class.
-            mode (str): Mode of operation, either 'real' or 'estimation'.
+            mode (str): Mode of operation, either 'real' or 'simulation'.
         """
         self._mode = mode
         self.bus = bus
@@ -43,10 +43,10 @@ class Route:
         """
         if self._mode == "real":
             return self._process_real_sections(df)
-        elif self._mode == "estimation":
-            return self._process_estimated_sections(df)
+        elif self._mode == "simulation":
+            return self._process_simulated_sections(df)
         else:
-            raise ValueError("Invalid mode. Mode should be 'real' or 'estimation'.")
+            raise ValueError("Invalid mode. Mode should be 'real' or 'simulation'.")
 
     def _process_real_sections(self, df: pd.DataFrame) -> list:
         """
@@ -83,7 +83,7 @@ class Route:
             sections.append(section)
         return sections
 
-    def _process_estimated_sections(self, df: pd.DataFrame):
+    def _process_simulated_sections(self, df: pd.DataFrame):
         """
         Process sections when working in real mode
         """

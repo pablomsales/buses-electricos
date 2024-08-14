@@ -1,7 +1,7 @@
 from core.section.base_section import BaseSection
 
 
-class EstimatedSection(BaseSection):
+class SimulatedSection(BaseSection):
     def __init__(self, coordinates, bus, emissions):
         super().__init__(coordinates, bus, emissions)
 

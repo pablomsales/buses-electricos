@@ -20,7 +20,7 @@ def estimate_speed_profile(route_df, stop_df):
     
     # Convertimos las paradas a un conjunto de tuplas para facilitar el chequeo
     stop_points = set(zip(stop_df['Latitud'], stop_df['Longitud']))
-
+ 
     for i in range(1, n):
         # Datos del tramo actual
         lat1, lon1 = route_df.at[i-1, 'Latitud'], route_df.at[i-1, 'Longitud']
@@ -61,7 +61,6 @@ def estimate_speed_profile(route_df, stop_df):
     
     return route_df
 
-# Ejemplo de uso:
 
 # Cargamos los datos desde los CSVs
 route_df = pd.read_csv(os.path.join('src','simulation','speed_limits','limits','limits_linea_d2_algoritmo.csv'))  # Este CSV debería tener columnas ['Latitud', 'Longitud', 'Limite']

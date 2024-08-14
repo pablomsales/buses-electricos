@@ -10,15 +10,15 @@ fuel_instance = Fuel(fuel_type="diesel")
 engine_instance = Engine(
     engine_type="combustion",  # Puede ser 'combustion' o 'electric'
     fuel=fuel_instance,
-    max_power=200,  # kW
+    max_power=300,  # kW
     efficiency=0.35,  # 0 a 1
 )
 
 # Crear una instancia de Bus con el motor
 bus_instance = Bus(
-    mass=12000,
-    drag_coefficient=0.65,
-    frontal_area=8.0,
+    mass=18000,
+    drag_coefficient=0.8,
+    frontal_area=13.0,
     rolling_resistance_coefficient=0.01,
     engine=engine_instance,
 )

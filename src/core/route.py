@@ -95,6 +95,7 @@ class Route:
         """
         sections = []
         prev_speed = 0.0
+        prev_time = 0.0
 
         for i in range(df.shape[0] - 1):
             start_section = df.iloc[i, :]
@@ -117,14 +118,15 @@ class Route:
             speed_limit = start_section["speed_limit"]
 
             # Creación y simulación de la sección
-            section = SimulatedSection(coordinates, self.bus, self.emissions, speed_limit)
-            section.simulate(prev_speed)
+            section = SimulatedSection(coordinates, self.bus, self.emissions, speed_limit, prev_speed, prev_time)
+            section.simulate()
 
             # Añadir la sección simulada a la lista
             sections.append(section)
 
-            # Actualizar la velocidad inicial para la próxima sección
+            # Actualizar la velocidad y el tiempo inicial para la próxima sección
             prev_speed = section.end_speed
+            prev_time = section._end_time  # El tiempo de fin de la sección actual será el tiempo de inicio para la siguiente
 
         return sections
 

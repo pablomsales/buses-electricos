@@ -11,7 +11,7 @@ def main():
     data = os.path.join("data", "linea_d2_algoritmo_simulation.csv")
 
     model = Model(
-        name="linea_d2_algoritmo",
+        name="linea_d2_algoritmo_simulation",
         filepath=data,
         bus=bus_instance,
         emissions=emissions_instance,
@@ -19,8 +19,8 @@ def main():
     )
 
     model.consumption_and_emissions()
-    # model.plot_combined_profiles()
-    # model.plot_map()
+    model.plot_combined_profiles()
+    model.plot_map()
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

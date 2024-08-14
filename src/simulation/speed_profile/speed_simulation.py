@@ -6,21 +6,17 @@ from geopy.distance import geodesic
 ACCELERATION_LIMIT = 0.6  # m/s^2 (Límite de aceleración)
 DECELERATION_LIMIT = -0.6  # m/s^2 (Límite de frenado)
 
-def estimate_speed_profile(route_df, stop_df):
+def estimate_speed_profile(route_df):
     """
     Estima el perfil de velocidad para una ruta dada.
     
-    :param route_df: DataFrame con columnas ['Latitud', 'Longitud', 'Limite']
-    :param stop_df: DataFrame con columnas ['Latitud', 'Longitud'] indicando puntos de parada
+    :param route_df: DataFrame con columnas ['Latitud', 'Longitud', 'Altitud', 'Limite']
     :return: DataFrame con columna adicional 'estimated_speed', 'time_elapsed' para cada punto
     """
     n = len(route_df)
     route_df['estimated_speed'] = 0.0  # Inicializamos todas las velocidades a 0
     route_df['time_elapsed'] = 0.0     # Inicializamos todo el tiempo a 0
     
-    # Convertimos las paradas a un conjunto de tuplas para facilitar el chequeo
-    stop_points = set(zip(stop_df['Latitud'], stop_df['Longitud']))
- 
     for i in range(1, n):
         # Datos del tramo actual
         lat1, lon1 = route_df.at[i-1, 'Latitud'], route_df.at[i-1, 'Longitud']
@@ -33,8 +29,8 @@ def estimate_speed_profile(route_df, stop_df):
         # Estimamos la velocidad en el punto anterior
         prev_speed = route_df.at[i-1, 'estimated_speed']
         
-        # Si es una parada, la velocidad final debe ser 0
-        if (lat2, lon2) in stop_points:
+        # Si es una parada (Limite = 0) o es el final de la ruta, la velocidad final debe ser 0
+        if limite == 0 or i == n - 1:
             final_speed = 0.0
         else:
             final_speed = limite
@@ -62,12 +58,11 @@ def estimate_speed_profile(route_df, stop_df):
     return route_df
 
 
-# Cargamos los datos desde los CSVs
-route_df = pd.read_csv(os.path.join('src','simulation','speed_limits','limits','limits_linea_d2_algoritmo.csv'))  # Este CSV debería tener columnas ['Latitud', 'Longitud', 'Limite']
-stop_df = pd.read_csv(os.path.join('src','simulation','speed_profile','stops','stops.csv'))  # Este CSV debería tener columnas ['Latitud', 'Longitud']
+# Cargamos los datos desde el CSV
+route_df = pd.read_csv(os.path.join('src','simulation','speed_limits','limits','limits_linea_d2_algoritmo.csv'))  # Este CSV debería tener columnas ['Latitud', 'Longitud', 'Altitud', 'Limite']
 
 # Calculamos el perfil de velocidad estimado
-estimated_route_df = estimate_speed_profile(route_df, stop_df)
+estimated_route_df = estimate_speed_profile(route_df)
 
 # Guardamos el resultado
 estimated_route_df.to_csv(os.path.join('src','simulation','speed_profile','perfil_velocidad_estimado.csv'), index=False)

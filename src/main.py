@@ -8,14 +8,14 @@ from core.model import Model
 def main():
     start_time = time()
 
-    data = os.path.join("data", "linea_d2_algoritmo.csv")
+    data = os.path.join("data", "linea_d2_algoritmo_simulation.csv")
 
     model = Model(
         name="linea_d2_algoritmo",
         filepath=data,
         bus=bus_instance,
         emissions=emissions_instance,
-        mode="real",
+        mode="simulation",
     )
 
     model.consumption_and_emissions()

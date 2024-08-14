@@ -83,12 +83,50 @@ class Route:
             sections.append(section)
         return sections
 
-    def _process_simulated_sections(self, df: pd.DataFrame):
+    def _process_simulated_sections(self, df: pd.DataFrame) -> list:
         """
-        Process sections when working in real mode
+        Process sections when working in simulation mode.
+
+        Args:
+            df (pd.DataFrame): DataFrame containing route information.
+
+        Returns:
+            list: A list of simulated sections created for the route.
         """
-        # IMPLEMENTAR LOGICA
-        pass
+        sections = []
+        prev_speed = 0.0
+
+        for i in range(df.shape[0] - 1):
+            start_section = df.iloc[i, :]
+            end_section = df.iloc[i + 1, :]
+
+            # Coordenadas de inicio y fin para la sección
+            start_coord = (
+                float(start_section["latitude"]),
+                float(start_section["longitude"]),
+                float(start_section["altitude"]),
+            )
+            end_coord = (
+                float(end_section["latitude"]),
+                float(end_section["longitude"]),
+                float(end_section["altitude"]),
+            )
+            coordinates = (start_coord, end_coord)
+
+            # Límite de velocidad de la sección
+            speed_limit = start_section["speed_limit"]
+
+            # Creación y simulación de la sección
+            section = SimulatedSection(coordinates, self.bus, self.emissions, speed_limit)
+            section.simulate(prev_speed)
+
+            # Añadir la sección simulada a la lista
+            sections.append(section)
+
+            # Actualizar la velocidad inicial para la próxima sección
+            prev_speed = section.end_speed
+
+        return sections
 
     def plot_altitude_profile(self, output_dir: str):
         """

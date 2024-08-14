@@ -128,9 +128,16 @@ class Model:
     @staticmethod
     def _process_simulation_data(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Process data to work in simulation mode, i. e., not receiving speed & time"""
-        # Add simulation logic here
-        pass
+        Process data to work in simulation mode, e.g., setting up speed limits and other parameters.
+        
+        Returns:
+        --------
+        pd.DataFrame: Processed data as a DataFrame ready for simulation.
+        """
+        # Suponiendo que las columnas relevantes están presentes en el archivo CSV
+        df.columns = ["latitude", "longitude", "altitude", "speed_limit"]
+        
+        return df
 
     def _create_output_dir(self, dir_name):
         final_path = os.path.join("outputs", dir_name)

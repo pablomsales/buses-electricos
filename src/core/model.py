@@ -37,6 +37,8 @@ class Model:
         header = [
             "start",
             "end",
+            "start_time",
+            "end_time",
             "start_speed",
             "end_speed",
             "Wh",
@@ -57,6 +59,8 @@ class Model:
             row = [
                 sect.start,
                 sect.end,
+                sect.start_time,
+                sect.end_time,
                 sect.start_speed,
                 sect.end_speed,
                 *consumption,

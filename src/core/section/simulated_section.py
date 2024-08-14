@@ -95,6 +95,14 @@ class SimulatedSection(BaseSection):
     @property
     def end_speed(self):
         return self._end_speed
+    
+    @property
+    def start_time(self):
+        return self._start_time
+    
+    @property
+    def end_time(self):
+        return self._end_time
 
     @property
     def duration_time(self):

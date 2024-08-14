@@ -93,15 +93,17 @@ class Route:
         Returns:
             list: A list of simulated sections created for the route.
         """
-        sections = []
-        prev_speed = 0.0
-        prev_time = 0.0
+        # Initialize the list of sections
+        secciones = []
+        initial_speed = 0
+        cumulative_time = 0
 
+        # Create an instance of SimulatedSection for each segment
         for i in range(df.shape[0] - 1):
+
             start_section = df.iloc[i, :]
             end_section = df.iloc[i + 1, :]
 
-            # Coordenadas de inicio y fin para la sección
             start_coord = (
                 float(start_section["latitude"]),
                 float(start_section["longitude"]),
@@ -114,22 +116,36 @@ class Route:
             )
             coordinates = (start_coord, end_coord)
 
-            # Límite de velocidad de la sección
-            speed_limit = start_section["speed_limit"]
+            limit = int(end_section["speed_limit"])
+            
+            # Set the start time for the section
+            start_time = cumulative_time
+            
+            # Create a SimulatedSection instance
+            seccion = SimulatedSection(
+                coordinates, limit, initial_speed, start_time, self.bus, self.emissions)
+            seccion.process()
+            secciones.append(seccion)
+            
+            # Update the initial speed for the next section
+            initial_speed = seccion.end_speed
+            
+            # Update the cumulative time
+            cumulative_time = seccion.end_time
+        
+        # Consolidate results
+        velocities = []
+        start_times = []
+        end_times = []
+        
+        for seccion in secciones:
+            velocities.extend(seccion.velocities)
+            start_times.append(seccion.start_time)
+            end_times.append(seccion.end_time)
 
-            # Creación y simulación de la sección
-            section = SimulatedSection(coordinates, self.bus, self.emissions, speed_limit, prev_speed, prev_time)
-            section.simulate()
-
-            # Añadir la sección simulada a la lista
-            sections.append(section)
-
-            # Actualizar la velocidad y el tiempo inicial para la próxima sección
-            prev_speed = section.end_speed
-            prev_time = section._end_time  # El tiempo de fin de la sección actual será el tiempo de inicio para la siguiente
-
-        return sections
-
+        # Return consolidated results along with the section start and end times
+        return secciones
+    
     def plot_altitude_profile(self, output_dir: str):
         """
         Plots the altitude profile of the route based on distance.

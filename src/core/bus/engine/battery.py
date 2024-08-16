@@ -67,17 +67,9 @@ class Battery:
         charge_amount_ah : float
             The amount of charge to add to the battery in Ampere-hours.
         """
+        self.state_of_charge_percent = self._update_state_of_charge(charge_amount_ah)
 
-        # Get current state of charge in Ampere-hours
-        soc_in_ah = self.current_capacity_ah * (self.state_of_charge_percent / 100)
-        # Add the charge amount to the current state of charge
-        updated_soc_in_ah = soc_in_ah + charge_amount_ah
-        # Ensure the state of charge does not exceed the battery's maximum capacity
-        soc_in_ah = min(updated_soc_in_ah, self.current_capacity_ah)
-        # Update the state of charge percentage based on the new Ampere-hours value
-        self.state_of_charge_percent = (soc_in_ah / self.current_capacity_ah) * 100
-
-    def discharge(self, discharge_amount_ah: float) -> None:
+    def discharge(self, discharge_amount_ah: float, time_seconds: float) -> None:
         """
         Discharge the battery by a certain amount.
 
@@ -85,27 +77,21 @@ class Battery:
         ----------
         discharge_amount_ah : float
             The amount of charge to remove from the battery in Ampere-hours.
+        time : float
+            The duration time of the section in seconds
         """
 
-        # Get current state of charge in Ampere-hours
-        soc_in_ah = self.current_capacity_ah * (self.state_of_charge_percent / 100)
-        # Subtract the discharge amount from the current state of charge
-        updated_soc_in_ah = soc_in_ah - discharge_amount_ah
-
-        if updated_soc_in_ah < 0:
-            print("Battery depleted!")
-
         # Calculate the updated state of charge percentage
-        updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
+        # TODO: Chequear si discharge_amount es un numero negativo, sino, hay que:
+        #   - o bien pasarlo negativo de primeras
+        #   - o bien pasar como parametro `-discharge_amount_ah` aqui debajo
+        updated_soc_percent = self._update_state_of_charge(discharge_amount_ah)
 
-        # Update the number of completed cycles based on the change in state of charge
-        self._increase_completed_cycles(
-            self.state_of_charge_percent, updated_soc_percent
-        )
-        # Update the current capacity of the battery based on degradation
-        self.current_capacity_ah = self._initial_capacity_ah * self.health_state
+        # Get applied electric current (Amperes)
+        electric_current = self._calculate_current(discharge_amount_ah, time_seconds)
+        self._apply_degradation(updated_soc_percent, electric_current)
 
-        # Update the state of charge percentage
+        # Finally, update the SoC percentage
         self.state_of_charge_percent = updated_soc_percent
 
     def instant_degradation(self, time: float) -> float:
@@ -114,6 +100,55 @@ class Battery:
         Receives the duration time of the section.
         """
         return self.degradation_in_section / time
+
+    def _get_soc_in_ah(self) -> float:
+        """Get the current state of charge in Ampere-hours."""
+        return self.current_capacity_ah * (self.state_of_charge_percent / 100)
+
+    def _update_state_of_charge(self, amount_ah: float) -> float:
+        """
+        Updates the state of charge by a given amount in Ampere-hours.
+        It ensures that the SOC does not exceed the battery's capacity or
+        drop below zero.
+        """
+
+        # Get current state of charge in Ampere-hours
+        current_soc_ah = self._get_soc_in_ah()
+        updated_soc_in_ah = max(
+            0, min(current_soc_ah + amount_ah, self.current_capacity_ah)
+        )
+        # Calculate the updated State of Charge percentage
+        updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
+        self._check_drained_battery(updated_soc_percent)
+        return updated_soc_percent
+
+    def _apply_degradation(
+        self, updated_soc_percent: float, electric_current: float
+    ) -> None:
+        initial_soc_percent = self.state_of_charge_percent
+
+        # Update the number of completed cycles based on the change in state of charge
+        self._increase_completed_cycles(initial_soc_percent, updated_soc_percent)
+
+        # Update the current capacity of the battery based on degradation
+        self.current_capacity_ah = self._initial_capacity_ah * self.health_state
+
+    def _calculate_current(self, amount_ah: float, time_seconds: float) -> float:
+        """
+        Calculate the electric current in Amperes.
+
+        Parameters
+        ----------
+        amount_ah : float
+            The charge amount in Ampere-hours.
+        time_seconds : float
+            The time duration in seconds.
+        """
+        return amount_ah / (time_seconds / 3600)
+
+    def _check_drained_battery(self, soc_percent: float) -> None:
+        if soc_percent == 0:
+            print("DRAINED_BATTERY!!")
 
     def _increase_completed_cycles(
         self, initial_soc_percent: float, final_soc_percent: float

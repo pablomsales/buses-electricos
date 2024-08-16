@@ -36,6 +36,49 @@ class Battery:
         self._voltage_v = voltage_v
         self.min_health_percentage = min_health_percentage
 
+    @property
+    def degradation_rate(self) -> float:
+        """
+        Calculate the fixed degradation rate per cycle.
+        """
+        initial_health_percentage = 100
+        allowed_health_loss = initial_health_percentage - self.min_health_percentage
+
+        # Divide by the maximum number of cycles to get the fixed degradation rate
+        # Then divide by 100 to convert percentage to a fraction
+        return (allowed_health_loss / self._max_cycles) / 100
+
+    # NOTE: COMENTAR CON LUCIANO SI ESTE PLANTEAMIENTO ESTA BIEN O MEJOR USAR degradation_per_cycle
+    @property
+    def dynamic_degradation_rate(self) -> float:
+        """
+        Calculate the dynamic degradation rate per cycle based on current battery state.
+        """
+        if self._completed_cycles >= self._max_cycles:
+            warnings.warn(
+                "All cycles have been completed. Replace battery immediately.",
+                UserWarning,
+            )
+            return 0
+
+        current_health_percentage = (
+            self.current_capacity_ah / self._initial_capacity_ah
+        ) * 100
+
+        allowed_health_loss = current_health_percentage - self.min_health_percentage
+        remaining_cycles = self._max_cycles - self._completed_cycles
+
+        if remaining_cycles <= 0:
+            warnings.warn(
+                "All cycles have been completed. Replace battery immediately.",
+                UserWarning,
+            )
+            return 0
+
+        # Calculate the dynamic degradation rate as a fraction
+        # Divide allowed health loss by remaining cycles and then by 100 to convert percentage to a fraction
+        return (allowed_health_loss / remaining_cycles) / 100
+
     def charge(self, charge_amount_ah: float) -> None:
         """
         Charge the battery by a certain amount.
@@ -124,46 +167,3 @@ class Battery:
 
         # update current capacity
         self.current_capacity_ah = self._initial_capacity_ah * health_state
-
-    @property
-    def degradation_rate(self) -> float:
-        """
-        Calculate the fixed degradation rate per cycle.
-        """
-        initial_health_percentage = 100
-        allowed_health_loss = initial_health_percentage - self.min_health_percentage
-
-        # Divide by the maximum number of cycles to get the fixed degradation rate
-        # Then divide by 100 to convert percentage to a fraction
-        return (allowed_health_loss / self._max_cycles) / 100
-
-    # NOTE: COMENTAR CON LUCIANO SI ESTE PLANTEAMIENTO ESTA BIEN O MEJOR USAR degradation_per_cycle
-    @property
-    def dynamic_degradation_rate(self) -> float:
-        """
-        Calculate the dynamic degradation rate per cycle based on current battery state.
-        """
-        if self._completed_cycles >= self._max_cycles:
-            warnings.warn(
-                "All cycles have been completed. Replace battery immediately.",
-                UserWarning,
-            )
-            return 0
-
-        current_health_percentage = (
-            self.current_capacity_ah / self._initial_capacity_ah
-        ) * 100
-
-        allowed_health_loss = current_health_percentage - self.min_health_percentage
-        remaining_cycles = self._max_cycles - self._completed_cycles
-
-        if remaining_cycles <= 0:
-            warnings.warn(
-                "All cycles have been completed. Replace battery immediately.",
-                UserWarning,
-            )
-            return 0
-
-        # Calculate the dynamic degradation rate as a fraction
-        # Divide allowed health loss by remaining cycles and then by 100 to convert percentage to a fraction
-        return (allowed_health_loss / remaining_cycles) / 100

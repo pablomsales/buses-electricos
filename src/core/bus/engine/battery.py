@@ -1,6 +1,3 @@
-import warnings
-
-
 class Battery:
     """Class representing the battery of an electric vehicle"""
 
@@ -35,12 +32,11 @@ class Battery:
         self.state_of_charge_percent = initial_soc_percent
         self._voltage_v = voltage_v
         self.min_health_percentage = min_health_percentage
+        self._degradation_in_section = 0.0
 
     @property
     def degradation_rate(self) -> float:
-        """
-        Calculate the fixed degradation rate per cycle.
-        """
+        """Calculate the fixed degradation rate per cycle."""
         initial_health_percentage = 100
         allowed_health_loss = initial_health_percentage - self.min_health_percentage
 
@@ -50,11 +46,17 @@ class Battery:
 
     @property
     def health_state(self):
+        """Returns the current health state of the battery"""
         # Calculate the total health loss based on the number of completed cycles
         health_loss = self._completed_cycles * self.degradation_rate
 
         # calculate the health state substracting the loss to the total
         return 1 - health_loss
+
+    @property
+    def degradation_in_section(self) -> float:
+        """Returns the degradation triggered in the current section"""
+        return self._degradation_in_section
 
     def charge(self, charge_amount_ah: float) -> None:
         """
@@ -106,6 +108,13 @@ class Battery:
         # Update the state of charge percentage
         self.state_of_charge_percent = updated_soc_percent
 
+    def instant_degradation(self, time: float) -> float:
+        """
+        Computes the INSTANT degradation of this section.
+        Receives the duration time of the section.
+        """
+        return self.degradation_in_section / time
+
     def _increase_completed_cycles(
         self, initial_soc_percent: float, final_soc_percent: float
     ) -> None:
@@ -120,7 +129,10 @@ class Battery:
             The final state of charge as a percentage.
         """
 
-        # Calculate the amount of SOC change as a fraction of 100%
+        # Calculate the amount of SoC change as a fraction of 100%
         cycle_increment = (initial_soc_percent - final_soc_percent) / 100
         # Increment the count of completed cycles by the calculated amount
         self._completed_cycles += cycle_increment
+
+        # Calculate degradation for this section
+        self._degradation_in_section = cycle_increment / self._max_cycles

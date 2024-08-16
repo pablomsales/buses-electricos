@@ -48,35 +48,13 @@ class Battery:
         # Then divide by 100 to convert percentage to a fraction
         return (allowed_health_loss / self._max_cycles) / 100
 
-    # @property
-    # def dynamic_degradation_rate(self) -> float:
-    #     """
-    #     Calculate the dynamic degradation rate per cycle based on current battery state.
-    #     """
-    #     if self._completed_cycles >= self._max_cycles:
-    #         warnings.warn(
-    #             "All cycles have been completed. Replace battery immediately.",
-    #             UserWarning,
-    #         )
-    #         return 0
+    @property
+    def health_state(self):
+        # Calculate the total health loss based on the number of completed cycles
+        health_loss = self._completed_cycles * self.degradation_rate
 
-    #     current_health_percentage = (
-    #         self.current_capacity_ah / self._initial_capacity_ah
-    #     ) * 100
-
-    #     allowed_health_loss = current_health_percentage - self.min_health_percentage
-    #     remaining_cycles = self._max_cycles - self._completed_cycles
-
-    #     if remaining_cycles <= 0:
-    #         warnings.warn(
-    #             "All cycles have been completed. Replace battery immediately.",
-    #             UserWarning,
-    #         )
-    #         return 0
-
-    #     # Calculate the dynamic degradation rate as a fraction
-    #     # Divide allowed health loss by remaining cycles and then by 100 to convert percentage to a fraction
-    #     return (allowed_health_loss / remaining_cycles) / 100
+        # calculate the health state substracting the loss to the total
+        return 1 - health_loss
 
     def charge(self, charge_amount_ah: float) -> None:
         """
@@ -123,7 +101,7 @@ class Battery:
             self.state_of_charge_percent, updated_soc_percent
         )
         # Update the current capacity of the battery based on degradation
-        self._update_current_capacity()
+        self.current_capacity_ah = self._initial_capacity_ah * self.health_state
 
         # Update the state of charge percentage
         self.state_of_charge_percent = updated_soc_percent
@@ -146,17 +124,3 @@ class Battery:
         cycle_increment = (initial_soc_percent - final_soc_percent) / 100
         # Increment the count of completed cycles by the calculated amount
         self._completed_cycles += cycle_increment
-
-    def _update_current_capacity(self):
-        """
-        Update the current capacity of the battery based on degradation.
-        """
-
-        # Calculate the total health loss based on the number of completed cycles
-        health_loss = self._completed_cycles * self.degradation_rate
-
-        # calculate the health state substracting the loss to the total
-        health_state = 1 - health_loss
-
-        # update current capacity
-        self.current_capacity_ah = self._initial_capacity_ah * health_state

@@ -127,8 +127,19 @@ class Battery:
     ) -> None:
         initial_soc_percent = self.state_of_charge_percent
 
+        # Calculate degradation factors
+        soc_factor = self._soc_degradation_factor(updated_soc_percent)
+        electric_current_factor = self._electric_current_degradation_factor(
+            electric_current
+        )
+
+        # Add a factor to include information about the SoC and electric current
+        adjusted_degradation_factor = soc_factor * electric_current_factor
+
         # Update the number of completed cycles based on the change in state of charge
-        self._increase_completed_cycles(initial_soc_percent, updated_soc_percent)
+        self._increase_completed_cycles(
+            initial_soc_percent, updated_soc_percent, adjusted_degradation_factor
+        )
 
         # Update the current capacity of the battery based on degradation
         self.current_capacity_ah = self._initial_capacity_ah * self.health_state
@@ -151,7 +162,10 @@ class Battery:
             print("DRAINED_BATTERY!!")
 
     def _increase_completed_cycles(
-        self, initial_soc_percent: float, final_soc_percent: float
+        self,
+        initial_soc_percent: float,
+        final_soc_percent: float,
+        factor: float,
     ) -> None:
         """
         Increment the count of completed cycles based on SOC change.
@@ -167,7 +181,22 @@ class Battery:
         # Calculate the amount of SoC change as a fraction of 100%
         cycle_increment = (initial_soc_percent - final_soc_percent) / 100
         # Increment the count of completed cycles by the calculated amount
-        self._completed_cycles += cycle_increment
+        self._completed_cycles += cycle_increment * factor
 
         # Calculate degradation for this section
         self._degradation_in_section = cycle_increment / self._max_cycles
+
+    def _soc_degradation_factor(self, soc_percent: float) -> float:
+        """Calculate a degradation factor based on the state of charge."""
+
+        # Example function: more degradation at the extremes
+        # Quadratic increase away from 50%
+        # TODO: esta bien esta funcion???
+        return 1 + 0.5 * (max(abs(soc_percent - 50) / 50, 1))
+
+    def _electric_current_degradation_factor(self, electric_current: float) -> float:
+        """Calculate a degradation factor based on the electric current."""
+
+        # Example function: linear increase with current
+        # TODO: 0.0001 esta bien???
+        return 1 + 0.0001 * electric_current  # Linear increase for simplicity

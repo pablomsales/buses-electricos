@@ -32,28 +32,34 @@ class SimulatedSection(BaseSection):
         super().__init__(coordinates, bus, emissions)
 
     def process(self):
-        """Calculate the speed and time for the given section."""
+        """Calculate the speed and time for the given section considering total resistance."""
         dist = geodesic(self._start[:2], self._end[:2]).meters
         limit = self._speed_limit
         accel, decel = 0, 0
+        
+        # Resistencia total al avance
+        total_resistance = self.total_resistance  # N
+
+        # Ajustar aceleración máxima basada en la resistencia total al avance
+        effective_max_acceleration = max_acceleration - (total_resistance / self.bus.mass)
 
         if limit == 0:
             self._end_speed = 0
-            required_deceleration = (self._start_speed**2) / (2 * dist)
-            decel = min(max_acceleration, required_deceleration)
+            required_deceleration = (self._start_speed**2) / (2 * dist) # a = (v^2) / (2d)
+            decel = min(effective_max_acceleration, required_deceleration)
         elif limit < self._start_speed:
             required_deceleration = (self._start_speed**2 - limit**2) / (2 * dist)
-            decel = min(max_acceleration, required_deceleration)
+            decel = min(effective_max_acceleration, required_deceleration)
             self._end_speed = limit
         elif limit > self._start_speed:
             required_acceleration = (limit**2 - self._start_speed**2) / (2 * dist)
-            accel = min(max_acceleration, required_acceleration)
+            accel = min(effective_max_acceleration, required_acceleration)
             self._end_speed = limit
         else:
             self._end_speed = limit
 
         if decel > 0:
-            time = (self._start_speed - self._end_speed) / decel
+            time = (self._start_speed - self._end_speed) / decel # t = (vi - vf) / a
         elif accel > 0:
             time = (self._end_speed - self._start_speed) / accel
         else:

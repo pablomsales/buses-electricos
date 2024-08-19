@@ -153,6 +153,10 @@ class BaseSection:
             fuel_consumption_rate=fuel_consumption_rate,
         )
 
+    @property
+    def battery_degradation_in_section(self):
+        return self.bus.battery_degradation_in_section
+
     def __str__(self):
         emissions_str = "\n".join(
             [f"{k}: {v:.6f} g/s" for k, v in self.section_emissions.items()]

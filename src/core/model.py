@@ -48,20 +48,22 @@ class Model:
             "HC",
             "PM",
             "CO2",
+            "battery_degradation",
         ]
         rows = []
 
         for sect in self.route.sections:
-            emissions = [float(value) for value in sect.section_emissions.values()]
-            consumption = [float(value) for value in sect.consumption.values()]
+            sect_emissions = [float(value) for value in sect.section_emissions.values()]
+            sect_consumption = [float(value) for value in sect.consumption.values()]
 
             row = [
                 sect.start,
                 sect.end,
                 sect.start_speed,
                 sect.end_speed,
-                *consumption,
-                *emissions,
+                *sect_consumption,
+                *sect_emissions,
+                sect.battery_degradation_in_section,
             ]
             rows.append(row)
 

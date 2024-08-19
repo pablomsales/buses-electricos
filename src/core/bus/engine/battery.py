@@ -4,10 +4,10 @@ class Battery:
     def __init__(
         self,
         initial_capacity_ah: float,
+        voltage_v: float,
         max_cycles: int,
         initial_soc_percent: float,
-        voltage_v: float,
-        min_health_percentage: float,
+        min_depth_of_discharge: float,
     ):
         """
         Initialize a Battery instance.
@@ -22,7 +22,7 @@ class Battery:
             The initial State of Charge as a percentage.
         voltage_v : float
             The voltage of the battery in volts.
-        min_health_percentage : float
+        min_depth_of_discharge : float
             The minimum allowed battery health as a percentage.
         """
         self._initial_capacity_ah = initial_capacity_ah
@@ -30,22 +30,22 @@ class Battery:
         self._max_cycles = max_cycles
         self._completed_cycles = 0
         self.state_of_charge_percent = initial_soc_percent
-        self._voltage_v = voltage_v
-        self.min_health_percentage = min_health_percentage
+        self.voltage_v = voltage_v
+        self.min_depth_of_discharge = min_depth_of_discharge
         self._degradation_in_section = 0.0
 
     @property
     def degradation_rate(self) -> float:
         """Calculate the fixed degradation rate per cycle."""
-        initial_health_percentage = 100
-        allowed_health_loss = initial_health_percentage - self.min_health_percentage
+        initial_depth_of_discharge = 100
+        allowed_health_loss = initial_depth_of_discharge - self.min_depth_of_discharge
 
         # Divide by the maximum number of cycles to get the fixed degradation rate
         # Then divide by 100 to convert percentage to a fraction
         return (allowed_health_loss / self._max_cycles) / 100
 
     @property
-    def health_state(self):
+    def depth_of_discharge(self):
         """Returns the current health state of the battery"""
         # Calculate the total health loss based on the number of completed cycles
         health_loss = self._completed_cycles * self.degradation_rate
@@ -55,7 +55,7 @@ class Battery:
 
     @property
     def degradation_in_section(self) -> float:
-        """Returns the degradation triggered in the current section"""
+        """Returns the percentage of degradation triggered in the current section."""
         return self._degradation_in_section
 
     def charge(self, charge_amount_ah: float) -> None:
@@ -159,7 +159,7 @@ class Battery:
         )
 
         # Update the current capacity of the battery based on degradation
-        self.current_capacity_ah = self._initial_capacity_ah * self.health_state
+        self.current_capacity_ah = self._initial_capacity_ah * self.depth_of_discharge
 
     def _soc_degradation_factor(self, soc_percent: float) -> float:
         """Calculate a degradation factor based on the state of charge."""

@@ -10,6 +10,16 @@ class ElectricalEngine(BaseEngine):
         super().__init__(max_power, efficiency)
         self.battery = battery
 
+    @property
+    def battery_degradation_in_section(self):
+        # NOTE: ALWAYS access this property after running .consumption() method
+        # to ensure the degradation is updated to the current Section.
+        return self.battery.degradation_in_section
+
+    @property
+    def battery_depth_of_discharge(self):
+        return self.battery.depth_of_discharge
+
     def consumption(self, power, time, km=None):
         """
         Calculate electric consumption in Wh.
@@ -19,7 +29,12 @@ class ElectricalEngine(BaseEngine):
 
         # Compute consumption in Wh and Ah
         watts_hour = power * hours
-        ampers_hour = watts_hour / self.battery.voltage
+        ampers_hour = watts_hour / self.battery.voltage_v
+
+        if ampers_hour > 0:
+            self.battery.charge(ampers_hour)
+        else:
+            self.battery.discharge(ampers_hour, time)
 
         return {
             "Wh": watts_hour,

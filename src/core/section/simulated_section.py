@@ -1,4 +1,3 @@
-from geopy.distance import geodesic
 from core.section.base_section import BaseSection
 
 max_acceleration = 1.5  # m/s^2
@@ -23,12 +22,15 @@ class SimulatedSection(BaseSection):
         self._start_time = start_time
         self._end_speed = 0.0
         self._end_time = 0.0
+        # self.acceleration = None  # Store calculated acceleration/deceleration
         self.velocities = []          # List of average velocities
         self.start_times = []         # List of start times
         self.end_times = []           # List of end times
         
         # Call base class to initialize necessary attributes
         super().__init__(coordinates, bus, emissions)
+        
+        self.acceleration = self.process()
 
     def process(self):
         """Calculate the speed and time for the given section considering total resistance."""
@@ -41,6 +43,15 @@ class SimulatedSection(BaseSection):
         # Calculate end speed based on the speed limit and start speed
         self._end_speed, decel, accel = self._calculate_end_speed(limit, dist, effective_max_acceleration, effective_max_deceleration)
         
+        # Store the calculated acceleration/deceleration
+        # acceleration = min(accel, max_acceleration) if accel is not None else min(decel, max_deceleration)
+        if accel is not None:
+            acceleration = min(accel, max_acceleration)
+        elif decel is not None:
+            acceleration = max(decel, max_deceleration)
+        else:
+            acceleration = 0.0
+
         # Calculate the time required to traverse the section
         self._end_time = self._calculate_time(decel, accel, dist)
         
@@ -49,6 +60,8 @@ class SimulatedSection(BaseSection):
         self.velocities.append(avg_speed)
         self.start_times.append(self._start_time)
         self.end_times.append(self._end_time)
+
+        return acceleration
 
     def _calculate_effective_forces(self):
         """Calculate effective acceleration and deceleration based on total resistance."""
@@ -92,6 +105,10 @@ class SimulatedSection(BaseSection):
         
         return self._start_time + time
 
+    # def _calculate_acceleration(self):
+    #     """Return the calculated acceleration or deceleration."""
+    #     return self.acceleration
+
     @property
     def start_speed(self):
         return self._start_speed
@@ -132,4 +149,5 @@ class SimulatedSection(BaseSection):
             f"Time Elapsed: {round(self.duration_time, 2)} s\n"
             f"Distance: {round(self.length, 2)} m\n"
             f"Total Resistance: {round(self.total_resistance, 2)} N\n"
+            f"Calculated Acceleration/Deceleration: {round(self._calculate_acceleration(), 2)} m/s^2\n"
         )

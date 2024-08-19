@@ -194,6 +194,10 @@ class BaseSection:
         return self.emissions.calculate_emissions(
             power_kw, fuel_consumption_rate=consumption_rate
         )
+    
+    @property
+    def duration_time(self):
+        return self._end_time - self._start_time
 
     def __str__(self):
         emissions_str = "\n".join(

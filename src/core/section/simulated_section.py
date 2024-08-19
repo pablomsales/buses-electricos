@@ -1,7 +1,8 @@
 from geopy.distance import geodesic
 from core.section.base_section import BaseSection
 
-max_acceleration = 0.6  # m/s^2
+max_acceleration = 1.5  # m/s^2
+max_deceleration = -1.0  # m/s^2, note this is negative
 
 class SimulatedSection(BaseSection):
     def __init__(self, coordinates, speed_limit, start_speed, start_time, bus, emissions):
@@ -22,8 +23,6 @@ class SimulatedSection(BaseSection):
         self._start_time = start_time
         self._end_speed = 0.0
         self._end_time = 0.0
-        self._start = coordinates[0]  # Coordinates of the start of the section
-        self._end = coordinates[1]    # Coordinates of the end of the section
         self.velocities = []          # List of average velocities
         self.start_times = []         # List of start times
         self.end_times = []           # List of end times
@@ -33,51 +32,65 @@ class SimulatedSection(BaseSection):
 
     def process(self):
         """Calculate the speed and time for the given section considering total resistance."""
-        dist = geodesic(self._start[:2], self._end[:2]).meters
+        dist = self.length  # Distance of the section
         limit = self._speed_limit
-        accel, decel = 0, 0
         
-        # Resistencia total al avance
-        total_resistance = self.total_resistance  # N
-
-        # Ajustar aceleración máxima basada en la resistencia total al avance
-        effective_max_acceleration = max_acceleration - (total_resistance / self.bus.mass)
-
-        if limit == 0:
-            self._end_speed = 0
-            required_deceleration = (self._start_speed**2) / (2 * dist) # a = (v^2) / (2d)
-            decel = min(effective_max_acceleration, required_deceleration)
-        elif limit < self._start_speed:
-            required_deceleration = (self._start_speed**2 - limit**2) / (2 * dist)
-            decel = min(effective_max_acceleration, required_deceleration)
-            self._end_speed = limit
-        elif limit > self._start_speed:
-            required_acceleration = (limit**2 - self._start_speed**2) / (2 * dist)
-            accel = min(effective_max_acceleration, required_acceleration)
-            self._end_speed = limit
-        else:
-            self._end_speed = limit
-
-        if decel > 0:
-            time = (self._start_speed - self._end_speed) / decel # t = (vi - vf) / a
-        elif accel > 0:
-            time = (self._end_speed - self._start_speed) / accel
-        else:
-            time = dist / max(self._start_speed, 0.1)
-
-        self._end_time = self._start_time + time  # Calculate end_time
-        avg_speed = (self._start_speed + self._end_speed) / 2
+        # Calculate effective acceleration and deceleration based on total resistance
+        effective_max_acceleration, effective_max_deceleration = self._calculate_effective_forces()
+        
+        # Calculate end speed based on the speed limit and start speed
+        self._end_speed, decel, accel = self._calculate_end_speed(limit, dist, effective_max_acceleration, effective_max_deceleration)
+        
+        # Calculate the time required to traverse the section
+        self._end_time = self._calculate_time(decel, accel, dist)
+        
+        # Calculate and store the average speed
+        avg_speed = self._calculate_average_speed()  
         self.velocities.append(avg_speed)
         self.start_times.append(self._start_time)
         self.end_times.append(self._end_time)
 
-    @property
-    def start(self) -> tuple[float, float, float]:
-        return self._start
+    def _calculate_effective_forces(self):
+        """Calculate effective acceleration and deceleration based on total resistance."""
+        total_resistance = self.total_resistance  # N
+        effective_max_acceleration = max_acceleration - (total_resistance / self.bus.mass)
+        effective_max_deceleration = max_deceleration + (total_resistance / self.bus.mass)
+        return effective_max_acceleration, effective_max_deceleration
 
-    @property
-    def end(self) -> tuple[float, float, float]:
-        return self._end
+    def _calculate_end_speed(self, limit, dist, effective_max_acceleration, effective_max_deceleration):
+        """Determine the end speed, and possible acceleration or deceleration."""
+        if limit == 0:
+            self._end_speed = 0
+            required_deceleration = (self._start_speed**2) / (2 * dist)  # a = (v^2) / (2d)
+            decel = max(effective_max_deceleration, -required_deceleration)
+            accel = None
+        elif limit < self._start_speed:
+            required_deceleration = (self._start_speed**2 - limit**2) / (2 * dist)
+            decel = max(effective_max_deceleration, -required_deceleration)
+            accel = None
+            self._end_speed = limit
+        elif limit > self._start_speed:
+            required_acceleration = (limit**2 - self._start_speed**2) / (2 * dist)
+            accel = min(effective_max_acceleration, required_acceleration)
+            decel = None
+            self._end_speed = limit
+        else:
+            self._end_speed = limit
+            decel = None
+            accel = None
+        
+        return self._end_speed, decel, accel
+
+    def _calculate_time(self, decel, accel, dist):
+        """Calculate the time required to traverse the section."""
+        if decel is not None and decel < 0:
+            time = (self._start_speed - self._end_speed) / abs(decel)  # t = (vi - vf) / |a|
+        elif accel is not None and accel > 0:
+            time = (self._end_speed - self._start_speed) / accel
+        else:
+            time = dist / max(self._start_speed, 0.1)
+        
+        return self._start_time + time
 
     @property
     def start_speed(self):
@@ -110,10 +123,6 @@ class SimulatedSection(BaseSection):
     @end_time.setter
     def end_time(self, value):
         self._end_time = value
-
-    @property
-    def duration_time(self):
-        return self._end_time - self._start_time
 
     def __str__(self):
         return (

@@ -49,7 +49,4 @@ class RealSection(BaseSection):
     @property
     def end_time(self):
         return self._end_time
-
-    @property
-    def duration_time(self):
-        return self._end_time - self._start_time
+    

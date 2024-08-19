@@ -101,10 +101,6 @@ class Battery:
         """
         return self.degradation_in_section / time
 
-    def _get_soc_in_ah(self) -> float:
-        """Get the current state of charge in Ampere-hours."""
-        return self.current_capacity_ah * (self.state_of_charge_percent / 100)
-
     def _update_state_of_charge(self, amount_ah: float) -> float:
         """
         Updates the state of charge by a given amount in Ampere-hours.
@@ -121,6 +117,27 @@ class Battery:
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
         self._check_drained_battery(updated_soc_percent)
         return updated_soc_percent
+
+    def _get_soc_in_ah(self) -> float:
+        """Get the current state of charge in Ampere-hours."""
+        return self.current_capacity_ah * (self.state_of_charge_percent / 100)
+
+    def _check_drained_battery(self, soc_percent: float) -> None:
+        if soc_percent == 0:
+            print("DRAINED_BATTERY!!")
+
+    def _calculate_current(self, amount_ah: float, time_seconds: float) -> float:
+        """
+        Calculate the electric current in Amperes.
+
+        Parameters
+        ----------
+        amount_ah : float
+            The charge amount in Ampere-hours.
+        time_seconds : float
+            The time duration in seconds.
+        """
+        return amount_ah / (time_seconds / 3600)
 
     def _apply_degradation(
         self, updated_soc_percent: float, electric_current: float
@@ -144,22 +161,20 @@ class Battery:
         # Update the current capacity of the battery based on degradation
         self.current_capacity_ah = self._initial_capacity_ah * self.health_state
 
-    def _calculate_current(self, amount_ah: float, time_seconds: float) -> float:
-        """
-        Calculate the electric current in Amperes.
+    def _soc_degradation_factor(self, soc_percent: float) -> float:
+        """Calculate a degradation factor based on the state of charge."""
 
-        Parameters
-        ----------
-        amount_ah : float
-            The charge amount in Ampere-hours.
-        time_seconds : float
-            The time duration in seconds.
-        """
-        return amount_ah / (time_seconds / 3600)
+        # Example function: more degradation at the extremes
+        # Quadratic increase away from 50%
+        # TODO: esta bien esta funcion???
+        return 1 + 0.5 * (max(abs(soc_percent - 50) / 50, 1))
 
-    def _check_drained_battery(self, soc_percent: float) -> None:
-        if soc_percent == 0:
-            print("DRAINED_BATTERY!!")
+    def _electric_current_degradation_factor(self, electric_current: float) -> float:
+        """Calculate a degradation factor based on the electric current."""
+
+        # Example function: linear increase with current
+        # TODO: 0.0001 esta bien???
+        return 1 + 0.0001 * electric_current  # Linear increase for simplicity
 
     def _increase_completed_cycles(
         self,
@@ -185,18 +200,3 @@ class Battery:
 
         # Calculate degradation for this section
         self._degradation_in_section = cycle_increment / self._max_cycles
-
-    def _soc_degradation_factor(self, soc_percent: float) -> float:
-        """Calculate a degradation factor based on the state of charge."""
-
-        # Example function: more degradation at the extremes
-        # Quadratic increase away from 50%
-        # TODO: esta bien esta funcion???
-        return 1 + 0.5 * (max(abs(soc_percent - 50) / 50, 1))
-
-    def _electric_current_degradation_factor(self, electric_current: float) -> float:
-        """Calculate a degradation factor based on the electric current."""
-
-        # Example function: linear increase with current
-        # TODO: 0.0001 esta bien???
-        return 1 + 0.0001 * electric_current  # Linear increase for simplicity

@@ -17,8 +17,8 @@ from core.emissions import Emissions
 
 # Crear instancia de Battery
 battery_instance = Battery(
-    initial_capacity_ah=300,
-    voltage_v=600,
+    initial_capacity_ah=1225,
+    voltage_v=400,
     max_cycles=3000,
     initial_soc_percent=100,
     min_depth_of_discharge=80,

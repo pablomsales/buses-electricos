@@ -85,9 +85,14 @@ class Bus:
                 "Engine must be an instance of BaseEngine or its subclasses"
             )
 
-    @property
-    def battery_degradation_in_section(self):
-        return self.engine.battery_degradation_in_section
+    def get_battery_state_of_charge(self):
+        return self.engine.get_battery_state_of_charge()
+
+    def get_battery_degradation_in_section(self):
+        return self.engine.get_battery_degradation_in_section()
+
+    def get_battery_depth_of_discharge(self):
+        return self.engine.get_battery_depth_of_discharge()
 
     def __str__(self):
         return (

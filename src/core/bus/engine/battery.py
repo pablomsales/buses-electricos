@@ -111,7 +111,7 @@ class Battery:
         # Get current state of charge in Ampere-hours
         current_soc_ah = self._get_soc_in_ah()
         updated_soc_in_ah = max(
-            0, min(current_soc_ah + amount_ah, self.current_capacity_ah)
+            0, min(current_soc_ah - amount_ah, self.current_capacity_ah)
         )
         # Calculate the updated State of Charge percentage
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100

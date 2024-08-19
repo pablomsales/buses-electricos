@@ -153,9 +153,14 @@ class BaseSection:
             fuel_consumption_rate=fuel_consumption_rate,
         )
 
-    @property
-    def battery_degradation_in_section(self):
-        return self.bus.battery_degradation_in_section
+    def get_battery_degradation_in_section(self):
+        return self.bus.get_battery_degradation_in_section()
+
+    def get_battery_state_of_charge(self):
+        return self.bus.get_battery_state_of_charge()
+
+    def get_battery_depth_of_discharge(self):
+        return self.bus.get_battery_depth_of_discharge()
 
     def __str__(self):
         emissions_str = "\n".join(
@@ -177,5 +182,8 @@ class BaseSection:
             f"\nRequired Power: {self.instant_power:.2f} W"
             f"\nConsumption: {self.consumption}"
             f"\n\nEmissions:\n{emissions_str}"
+            f"\n\nBattery SoC: {self.get_battery_state_of_charge()}"
+            f"\nBattery degradation:{self.get_battery_degradation_in_section()}"
+            f"\nBattery DoD (Health): {self.get_battery_depth_of_discharge()}"
             f"\n"
         )

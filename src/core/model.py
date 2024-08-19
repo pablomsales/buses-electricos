@@ -63,9 +63,11 @@ class Model:
                 sect.end_speed,
                 *sect_consumption,
                 *sect_emissions,
-                sect.battery_degradation_in_section,
+                sect.get_battery_degradation_in_section(),
             ]
             rows.append(row)
+
+            print(sect)
 
         # Write to CSV file
         with open(filename, "w", newline="") as f:

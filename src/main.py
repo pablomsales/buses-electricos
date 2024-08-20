@@ -23,6 +23,8 @@ def main():
     model.plot_map()
     for sect in model.route.sections:
         print(sect)
+        # print("-------------------")
+        # print(sect._calculate_effective_forces())
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

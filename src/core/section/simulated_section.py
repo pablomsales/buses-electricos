@@ -22,7 +22,6 @@ class SimulatedSection(BaseSection):
         self._start_time = start_time
         self._end_speed = 0.0
         self._end_time = 0.0
-        # self.acceleration = None  # Store calculated acceleration/deceleration
         self.velocities = []          # List of average velocities
         self.start_times = []         # List of start times
         self.end_times = []           # List of end times
@@ -30,9 +29,10 @@ class SimulatedSection(BaseSection):
         # Call base class to initialize necessary attributes
         super().__init__(coordinates, bus, emissions)
         
-        self.acceleration = self.process()
+        # Process the section
+        self._process()
 
-    def process(self):
+    def _process(self):
         """Calculate the speed and time for the given section considering total resistance."""
         dist = self.length  # Distance of the section
         limit = self._speed_limit
@@ -44,13 +44,12 @@ class SimulatedSection(BaseSection):
         self._end_speed, decel, accel = self._calculate_end_speed(limit, dist, effective_max_acceleration, effective_max_deceleration)
         
         # Store the calculated acceleration/deceleration
-        # acceleration = min(accel, max_acceleration) if accel is not None else min(decel, max_deceleration)
         if accel is not None:
-            acceleration = min(accel, max_acceleration)
+            self.acceleration = min(accel, max_acceleration)
         elif decel is not None:
-            acceleration = max(decel, max_deceleration)
+            self.acceleration = max(decel, max_deceleration)
         else:
-            acceleration = 0.0
+            self.acceleration = 0.0
 
         # Calculate the time required to traverse the section
         self._end_time = self._calculate_time(decel, accel, dist)
@@ -60,8 +59,6 @@ class SimulatedSection(BaseSection):
         self.velocities.append(avg_speed)
         self.start_times.append(self._start_time)
         self.end_times.append(self._end_time)
-
-        return acceleration
 
     def _calculate_effective_forces(self):
         """Calculate effective acceleration and deceleration based on total resistance."""
@@ -87,7 +84,7 @@ class SimulatedSection(BaseSection):
             accel = min(effective_max_acceleration, required_acceleration)
             decel = None
             self._end_speed = limit
-        else:
+        else:   
             self._end_speed = limit
             decel = None
             accel = None
@@ -104,10 +101,6 @@ class SimulatedSection(BaseSection):
             time = dist / max(self._start_speed, 0.1)
         
         return self._start_time + time
-
-    # def _calculate_acceleration(self):
-    #     """Return the calculated acceleration or deceleration."""
-    #     return self.acceleration
 
     @property
     def start_speed(self):

@@ -124,7 +124,6 @@ class Route:
             # Create a SimulatedSection instance
             seccion = SimulatedSection(
                 coordinates, limit, initial_speed, start_time, self.bus, self.emissions)
-            # seccion.process()
             secciones.append(seccion)
             
             # Update the initial speed for the next section

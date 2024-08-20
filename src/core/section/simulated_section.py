@@ -69,51 +69,58 @@ class SimulatedSection(BaseSection):
         effective_max_deceleration = max_deceleration + (total_resistance / self.bus.mass)
         return effective_max_acceleration, effective_max_deceleration
 
+    MAX_ITERATIONS = 500  # Limit the number of iterations to avoid infinite loop
+    STEP_SIZE = 0.1  # Step size for adjustment
+
+    def _decelerate_to_stop(self, dist, effective_max_deceleration):
+        """Handles the case where the speed must be reduced to zero."""
+        self._end_speed = 0
+        decel = (self._start_speed**2) / (2 * dist)
+        iterations = 0
+        while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
+            if self._start_speed - self.STEP_SIZE >= 0:
+                self._start_speed -= self.STEP_SIZE
+            decel = (-self._start_speed**2) / (2 * dist)
+            iterations += 1
+        return decel, None
+
+    def _decelerate(self, limit, dist, effective_max_deceleration):
+        """Handles the case where the speed must be reduced to a certain limit."""
+        self._end_speed = limit
+        decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+        iterations = 0
+        while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
+            if self._end_speed - self.STEP_SIZE >= 0:
+                self._end_speed -= self.STEP_SIZE
+            decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+            iterations += 1
+        return decel, None
+
+    def _accelerate(self, limit, dist, effective_max_acceleration):
+        """Handles the case where the speed must be increased to a certain limit."""
+        self._end_speed = limit
+        accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+        iterations = 0
+        while abs(accel) > abs(effective_max_acceleration) and iterations < self.MAX_ITERATIONS:
+            if self._end_speed - self.STEP_SIZE >= 0:
+                self._end_speed -= self.STEP_SIZE
+            accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+            iterations += 1
+        return None, accel
+
     def _calculate_end_speed(self, limit, dist, effective_max_acceleration, effective_max_deceleration):
         """Determine the end speed, and possible acceleration or deceleration."""
-        MAX_ITERATIONS = 500  # Limit the number of iterations to avoid infinite loop
-        STEP_SIZE = 0.1  # Step size for adjustment
-        
         if limit == 0:
-            # Special case: Need to come to a full stop
-            self._end_speed = 0
-            decel = (self._start_speed**2) / (2 * dist)
-            accel = None
-            iterations = 0
-            while abs(decel) > abs(effective_max_deceleration) and iterations < MAX_ITERATIONS:
-                if self._start_speed - STEP_SIZE >= 0:
-                    self._start_speed -= STEP_SIZE
-                decel = (-self._start_speed**2) / (2 * dist)
-                iterations += 1
+            decel, accel = self._decelerate_to_stop(dist, effective_max_deceleration)
         elif limit < self._start_speed:
-            # Need to decelerate to the speed limit
-            self._end_speed = limit
-            decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
-            accel = None
-            iterations = 0
-            while abs(decel) > abs(effective_max_deceleration) and iterations < MAX_ITERATIONS:
-                if self._end_speed - STEP_SIZE >= 0:
-                    self._end_speed -= STEP_SIZE
-                decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
-                iterations += 1
+            decel, accel = self._decelerate(limit, dist, effective_max_deceleration)
         elif limit > self._start_speed:
-            # Need to accelerate to the speed limit
-            self._end_speed = limit
-            accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
-            decel = None
-            iterations = 0
-            while abs(accel) > abs(effective_max_acceleration) and iterations < MAX_ITERATIONS:
-                if self._end_speed - STEP_SIZE >= 0:
-                    self._end_speed -= STEP_SIZE
-                accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
-                iterations += 1
+            decel, accel = self._accelerate(limit, dist, effective_max_acceleration)
         else:
-            # No change in speed
             self._end_speed = limit
-            decel = None
-            accel = None
+            decel, accel = None, None
 
-        # If after max iterations, the deceleration or acceleration is still not within limits, return the adjusted values
+        # Return the final end speed, deceleration, and acceleration
         return self._end_speed, decel, accel
 
     def _calculate_time(self, decel, accel, dist):

@@ -42,15 +42,20 @@ class SimulatedSection(BaseSection):
         
         # Calculate end speed based on the speed limit and start speed
         self._end_speed, decel, accel = self._calculate_end_speed(limit, dist, effective_max_acceleration, effective_max_deceleration)
-        
-        # Store the calculated acceleration/deceleration
-        if accel is not None:
-            self.acceleration = min(accel, max_acceleration)
-        elif decel is not None:
-            self.acceleration = max(decel, max_deceleration)
-        else:
-            self.acceleration = 0.0
 
+        if accel is not None:
+            # Set acceleration to the calculated value
+            self._acceleration = accel
+        elif decel is not None:
+            # Set deceleration to the calculated value
+            self._acceleration = decel
+        else:
+            # No change in speed
+            self._acceleration = 0.0
+        
+        # Adjust the speed if necessary
+        # self._adjust_speeds_if_needed(dist, effective_max_acceleration, effective_max_deceleration)
+        
         # Calculate the time required to traverse the section
         self._end_time = self._calculate_time(decel, accel, dist)
         
@@ -70,21 +75,31 @@ class SimulatedSection(BaseSection):
     def _calculate_end_speed(self, limit, dist, effective_max_acceleration, effective_max_deceleration):
         """Determine the end speed, and possible acceleration or deceleration."""
         if limit == 0:
+            # Special case: Need to come to a full stop
             self._end_speed = 0
-            required_deceleration = (self._start_speed**2) / (2 * dist)  # a = (v^2) / (2d)
-            decel = max(effective_max_deceleration, -required_deceleration)
+            decel = (self._start_speed**2) / (2 * dist)
             accel = None
+            while abs(decel) > abs(effective_max_deceleration):
+                self._start_speed -= 0.5
+                decel = (self._start_speed**2) / (2 * dist)
         elif limit < self._start_speed:
-            required_deceleration = (self._start_speed**2 - limit**2) / (2 * dist)
-            decel = max(effective_max_deceleration, -required_deceleration)
+            # Need to decelerate to the speed limit
+            self._end_speed = limit
+            decel = (self._start_speed**2 - limit**2) / (2 * dist)
             accel = None
-            self._end_speed = limit
+            while abs(decel) > abs(effective_max_deceleration):
+                self._start_speed -= 0.5
+                decel = (self._start_speed**2 - limit**2) / (2 * dist)
         elif limit > self._start_speed:
-            required_acceleration = (limit**2 - self._start_speed**2) / (2 * dist)
-            accel = min(effective_max_acceleration, required_acceleration)
-            decel = None
+            # Need to accelerate to the speed limit
             self._end_speed = limit
-        else:   
+            accel = (limit**2 - self._start_speed**2) / (2 * dist)
+            decel = None
+            while abs(accel) > abs(effective_max_acceleration):
+                self._start_speed += 0.5
+                accel = (limit**2 - self._start_speed**2) / (2 * dist)
+        else:
+            # No change in speed
             self._end_speed = limit
             decel = None
             accel = None
@@ -101,6 +116,14 @@ class SimulatedSection(BaseSection):
             time = dist / max(self._start_speed, 0.1)
         
         return self._start_time + time
+    
+    @property
+    def acceleration(self):
+        return self._acceleration
+    
+    @acceleration.setter
+    def acceleration(self, value):
+        self._acceleration = value
 
     @property
     def start_speed(self):
@@ -142,5 +165,5 @@ class SimulatedSection(BaseSection):
             f"Time Elapsed: {round(self.duration_time, 2)} s\n"
             f"Distance: {round(self.length, 2)} m\n"
             f"Total Resistance: {round(self.total_resistance, 2)} N\n"
-            f"Calculated Acceleration/Deceleration: {round(self._calculate_acceleration(), 2)} m/s^2\n"
+            f"Calculated Acceleration/Deceleration: {round(self.acceleration, 2)} m/s^2\n"
         )

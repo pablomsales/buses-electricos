@@ -1,7 +1,7 @@
 from core.section.base_section import BaseSection
 
-max_acceleration = 2.0  # m/s^2
-max_deceleration = -1.5  # m/s^2, note this is negative
+max_acceleration = 1.5  # m/s^2
+max_deceleration = -1.0  # m/s^2, note this is negative
 
 class SimulatedSection(BaseSection):
     def __init__(self, coordinates, speed_limit, start_speed, start_time, bus, emissions):
@@ -70,7 +70,7 @@ class SimulatedSection(BaseSection):
         return effective_max_acceleration, effective_max_deceleration
 
     MAX_ITERATIONS = 500  # Limit the number of iterations to avoid infinite loop
-    STEP_SIZE = 0.1  # Step size for adjustment
+    STEP_SIZE = 1.0  # Step size for adjustment
 
     def _decelerate_to_stop(self, dist, effective_max_deceleration):
         """Handles the case where the speed must be reduced to zero."""
@@ -92,6 +92,8 @@ class SimulatedSection(BaseSection):
         while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
             if self._end_speed - self.STEP_SIZE >= 0:
                 self._end_speed -= self.STEP_SIZE
+            if self._start_speed - self.STEP_SIZE >= 0:
+                self._start_speed -= self.STEP_SIZE
             decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
             iterations += 1
         return decel, None
@@ -104,6 +106,8 @@ class SimulatedSection(BaseSection):
         while abs(accel) > abs(effective_max_acceleration) and iterations < self.MAX_ITERATIONS:
             if self._end_speed - self.STEP_SIZE >= 0:
                 self._end_speed -= self.STEP_SIZE
+            if self._start_speed - self.STEP_SIZE >= 0:
+                self._start_speed -= self.STEP_SIZE
             accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
             iterations += 1
         return None, accel

@@ -11,8 +11,8 @@ class ElectricalEngine(BaseEngine):
         self.battery = battery
 
     @property
-    def battery_depth_of_discharge(self):
-        return self.battery.depth_of_discharge
+    def battery_state_of_health(self):
+        return self.battery.state_of_health
 
     def consumption(self, power, time, km=None):
         """
@@ -25,10 +25,7 @@ class ElectricalEngine(BaseEngine):
         watts_hour = power * hours
         ampers_hour = watts_hour / self.battery.voltage_v
 
-        if ampers_hour < 0:
-            self.battery.charge(ampers_hour)
-        else:
-            self.battery.discharge(ampers_hour, time)
+        self.battery.update_soc_and_degradation(ampers_hour, time)
 
         return {
             "Wh": watts_hour,
@@ -43,8 +40,8 @@ class ElectricalEngine(BaseEngine):
     def get_battery_degradation_in_section(self):
         return self.battery.degradation_in_section
 
-    def get_battery_depth_of_discharge(self):
-        return self.battery.depth_of_discharge
+    def get_battery_state_of_health(self):
+        return self.battery.state_of_health
 
     def __str__(self):
         return "Engine Type: Electric\n" + super().__str__()

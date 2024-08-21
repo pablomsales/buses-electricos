@@ -7,7 +7,7 @@ class Battery:
         voltage_v: float,
         max_cycles: int,
         initial_soc_percent: float,
-        min_depth_of_discharge: float,
+        min_state_of_health: float,
     ):
         """
         Initialize a Battery instance.
@@ -22,7 +22,7 @@ class Battery:
             The initial State of Charge as a percentage.
         voltage_v : float
             The voltage of the battery in volts.
-        min_depth_of_discharge : float
+        min_state_of_health : float
             The minimum allowed battery health as a percentage.
         """
         self._initial_capacity_ah = initial_capacity_ah
@@ -31,21 +31,21 @@ class Battery:
         self._completed_cycles = 0
         self.state_of_charge_percent = initial_soc_percent
         self.voltage_v = voltage_v
-        self.min_depth_of_discharge = min_depth_of_discharge
+        self.min_state_of_health = min_state_of_health
         self._degradation_in_section = 0.0
 
     @property
     def degradation_rate(self) -> float:
         """Calculate the fixed degradation rate per cycle."""
-        initial_depth_of_discharge = 100
-        allowed_health_loss = initial_depth_of_discharge - self.min_depth_of_discharge
+        initial_state_of_health = 100
+        allowed_health_loss = initial_state_of_health - self.min_state_of_health
 
         # Divide by the maximum number of cycles to get the fixed degradation rate
         # Then divide by 100 to convert percentage to a fraction
         return (allowed_health_loss / self._max_cycles) / 100
 
     @property
-    def depth_of_discharge(self):
+    def state_of_health(self):
         """Returns the current health state of the battery"""
         # Calculate the total health loss based on the number of completed cycles
         health_loss = self._completed_cycles * self.degradation_rate
@@ -58,42 +58,6 @@ class Battery:
         """Returns the percentage of degradation triggered in the current section."""
         return self._degradation_in_section
 
-    def charge(self, charge_amount_ah: float) -> None:
-        """
-        Charge the battery by a certain amount.
-
-        Parameters
-        ----------
-        charge_amount_ah : float
-            The amount of charge to add to the battery in Ampere-hours.
-        """
-        self.state_of_charge_percent = self._update_state_of_charge(charge_amount_ah)
-
-    def discharge(self, discharge_amount_ah: float, time_seconds: float) -> None:
-        """
-        Discharge the battery by a certain amount.
-
-        Parameters
-        ----------
-        discharge_amount_ah : float
-            The amount of charge to remove from the battery in Ampere-hours.
-        time : float
-            The duration time of the section in seconds
-        """
-
-        # Calculate the updated state of charge percentage
-        # TODO: Chequear si discharge_amount es un numero negativo, sino, hay que:
-        #   - o bien pasarlo negativo de primeras
-        #   - o bien pasar como parametro `-discharge_amount_ah` aqui debajo
-        updated_soc_percent = self._update_state_of_charge(discharge_amount_ah)
-
-        # Get applied electric current (Amperes)
-        electric_current = self._calculate_current(discharge_amount_ah, time_seconds)
-        self._apply_degradation(updated_soc_percent, electric_current)
-
-        # Finally, update the SoC percentage
-        self.state_of_charge_percent = updated_soc_percent
-
     def instant_degradation(self, time: float) -> float:
         """
         Computes the INSTANT degradation of this section.
@@ -101,7 +65,30 @@ class Battery:
         """
         return self.degradation_in_section / time
 
-    def _update_state_of_charge(self, amount_ah: float) -> float:
+    def update_soc_and_degradation(
+        self, ah_transferred: float, time_seconds: float
+    ) -> None:
+        """
+        Update the state of charge of the battery by a certain amount and apply its corresponding degradation.
+
+        Parameters
+        ----------
+        ah_transferred : float
+            The amount of input or output charge in Ampere-hours.
+        time : float
+            The duration time of the section in seconds
+        """
+
+        updated_soc_percent = self._compute_new_soc(ah_transferred)
+
+        # Get applied electric current (Amperes)
+        electric_current = self._calculate_current(ah_transferred, time_seconds)
+        self._apply_degradation(updated_soc_percent, electric_current)
+
+        # Finally, update the SoC percentage
+        self.state_of_charge_percent = updated_soc_percent
+
+    def _compute_new_soc(self, ah_transferred: float) -> float:
         """
         Updates the state of charge by a given amount in Ampere-hours.
         It ensures that the SOC does not exceed the battery's capacity or
@@ -111,7 +98,7 @@ class Battery:
         # Get current state of charge in Ampere-hours
         current_soc_ah = self._get_soc_in_ah()
         updated_soc_in_ah = max(
-            0, min(current_soc_ah - amount_ah, self.current_capacity_ah)
+            0, min(current_soc_ah - ah_transferred, self.current_capacity_ah)
         )
         # Calculate the updated State of Charge percentage
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
@@ -126,18 +113,18 @@ class Battery:
         if soc_percent == 0:
             print("DRAINED_BATTERY!!")
 
-    def _calculate_current(self, amount_ah: float, time_seconds: float) -> float:
+    def _calculate_current(self, ah_transferred: float, time_seconds: float) -> float:
         """
         Calculate the electric current in Amperes.
 
         Parameters
         ----------
-        amount_ah : float
+        ah_transferred : float
             The charge amount in Ampere-hours.
         time_seconds : float
             The time duration in seconds.
         """
-        return amount_ah / (time_seconds / 3600)
+        return ah_transferred / (time_seconds / 3600)
 
     def _apply_degradation(
         self, updated_soc_percent: float, electric_current: float
@@ -145,7 +132,7 @@ class Battery:
         initial_soc_percent = self.state_of_charge_percent
 
         # Calculate degradation factors
-        soc_factor = self._soc_degradation_factor(updated_soc_percent)
+        soc_factor = self._soc_degradation_factor(updated_soc_percent, electric_current)
         electric_current_factor = self._electric_current_degradation_factor(
             electric_current
         )
@@ -159,23 +146,60 @@ class Battery:
         )
 
         # Update the current capacity of the battery based on degradation
-        self.current_capacity_ah = self._initial_capacity_ah * self.depth_of_discharge
+        self.current_capacity_ah = self._initial_capacity_ah * self.state_of_health
 
-    def _soc_degradation_factor(self, soc_percent: float) -> float:
+    def _soc_degradation_factor(
+        self, soc_percent: float, electric_current: float
+    ) -> float:
         """Calculate a degradation factor based on the state of charge."""
 
-        # Example function: more degradation at the extremes
-        # Quadratic increase away from 50%
-        # TODO: esta bien esta funcion???
-        return 1 + 0.5 * (max(abs(soc_percent - 50) / 50, 1))
+        if self._is_charging(electric_current):
+            return self._calculate_charging_degradation(soc_percent)
+        else:
+            return self._calculate_discharging_degradation(soc_percent)
+
+    def _is_charging(self, electric_current: float) -> bool:
+        return electric_current < 0
+
+    def _calculate_charging_degradation(self, soc_percent: float) -> float:
+        """Calculate degradation factor during charging."""
+
+        # NOTE: adjust with numerical data
+        m = 0.02
+
+        if soc_percent < 80:
+            return 1.005  # Constant degradation before 80% charge
+        else:
+            return 1.005 + m * (soc_percent - 80)  # Linear increase after 80%
+
+    def _calculate_discharging_degradation(self, soc_percent: float) -> float:
+        """Calculate degradation factor during discharging."""
+
+        # NOTE: adjust with numerical data
+        m = 0.02
+
+        if soc_percent > 20:
+            return 1.05  # Constant degradation above 20% charge
+        else:
+            return 1.05 + m * (20 - soc_percent)  # Linear increase below 20%
 
     def _electric_current_degradation_factor(self, electric_current: float) -> float:
         """Calculate a degradation factor based on the electric current."""
 
-        # Example function: linear increase with current
-        # TODO: 0.0001 esta bien???
-        return 1 + 0.0001 * electric_current  # Linear increase for simplicity
+        # NOTE: adjust with numerical data
+        m = 0.0002
 
+        # Determine if the battery is charging or discharging
+        if self._is_charging(electric_current):
+            # Greater degradation for higher positive currents during charging
+            return 1 + m * electric_current
+        else:
+            # Greater degradation for more negative currents during discharging
+            return 1 + m * abs(electric_current)
+
+    # TODO: Ajustar este metodo porque estaba hecho pensando especificamente para
+    #       incremento de ciclos cuando se descargaba la bateria. Pensar/preguntar_a_Luciano
+    #       que hacer sino para marcar la degradación de la batería
     def _increase_completed_cycles(
         self,
         initial_soc_percent: float,
@@ -194,7 +218,7 @@ class Battery:
         """
 
         # Calculate the amount of SoC change as a fraction of 100%
-        cycle_increment = (initial_soc_percent - final_soc_percent) / 100
+        cycle_increment = abs(initial_soc_percent - final_soc_percent) / 100
         # Increment the count of completed cycles by the calculated amount
         self._completed_cycles += cycle_increment * factor
 

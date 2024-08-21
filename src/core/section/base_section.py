@@ -159,8 +159,8 @@ class BaseSection:
     def get_battery_state_of_charge(self):
         return self.bus.get_battery_state_of_charge()
 
-    def get_battery_depth_of_discharge(self):
-        return self.bus.get_battery_depth_of_discharge()
+    def get_battery_state_of_health(self):
+        return self.bus.get_battery_state_of_health()
 
     def __str__(self):
         emissions_str = "\n".join(
@@ -184,6 +184,6 @@ class BaseSection:
             f"\n\nEmissions:\n{emissions_str}"
             f"\n\nBattery SoC: {self.get_battery_state_of_charge()}"
             f"\nBattery degradation:{self.get_battery_degradation_in_section()}"
-            f"\nBattery DoD (Health): {self.get_battery_depth_of_discharge()}"
+            f"\nBattery DoD (Health): {self.get_battery_state_of_health()}"
             f"\n"
         )

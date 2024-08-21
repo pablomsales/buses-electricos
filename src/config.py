@@ -21,7 +21,7 @@ battery_instance = Battery(
     voltage_v=400,
     max_cycles=3000,
     initial_soc_percent=100,
-    min_depth_of_discharge=80,
+    min_state_of_health=80,
 )
 
 engine_instance = ElectricalEngine(

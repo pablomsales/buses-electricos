@@ -75,7 +75,7 @@ class SimulatedSection(BaseSection):
     def _decelerate_to_stop(self, dist, effective_max_deceleration):
         """Handles the case where the speed must be reduced to zero."""
         self._end_speed = 0
-        decel = (self._start_speed**2) / (2 * dist)
+        decel = (-self._start_speed**2) / (2 * dist)
         iterations = 0
         while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
             if self._start_speed - self.STEP_SIZE >= 0:

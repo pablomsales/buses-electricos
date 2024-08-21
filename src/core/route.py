@@ -95,7 +95,7 @@ class Route:
         """
         # Initialize the list of sections
         secciones = []
-        initial_speed = 0
+        next_initial_speed = 0
         cumulative_time = 0
 
         # Create an instance of SimulatedSection for each segment
@@ -121,16 +121,28 @@ class Route:
             # Set the start time for the section
             start_time = cumulative_time
             
+            # Assign the initial speed for the first section
+            initial_speed = next_initial_speed
+
             # Create a SimulatedSection instance
             seccion = SimulatedSection(
                 coordinates, limit, initial_speed, start_time, self.bus, self.emissions)
-            secciones.append(seccion)
             
             # Update the initial speed for the next section
-            initial_speed = seccion.end_speed
+            next_initial_speed = seccion.end_speed
+
+            # Actual initial speed for the next section
+            actual_initial_speed = seccion.start_speed
             
+            # Update the end speed for the actual section
+            if secciones:
+                secciones[-1].end_speed = actual_initial_speed
+
             # Update the cumulative time
             cumulative_time = seccion.end_time
+
+            # Append the section to the list
+            secciones.append(seccion)
         
         # Consolidate results
         velocities = []

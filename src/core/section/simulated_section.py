@@ -65,7 +65,7 @@ class SimulatedSection(BaseSection):
         """Handles the case where the speed must be reduced to zero by reducinng the
         initial speed while the calculated deceleration is greater than the maximum deceleration allowed."""
         self._end_speed = 0
-        decel = (-self._start_speed**2) / (2 * dist)
+        decel = self._calculate_instant_acceleration(self._start_speed, self._end_speed, dist)
         while abs(decel) > abs(effective_max_deceleration):
             if self._start_speed - step_size >= 0:
                 self._start_speed -= step_size
@@ -76,7 +76,7 @@ class SimulatedSection(BaseSection):
         """Handles the case where the speed must be reduced to a certain limit by reducing the
         initial speed while the calculated deceleration is greater than the maximum deceleration allowed."""
         self._end_speed = limit
-        decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+        decel = self._calculate_instant_acceleration(self._start_speed, self._end_speed, dist)
         while abs(decel) > abs(effective_max_deceleration):
             if self._end_speed - step_size >= 0:
                 self._end_speed -= step_size
@@ -90,7 +90,7 @@ class SimulatedSection(BaseSection):
         necessary amount if the calculated acceleration is under the maximum acceleration allowed. When
         not, the speed is reduced until the acceleration is under the maximum allowed."""
         self._end_speed = limit
-        accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
+        accel = self._calculate_instant_acceleration(self._start_speed, self._end_speed, dist)
         while abs(accel) > abs(effective_max_acceleration):
             if self._end_speed - step_size >= 0:
                 self._end_speed -= step_size
@@ -114,6 +114,10 @@ class SimulatedSection(BaseSection):
         # Return the final end speed, deceleration, and acceleration
         return self._end_speed, decel, accel
     
+    def _calculate_instant_acceleration(self, start_speed, end_speed, dist):
+        """Calculate the instantaneous acceleration for the section."""
+        return (end_speed**2 - start_speed**2) / (2 * dist)
+
     def _set_acceleration(self, decel, accel):
         """Set the acceleration based on the deceleration and acceleration values."""
         if accel is not None and decel is None:

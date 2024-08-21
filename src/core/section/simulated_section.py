@@ -43,15 +43,7 @@ class SimulatedSection(BaseSection):
         # Calculate end speed based on the speed limit and start speed
         self._end_speed, decel, accel = self._calculate_end_speed(limit, dist, effective_max_acceleration, effective_max_deceleration)
 
-        if accel is not None and decel is None:
-            # Set acceleration to the calculated value
-            self._acceleration = accel
-        elif decel is not None and accel is None:
-            # Set deceleration to the calculated value
-            self._acceleration = decel
-        else:
-            # No change in speed
-            self._acceleration = 0.0
+        self._acceleration = self._set_acceleration(decel, accel)
         
         # Calculate the time required to traverse the section
         self._end_time = self._calculate_time(decel, accel, dist)
@@ -121,6 +113,15 @@ class SimulatedSection(BaseSection):
 
         # Return the final end speed, deceleration, and acceleration
         return self._end_speed, decel, accel
+    
+    def _set_acceleration(self, decel, accel):
+        """Set the acceleration based on the deceleration and acceleration values."""
+        if accel is not None and decel is None:
+            return accel
+        elif decel is not None and accel is None:
+            return decel
+        else:
+            return 0.0
 
     def _calculate_time(self, decel, accel, dist):
         """Calculate the time required to traverse the section."""

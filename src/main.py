@@ -18,7 +18,7 @@ def main():
         mode="simulation",
     )
 
-    model.consumption_and_emissions()
+    # model.consumption_and_emissions()
     # model.plot_combined_profiles()
     # model.plot_map()
     # for sect in model.route.sections:

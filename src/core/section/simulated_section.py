@@ -94,8 +94,9 @@ class SimulatedSection(BaseSection):
         return decel, None
 
     def _accelerate(self, limit, dist, effective_max_acceleration, step_size=1.0):
-        """Handles the case where the speed must be increased to a certain limit by reducing the
-        initial speed while the calculated acceleration is greater than the maximum acceleration allowed."""
+        """Handles the case where the speed must be increased to a certain limit by accelerating the
+        necessary amount if the calculated acceleration is under the maximum acceleration allowed. When
+        not, the speed is reduced until the acceleration is under the maximum allowed."""
         self._end_speed = limit
         accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
         while abs(accel) > abs(effective_max_acceleration):

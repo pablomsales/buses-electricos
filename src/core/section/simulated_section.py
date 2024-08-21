@@ -69,7 +69,7 @@ class SimulatedSection(BaseSection):
         effective_max_deceleration = max_deceleration + (total_resistance / self.bus.mass)
         return effective_max_acceleration, effective_max_deceleration
 
-    MAX_ITERATIONS = 500  # Limit the number of iterations to avoid infinite loop
+    # MAX_ITERATIONS = 500  # Limit the number of iterations to avoid infinite loop
     STEP_SIZE = 1.0  # Step size for adjustment
 
     def _decelerate_to_stop(self, dist, effective_max_deceleration):
@@ -77,7 +77,7 @@ class SimulatedSection(BaseSection):
         self._end_speed = 0
         decel = (-self._start_speed**2) / (2 * dist)
         iterations = 0
-        while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
+        while abs(decel) > abs(effective_max_deceleration):# and iterations < self.MAX_ITERATIONS:
             if self._start_speed - self.STEP_SIZE >= 0:
                 self._start_speed -= self.STEP_SIZE
             decel = (-self._start_speed**2) / (2 * dist)
@@ -89,7 +89,7 @@ class SimulatedSection(BaseSection):
         self._end_speed = limit
         decel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
         iterations = 0
-        while abs(decel) > abs(effective_max_deceleration) and iterations < self.MAX_ITERATIONS:
+        while abs(decel) > abs(effective_max_deceleration):# and iterations < self.MAX_ITERATIONS:
             if self._end_speed - self.STEP_SIZE >= 0:
                 self._end_speed -= self.STEP_SIZE
             if self._start_speed - self.STEP_SIZE >= 0:
@@ -103,7 +103,7 @@ class SimulatedSection(BaseSection):
         self._end_speed = limit
         accel = (self._end_speed**2 - self._start_speed**2) / (2 * dist)
         iterations = 0
-        while abs(accel) > abs(effective_max_acceleration) and iterations < self.MAX_ITERATIONS:
+        while abs(accel) > abs(effective_max_acceleration):# and iterations < self.MAX_ITERATIONS:
             if self._end_speed - self.STEP_SIZE >= 0:
                 self._end_speed -= self.STEP_SIZE
             if self._start_speed - self.STEP_SIZE >= 0:

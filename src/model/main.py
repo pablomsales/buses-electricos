@@ -23,6 +23,7 @@ def main():
     )
 
     model.consumption_and_emissions()
+    model.plot_combined_profiles()
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

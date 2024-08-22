@@ -1,20 +1,24 @@
 import os
 from time import time
 
-from config import bus_instance, emissions_instance
+from config import Config
 from core.model import Model
 
 
 def main():
     start_time = time()
 
-    data = os.path.join("data", "linea_d2_algoritmo_simulation.csv")
+    name = "linea_d2_algoritmo_simulation"
+
+    data = os.path.join("data", f"{name}.csv")
+
+    config = Config(electric=True, euro_standard="EURO_6")
 
     model = Model(
-        name="linea_d2_algoritmo_simulation",
+        name=name,
         filepath=data,
-        bus=bus_instance,
-        emissions=emissions_instance,
+        bus=config.create_bus(),
+        emissions=config.create_emissions(),
         mode="simulation",
     )
 

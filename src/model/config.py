@@ -58,9 +58,9 @@ class Config:
 
         # Crear una instancia de Bus con el motor
         bus_instance = Bus(
-            mass=18000,
+            mass=20000,
             drag_coefficient=0.8,
-            frontal_area=13.0,
+            frontal_area=9.0,
             rolling_resistance_coefficient=0.01,
             engine=engine_instance,
         )

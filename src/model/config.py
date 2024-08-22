@@ -6,7 +6,7 @@ from core.bus.fuel import Fuel
 from core.route.emissions import Emissions
 
 class Config:
-    def __init__(self, electric=True, euro_standard="EURO_6"):
+    def __init__(self, electric, euro_standard="EURO_6"):
         """
         Class to create the configuration of the bus and emissions.
 

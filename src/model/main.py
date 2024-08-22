@@ -12,7 +12,7 @@ def main():
 
     data = os.path.join("data", f"{name}.csv")
 
-    config = Config(electric=True, euro_standard="EURO_6")
+    config = Config(electric=True)
 
     model = Model(
         name=name,

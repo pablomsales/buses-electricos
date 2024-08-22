@@ -197,9 +197,6 @@ class Battery:
             # Greater degradation for more negative currents during discharging
             return 1 + m * abs(electric_current)
 
-    # TODO: Ajustar este metodo porque estaba hecho pensando especificamente para
-    #       incremento de ciclos cuando se descargaba la bateria. Pensar/preguntar_a_Luciano
-    #       que hacer sino para marcar la degradación de la batería
     def _increase_completed_cycles(
         self,
         initial_soc_percent: float,

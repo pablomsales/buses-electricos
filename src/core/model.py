@@ -42,6 +42,7 @@ class Model:
             "start_speed",
             "end_speed",
             "Wh",
+            "Ah",
             "L/h",
             "L/km",
             "NOx",
@@ -49,12 +50,13 @@ class Model:
             "HC",
             "PM",
             "CO2",
+            "battery_degradation",
         ]
         rows = []
 
         for sect in self.route.sections:
-            emissions = [float(value) for value in sect.section_emissions.values()]
-            consumption = [float(value) for value in sect.consumption.values()]
+            sect_emissions = [float(value) for value in sect.section_emissions.values()]
+            sect_consumption = [float(value) for value in sect.consumption.values()]
 
             row = [
                 sect.start,
@@ -63,10 +65,13 @@ class Model:
                 sect.end_time,
                 sect.start_speed,
                 sect.end_speed,
-                *consumption,
-                *emissions,
+                *sect_consumption,
+                *sect_emissions,
+                sect.get_battery_degradation_in_section(),
             ]
             rows.append(row)
+
+            print(sect)
 
         # Write to CSV file
         with open(filename, "w", newline="") as f:

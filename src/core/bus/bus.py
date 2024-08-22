@@ -1,4 +1,4 @@
-from core.bus.engine import Engine
+from core.bus.engine.base_engine import BaseEngine
 
 
 class Bus:
@@ -18,7 +18,7 @@ class Bus:
         self._drag_coefficient = drag_coefficient
         self._frontal_area = frontal_area
         self._rolling_resistance_coefficient = rolling_resistance_coefficient
-        self._engine = engine
+        self.engine = engine  # Use the setter for validation
 
     @property
     def mass(self):
@@ -77,8 +77,22 @@ class Bus:
 
     @engine.setter
     def engine(self, value):
-        if isinstance(value, Engine):
+        if isinstance(value, BaseEngine):
             self._engine = value
+        else:
+            print(type(value))
+            raise ValueError(
+                "Engine must be an instance of BaseEngine or its subclasses"
+            )
+
+    def get_battery_state_of_charge(self):
+        return self.engine.get_battery_state_of_charge()
+
+    def get_battery_degradation_in_section(self):
+        return self.engine.get_battery_degradation_in_section()
+
+    def get_battery_state_of_health(self):
+        return self.engine.get_battery_state_of_health()
 
     def __str__(self):
         return (

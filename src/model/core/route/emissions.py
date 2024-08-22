@@ -7,6 +7,15 @@ class Emissions:
     """
 
     def __init__(self, euro_standard):
+        """
+        Initialize an Emissions instance with the EURO standard.
+
+        Parameters
+        ----------
+        euro_standard : str
+            The EURO standard for emissions.
+        """
+        
         self._validate_euro_standard(euro_standard)
         self.euro_standard = euro_standard
         self.standards = euro_standards[euro_standard]

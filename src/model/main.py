@@ -18,13 +18,7 @@ def main():
         mode="simulation",
     )
 
-    # model.consumption_and_emissions()
-    # model.plot_combined_profiles()
-    # model.plot_map()
-    # for sect in model.route.sections:
-    #     print(sect)
-    #     print("-------------------")
-    #     print(sect._calculate_effective_forces())
+    model.consumption_and_emissions()
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

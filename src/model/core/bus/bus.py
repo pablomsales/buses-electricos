@@ -14,6 +14,22 @@ class Bus:
         rolling_resistance_coefficient,
         engine,
     ):
+        """
+        Initialize a Bus instance.
+
+        Parameters
+        ----------
+        mass : float
+            Mass of the bus in kg.
+        drag_coefficient : float
+            Drag coefficient of the bus.
+        frontal_area : float
+            Frontal area of the bus in m².
+        rolling_resistance_coefficient : float
+            Rolling resistance coefficient of the bus.
+        engine : BaseEngine
+            Engine object representing the bus engine.
+        """
         self._mass = mass
         self._drag_coefficient = drag_coefficient
         self._frontal_area = frontal_area

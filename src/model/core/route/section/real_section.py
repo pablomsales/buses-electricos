@@ -1,4 +1,4 @@
-from core.section.base_section import BaseSection
+from core.route.section.base_section import BaseSection
 
 
 class RealSection(BaseSection):

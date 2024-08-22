@@ -2,7 +2,7 @@ import math
 
 from geopy.distance import geodesic
 
-from core.resistance_calculator import ResistanceCalculator
+from core.route.resistance_calculator import ResistanceCalculator
 
 
 class BaseSection:

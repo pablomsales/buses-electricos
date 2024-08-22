@@ -4,10 +4,18 @@ from core.bus.fuel import Fuel
 
 class FuelEngine(BaseEngine):
     """
-    Represents a combustion engine
+    Represents a combustion engine.
     """
 
     def __init__(self, max_power, efficiency, fuel):
+        """
+        Initialize a FuelEngine with the maximum power, efficiency, and fuel.
+
+        Args:
+            max_power (float): The maximum power output of the engine in Watts.
+            efficiency (float): The efficiency of the engine (0 to 1).
+            fuel (Fuel): The fuel used by the engine.
+        """
         super().__init__(max_power, efficiency)
         if not isinstance(fuel, Fuel):
             raise ValueError("fuel must be an instance of Fuel")

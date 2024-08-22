@@ -4,7 +4,20 @@ from utils.constants import AIR_DENSITY, GRAVITY
 
 
 class ResistanceCalculator:
+    """
+    Calculate the resistances of a section of a route.
+    """
+
     def __init__(self, bus, average_speed, acceleration, grade_angle):
+        """
+        Initialize a ResistanceCalculator with a bus, average speed, acceleration, and grade angle.
+
+        Args:
+            bus: Instance of the Bus class.
+            average_speed (float): Average speed of the section in m/s.
+            acceleration (float): Acceleration of the bus in m/s².
+            grade_angle (float): Grade angle of the section in degrees.
+        """
         self.bus = bus
         self.average_speed = average_speed
         self.acceleration = acceleration

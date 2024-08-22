@@ -1,5 +1,7 @@
 class Battery:
-    """Class representing the battery of an electric vehicle"""
+    """
+    Class representing the battery of an electric vehicle.
+    """
 
     def __init__(
         self,

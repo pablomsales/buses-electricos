@@ -1,6 +1,8 @@
 AIR_DENSITY = 1.225
 CO2_CONVERSION_FACTOR = 2.64
 GRAVITY = 9.81
+MAX_ACCELERATION = 1.5  # m/s^2
+MAX_DECELERATION = -1.0  # m/s^2, note this is negative
 
 fuels_lhv = {
     "gasoline": 3.1536e7,  # J/L

@@ -7,6 +7,16 @@ class Fuel:
     """
 
     def __init__(self, fuel_type, lhv=None):
+        """
+        Initialize a Fuel instance.
+
+        Parameters
+        ----------
+        fuel_type : str
+            The type of fuel.
+        lhv : float, optional
+            The Lower Heating Value of the fuel in J/L.
+        """
         self._fuel_type = fuel_type
         if fuel_type in fuels_lhv:
             self._lhv = fuels_lhv[fuel_type]

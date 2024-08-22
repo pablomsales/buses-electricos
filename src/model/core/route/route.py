@@ -4,8 +4,8 @@ import folium
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from core.section.simulated_section import SimulatedSection
-from core.section.real_section import RealSection
+from core.route.section.simulated_section import SimulatedSection
+from core.route.section.real_section import RealSection
 
 
 class Route:

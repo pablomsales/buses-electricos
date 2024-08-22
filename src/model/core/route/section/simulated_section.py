@@ -1,9 +1,11 @@
-from core.section.base_section import BaseSection
-
-max_acceleration = 1.5  # m/s^2
-max_deceleration = -1.0  # m/s^2, note this is negative
+from core.route.section.base_section import BaseSection
+from utils.constants import MAX_ACCELERATION, MAX_DECELERATION
 
 class SimulatedSection(BaseSection):
+    """
+    Represents a section of a route that has been simulated.
+    """
+    
     def __init__(self, coordinates, speed_limit, start_speed, start_time, bus, emissions):
         """
         Initialize a SimulatedSection with coordinates, bus, emissions, a single speed limit, 
@@ -57,8 +59,8 @@ class SimulatedSection(BaseSection):
     def _calculate_effective_forces(self):
         """Calculate effective acceleration and deceleration based on the total resistance."""
         total_resistance = self.total_resistance  # N
-        effective_max_acceleration = max_acceleration - (total_resistance / self.bus.mass)
-        effective_max_deceleration = max_deceleration + (total_resistance / self.bus.mass)
+        effective_max_acceleration = MAX_ACCELERATION - (total_resistance / self.bus.mass)
+        effective_max_deceleration = MAX_DECELERATION + (total_resistance / self.bus.mass)
         return effective_max_acceleration, effective_max_deceleration
 
     def _decelerate_to_stop(self, dist, effective_max_deceleration, step_size=1.0):

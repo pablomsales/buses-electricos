@@ -3,12 +3,14 @@ import os
 
 import pandas as pd
 
-from core.route import Route
+from core.route.route import Route
 
 
 class Model:
     def __init__(self, name: str, filepath: str, bus, emissions, mode: str):
-        """¡
+        """
+        Initialize a Model instance.
+        
         Args:
             name (str): The name of the model.
             filepath (str): Path to the input data CSV file.
@@ -70,8 +72,6 @@ class Model:
                 sect.get_battery_degradation_in_section(),
             ]
             rows.append(row)
-
-            print(sect)
 
         # Write to CSV file
         with open(filename, "w", newline="") as f:

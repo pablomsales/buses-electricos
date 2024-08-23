@@ -3,9 +3,8 @@ import os
 import folium
 import matplotlib.pyplot as plt
 import pandas as pd
-
-from core.route.section.simulated_section import SimulatedSection
 from core.route.section.real_section import RealSection
+from core.route.section.simulated_section import SimulatedSection
 
 
 class Route:
@@ -117,23 +116,24 @@ class Route:
             coordinates = (start_coord, end_coord)
 
             limit = int(end_section["speed_limit"])
-            
+
             # Set the start time for the section
             start_time = cumulative_time
-            
+
             # Assign the initial speed for the first section
             initial_speed = next_initial_speed
 
             # Create a SimulatedSection instance
             seccion = SimulatedSection(
-                coordinates, limit, initial_speed, start_time, self.bus, self.emissions)
-            
+                coordinates, limit, initial_speed, start_time, self.bus, self.emissions
+            )
+
             # Update the initial speed for the next section
             next_initial_speed = seccion.end_speed
 
             # Actual initial speed for the next section
             actual_initial_speed = seccion.start_speed
-            
+
             # Update the end speed for the actual section
             if secciones:
                 secciones[-1].end_speed = actual_initial_speed
@@ -143,12 +143,12 @@ class Route:
 
             # Append the section to the list
             secciones.append(seccion)
-        
+
         # Consolidate results
         velocities = []
         start_times = []
         end_times = []
-        
+
         for seccion in secciones:
             velocities.extend(seccion.velocities)
             start_times.append(seccion.start_time)
@@ -156,7 +156,7 @@ class Route:
 
         # Return consolidated results along with the section start and end times
         return secciones
-    
+
     def plot_altitude_profile(self, output_dir: str):
         """
         Plots the altitude profile of the route based on distance.
@@ -367,7 +367,7 @@ class Route:
             speeds.extend([start_speed, end_speed])
 
             # Acceleration
-            acceleration = section.acceleration
+            acceleration = section._acceleration
             accelerations.extend([acceleration, acceleration])
             markers_acceleration.extend([acceleration, acceleration])
 

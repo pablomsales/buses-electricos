@@ -5,6 +5,7 @@ from core.bus.engine.fuel_engine import FuelEngine
 from core.bus.fuel import Fuel
 from core.route.emissions import Emissions
 
+
 class Config:
     def __init__(self, electric, euro_standard="EURO_6"):
         """
@@ -77,5 +78,8 @@ class Config:
             The emissions instance created
         """
         # Crear una instancia de Emissions con el estándar EURO deseado
-        emissions_instance = Emissions(euro_standard=self.euro_standard)
+        emissions_instance = Emissions(
+            euro_standard=self.euro_standard,
+            electric=self.electric,
+        )
         return emissions_instance

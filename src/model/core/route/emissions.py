@@ -6,7 +6,7 @@ class Emissions:
     Class to calculate emissions based on the EURO standard.
     """
 
-    def __init__(self, euro_standard):
+    def __init__(self, euro_standard: str, electric: bool):
         """
         Initialize an Emissions instance with the EURO standard.
 
@@ -15,10 +15,11 @@ class Emissions:
         euro_standard : str
             The EURO standard for emissions.
         """
-        
+
         self._validate_euro_standard(euro_standard)
         self.euro_standard = euro_standard
         self.standards = euro_standards[euro_standard]
+        self._electric = electric
 
     @staticmethod
     def _validate_euro_standard(euro_standard):
@@ -44,6 +45,15 @@ class Emissions:
         """
         Calculate emissions for NOx, CO, HC, and PM based on the given power in kW.
         """
+
+        # si la potencia del motor es negativa, la ponemos a 0
+        # para que las emisiones sean 0
+        if power_kw < 0:
+            power_kw = 0 if self._electric else 0
+        # NOTE: En motor de combustion hay que poner una constante
+        # porque el motor esta en ralenti. De momento esta a 0
+        # por simplicidad
+
         return {
             pollutant: value * power_kw / 3600  # converting g/kWh to g/s
             for pollutant, value in self.standards.items()

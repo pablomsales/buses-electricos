@@ -46,13 +46,15 @@ class Emissions:
         Calculate emissions for NOx, CO, HC, and PM based on the given power in kW.
         """
 
-        # si la potencia del motor es negativa, la ponemos a 0
-        # para que las emisiones sean 0
+        # Si la potencia del motor es negativa, la ajustamos para evitar valores inválidos.
         if power_kw < 0:
-            power_kw = 0 if self._electric else 0
-        # NOTE: En motor de combustion hay que poner una constante
-        # porque el motor esta en ralenti. De momento esta a 0
-        # por simplicidad
+            if self._electric:
+                power_kw = 0
+            else:
+                # NOTE: Para motores de combustión interna, se puede considerar una constante
+                # para representar el motor en ralentí. Por simplicidad, la ajustamos a 0.
+                # En el futuro, se debe modificar este valor para reflejar mejor el ralenti.
+                power_kw = 0
 
         return {
             pollutant: value * power_kw / 3600  # converting g/kWh to g/s

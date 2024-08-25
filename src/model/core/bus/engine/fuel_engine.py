@@ -60,8 +60,8 @@ class FuelEngine(BaseEngine):
         litres = energy / lhv
 
         consumption = {
-            "Wh": 0,  # always 0 for combustion engines
-            "Ah": 0,  # ""    ""  ""  ""          ""
+            # "Wh": 0,  # always 0 for combustion engines
+            # "Ah": 0,  # ""    ""  ""  ""          ""
             "L/h": litres / (time / 3600),  # Convert time from seconds to hours
             "L/km": litres / km,
         }

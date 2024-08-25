@@ -47,8 +47,6 @@ class Model:
                 "end_speed",
                 "Wh",
                 "Ah",
-                "L/h",
-                "L/km",
                 "NOx",
                 "CO",
                 "HC",

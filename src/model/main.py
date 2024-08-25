@@ -8,18 +8,18 @@ from core.model import Model
 def main():
     start_time = time()
 
-    name = "linea_d2_simulation_electric"
+    name = "linea_d2_simulation_combustion"
 
     data = os.path.join("data", "linea_d2_simulation.csv")
 
-    config = Config(electric=True)
+    config = Config(electric=False)
 
     model = Model(
         name=name,
         filepath=data,
         bus=config.create_bus(),
         emissions=config.create_emissions(),
-        mode="simulation",
+        mode="simulation"
     )
 
     model.consumption_and_emissions()

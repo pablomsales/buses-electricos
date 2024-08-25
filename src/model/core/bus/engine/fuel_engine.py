@@ -21,7 +21,7 @@ class FuelEngine(BaseEngine):
             raise ValueError("fuel must be an instance of Fuel")
         self._fuel = fuel
         self.electric = False
-        
+
     @property
     def fuel(self):
         """
@@ -51,6 +51,15 @@ class FuelEngine(BaseEngine):
                 - "L/h": Liters of fuel consumed per hour.
                 - "L/km": Liters of fuel consumed per kilometer (if distance provided).
         """
+
+        # If power is negative, consumption is zero.
+        # NOTE: quizá no sea 0 y sea una constante
+        if power < 0:
+            return {
+                "L/h": 0.0,
+                "L/km": 0.0 if km is not None else None,
+            }
+
         power = self._adjust_power(power)
         lhv = self.fuel.lhv  # Lower Heating Value of the fuel
 
@@ -60,10 +69,8 @@ class FuelEngine(BaseEngine):
         litres = energy / lhv
 
         consumption = {
-            # "Wh": 0,  # always 0 for combustion engines
-            # "Ah": 0,  # ""    ""  ""  ""          ""
             "L/h": litres / (time / 3600),  # Convert time from seconds to hours
-            "L/km": litres / km,
+            "L/km": litres / km if km is not None else None,
         }
 
         return consumption

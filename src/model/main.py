@@ -8,11 +8,11 @@ from core.model import Model
 def main():
     start_time = time()
 
-    name = "linea_d2_simulation_combustion"
+    name = "linea_d2_simulation_electric"
 
     data = os.path.join("data", "linea_d2_simulation.csv")
 
-    config = Config(electric=False)
+    config = Config(electric=True)
 
     model = Model(
         name=name,

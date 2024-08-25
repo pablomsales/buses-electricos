@@ -20,7 +20,8 @@ class FuelEngine(BaseEngine):
         if not isinstance(fuel, Fuel):
             raise ValueError("fuel must be an instance of Fuel")
         self._fuel = fuel
-
+        self.electric = False
+        
     @property
     def fuel(self):
         """

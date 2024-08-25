@@ -25,6 +25,7 @@ class Model:
 
         self._mode = mode
         self._data = self._load_data(filepath, mode)
+        self._bus = bus
         self.route = Route(
             data=self._data, bus=bus, emissions=emissions, mode=self._mode
         )
@@ -35,43 +36,79 @@ class Model:
         """
         filename = os.path.join(self._output_dir, "output.csv")
 
-        # Prepare header and data rows
-        header = [
-            "start",
-            "end",
-            "start_time",
-            "end_time",
-            "start_speed",
-            "end_speed",
-            "Wh",
-            "Ah",
-            "L/h",
-            "L/km",
-            "NOx",
-            "CO",
-            "HC",
-            "PM",
-            "CO2",
-            "battery_degradation",
-        ]
-        rows = []
-
-        for sect in self.route.sections:
-            sect_emissions = [float(value) for value in sect.section_emissions.values()]
-            sect_consumption = [float(value) for value in sect.consumption.values()]
-
-            row = [
-                sect.start,
-                sect.end,
-                sect.start_time,
-                sect.end_time,
-                sect.start_speed,
-                sect.end_speed,
-                *sect_consumption,
-                *sect_emissions,
-                sect.get_battery_degradation_in_section(),
+        if self._bus.engine.electric:
+            # Prepare header and data rows for the electric engine
+            header = [
+                "start",
+                "end",
+                "start_time",
+                "end_time",
+                "start_speed",
+                "end_speed",
+                "Wh",
+                "Ah",
+                "L/h",
+                "L/km",
+                "NOx",
+                "CO",
+                "HC",
+                "PM",
+                "CO2",
+                "battery_degradation",
             ]
-            rows.append(row)
+            rows = []
+
+            for sect in self.route.sections:
+                sect_emissions = [float(value) for value in sect.section_emissions.values()]
+                sect_consumption = [float(value) for value in sect.consumption.values()]
+
+                row = [
+                    sect.start,
+                    sect.end,
+                    sect.start_time,
+                    sect.end_time,
+                    sect.start_speed,
+                    sect.end_speed,
+                    *sect_consumption,
+                    *sect_emissions,
+                    sect.get_battery_degradation_in_section(),
+                ]
+                rows.append(row)
+        
+        else:
+            # Prepare header and data rows for the combustion engine
+            header = [
+                "start",
+                "end",
+                "start_time",
+                "end_time",
+                "start_speed",
+                "end_speed",
+                "L/h",
+                "L/km",
+                "NOx",
+                "CO",
+                "HC",
+                "PM",
+                "CO2",
+            ]
+            rows = []
+
+            for sect in self.route.sections:
+                sect_emissions = [float(value) for value in sect.section_emissions.values()]
+                sect_consumption = [float(value) for value in sect.consumption.values()]
+
+                row = [
+                    sect.start,
+                    sect.end,
+                    sect.start_time,
+                    sect.end_time,
+                    sect.start_speed,
+                    sect.end_speed,
+                    *sect_consumption,
+                    *sect_emissions,
+                ]
+                rows.append(row)
 
         # Write to CSV file
         with open(filename, "w", newline="") as f:

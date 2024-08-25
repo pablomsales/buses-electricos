@@ -9,6 +9,7 @@ class ElectricalEngine(BaseEngine):
     def __init__(self, max_power, efficiency, battery):
         super().__init__(max_power, efficiency)
         self.battery = battery
+        self.electric = True
 
     @property
     def battery_state_of_health(self):

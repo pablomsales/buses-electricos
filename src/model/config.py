@@ -31,33 +31,71 @@ class Config:
             The bus instance created
         """
         if self.electric:
-            # Crear instancia de Battery
-            battery_instance = Battery(
-                initial_capacity_ah=1225,
-                voltage_v=400,
-                max_cycles=3000,
-                initial_soc_percent=100,
-                min_state_of_health=80,
-            )
-
-            engine_instance = ElectricalEngine(
-                max_power=240,
-                efficiency=92,
-                battery=battery_instance,
-            )
+            # Create an electric bus instance
+            bus_instance = self._create_electric_bus()
 
         else:
-            # Crear una instancia de Fuel
-            fuel_instance = Fuel(fuel_type="diesel")
+            # Create a fuel bus instance
+            bus_instance = self._create_fuel_bus()
 
-            # Crear una instancia de Engine con el fuel
-            engine_instance = FuelEngine(
-                fuel=fuel_instance,
-                max_power=200,  # kW
-                efficiency=0.35,  # 0 a 1
-            )
+        return bus_instance
+    
+    def _create_electric_bus(self):
+        """
+        Create an electric bus instance with the battery and electrical engine selected.
 
-        # Crear una instancia de Bus con el motor
+        Returns
+        -------
+        Bus
+            The bus instance created
+        """
+        # Create a battery instance
+        battery_instance = Battery(
+            initial_capacity_ah=1225,
+            voltage_v=400,
+            max_cycles=3000,
+            initial_soc_percent=100,
+            min_state_of_health=80,
+        )
+
+        # Create an electrical engine instance
+        engine_instance = ElectricalEngine(
+            max_power=240,
+            efficiency=92,
+            battery=battery_instance,
+        )
+
+        # Create a bus instance
+        bus_instance = Bus(
+            mass=20000,
+            drag_coefficient=0.8,
+            frontal_area=9.0,
+            rolling_resistance_coefficient=0.01,
+            engine=engine_instance,
+        )
+
+        return bus_instance
+    
+    def _create_fuel_bus(self):
+        """
+        Create a fuel bus instance with the fuel engine selected.
+
+        Returns
+        -------
+        Bus
+            The bus instance created
+        """
+        # Create a fuel instance
+        fuel_instance = Fuel(fuel_type="diesel")
+
+        # Create a fuel engine instance
+        engine_instance = FuelEngine(
+            fuel=fuel_instance,
+            max_power=200,  # kW
+            efficiency=0.35,  # 0 a 1
+        )
+
+        # Create a bus instance
         bus_instance = Bus(
             mass=20000,
             drag_coefficient=0.8,

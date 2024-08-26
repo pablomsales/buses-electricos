@@ -53,24 +53,24 @@ class Config:
         battery_instance = Battery(
             initial_capacity_ah=1225,
             voltage_v=400,
-            max_cycles=3000,
-            initial_soc_percent=100,
-            min_state_of_health=80,
+            max_cycles=3000, # PREGUNTAR A LUCIANO SI ES ESTÁTICO O SI PUEDE GENERAR BENEFICIOS POR COSTE
+            initial_soc_percent=100, # parametro estatico para datathon
+            min_state_of_health=80, # parametro estatico para datathon
         )
 
         # Create an electrical engine instance
         engine_instance = ElectricalEngine(
             max_power=240,
-            efficiency=92,
+            efficiency=92, # parametro estatico para datathon
             battery=battery_instance,
         )
 
         # Create a bus instance
         bus_instance = Bus(
             mass=20000,
-            drag_coefficient=0.8,
-            frontal_area=9.0,
-            rolling_resistance_coefficient=0.01,
+            drag_coefficient=0.8, # parametro estatico para datathon
+            frontal_area=9.0, # parametro estatico para datathon
+            rolling_resistance_coefficient=0.01, # parametro estatico para datathon
             engine=engine_instance,
         )
 

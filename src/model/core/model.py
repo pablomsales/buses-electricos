@@ -2,7 +2,6 @@ import csv
 import os
 
 import pandas as pd
-
 from core.route.route import Route
 
 
@@ -10,7 +9,7 @@ class Model:
     def __init__(self, name: str, filepath: str, bus, emissions, mode: str):
         """
         Initialize a Model instance.
-        
+
         Args:
             name (str): The name of the model.
             filepath (str): Path to the input data CSV file.
@@ -36,8 +35,8 @@ class Model:
         """
         filename = os.path.join(self._output_dir, "output.csv")
 
+        # Define headers based on engine type
         if self._bus.engine.electric:
-            # Prepare header and data rows for the electric engine
             header = [
                 "start",
                 "end",
@@ -54,27 +53,7 @@ class Model:
                 "CO2",
                 "battery_degradation",
             ]
-            rows = []
-
-            for sect in self.route.sections:
-                sect_emissions = [float(value) for value in sect.section_emissions.values()]
-                sect_consumption = [float(value) for value in sect.consumption.values()]
-
-                row = [
-                    sect.start,
-                    sect.end,
-                    sect.start_time,
-                    sect.end_time,
-                    sect.start_speed,
-                    sect.end_speed,
-                    *sect_consumption,
-                    *sect_emissions,
-                    sect.get_battery_degradation_in_section(),
-                ]
-                rows.append(row)
-        
         else:
-            # Prepare header and data rows for the combustion engine
             header = [
                 "start",
                 "end",
@@ -90,23 +69,28 @@ class Model:
                 "PM",
                 "CO2",
             ]
-            rows = []
 
-            for sect in self.route.sections:
-                sect_emissions = [float(value) for value in sect.section_emissions.values()]
-                sect_consumption = [float(value) for value in sect.consumption.values()]
+        rows = []
 
-                row = [
-                    sect.start,
-                    sect.end,
-                    sect.start_time,
-                    sect.end_time,
-                    sect.start_speed,
-                    sect.end_speed,
-                    *sect_consumption,
-                    *sect_emissions,
-                ]
-                rows.append(row)
+        for sect in self.route.sections:
+            sect_emissions = [float(value) for value in sect.section_emissions.values()]
+            sect_consumption = [float(value) for value in sect.consumption.values()]
+
+            row = [
+                sect.start,
+                sect.end,
+                sect.start_time,
+                sect.end_time,
+                sect.start_speed,
+                sect.end_speed,
+                *sect_consumption,
+                *sect_emissions,
+            ]
+
+            if self._bus.engine.electric:
+                row.append(sect.get_battery_degradation_in_section())
+
+            rows.append(row)
 
         # Write to CSV file
         with open(filename, "w", newline="") as f:
@@ -173,14 +157,14 @@ class Model:
     def _process_simulation_data(df: pd.DataFrame) -> pd.DataFrame:
         """
         Process data to work in simulation mode, e.g., setting up speed limits and other parameters.
-        
+
         Returns:
         --------
         pd.DataFrame: Processed data as a DataFrame ready for simulation.
         """
         # Suponiendo que las columnas relevantes están presentes en el archivo CSV
         df.columns = ["latitude", "longitude", "altitude", "speed_limit"]
-        
+
         return df
 
     def _create_output_dir(self, dir_name):

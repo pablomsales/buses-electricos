@@ -1,0 +1,7 @@
+BUS TYPE: fuel
+
+Description: "Breve descripcion de este fichero, datos separados por tabulaciones, etc."
+==========================================================================================
+
+FORMAT: min_value   max_value
+MASS:   xxxx    xxxx

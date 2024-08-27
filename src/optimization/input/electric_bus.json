@@ -1,26 +1,31 @@
 {
-    "description": "Breve descripcion de este fichero.",
+    "description": "Parámetros de entrada para definir el espacio de búsqueda del problema de optimización de los autobuses eléctricos.",
     "parameters": {
         "bus_mass": {
-            "min_value": "xxxx",
-            "max_value": "xxxx"
+            "min_value": 10000,
+            "max_value": 20000,
+            "unit": "kg"
         },
         "engine_power": {
-            "min_value": "xxxx",
-            "max_value": "xxxx"
+            "min_value": 180000,
+            "max_value": 300000,
+            "unit": "Watts"
         },
         "battery": {
             "capacity": {
-                "min_value": "xxxx",
-                "max_value": "xxxx"
+                "min_value": 500,
+                "max_value": 2000,
+                "unit": "Ampers-hour"
             },
             "mass": {
-                "min_value": "xxxx",
-                "max_value": "xxxx"
+                "min_value": 500,
+                "max_value": 3000,
+                "unit": "kg"
             },
             "time_between_charges": {
-                "min_value": "xxxx",
-                "max_value": "xxxx"
+                "min_value": 60,
+                "max_value": 1440,
+                "unit": "minutes"
             }
         }
     }

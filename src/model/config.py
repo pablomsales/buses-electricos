@@ -53,7 +53,7 @@ class Config:
         battery_instance = Battery(
             initial_capacity_ah=1225,
             voltage_v=400,
-            max_cycles=3000, # PREGUNTAR A LUCIANO SI ES ESTÁTICO O SI PUEDE GENERAR BENEFICIOS POR COSTE
+            max_cycles=3000, # parametro estatico para datathon
             initial_soc_percent=100, # parametro estatico para datathon
             min_state_of_health=80, # parametro estatico para datathon
         )

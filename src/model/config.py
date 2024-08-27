@@ -39,7 +39,7 @@ class Config:
             bus_instance = self._create_fuel_bus()
 
         return bus_instance
-    
+
     def _create_electric_bus(self):
         """
         Create an electric bus instance with the battery and electrical engine selected.
@@ -53,29 +53,29 @@ class Config:
         battery_instance = Battery(
             initial_capacity_ah=1225,
             voltage_v=400,
-            max_cycles=3000, # parametro estatico para datathon
-            initial_soc_percent=100, # parametro estatico para datathon
-            min_state_of_health=80, # parametro estatico para datathon
+            max_cycles=3000,  # parametro estatico para datathon
+            initial_soc_percent=100,  # parametro estatico para datathon
+            min_state_of_health=80,  # parametro estatico para datathon
         )
 
         # Create an electrical engine instance
         engine_instance = ElectricalEngine(
-            max_power=240,
-            efficiency=92, # parametro estatico para datathon
+            max_power=250000,
+            efficiency=92,  # parametro estatico para datathon
             battery=battery_instance,
         )
 
         # Create a bus instance
         bus_instance = Bus(
             mass=20000,
-            drag_coefficient=0.8, # parametro estatico para datathon
-            frontal_area=9.0, # parametro estatico para datathon
-            rolling_resistance_coefficient=0.01, # parametro estatico para datathon
+            drag_coefficient=0.8,  # parametro estatico para datathon
+            frontal_area=9.0,  # parametro estatico para datathon
+            rolling_resistance_coefficient=0.01,  # parametro estatico para datathon
             engine=engine_instance,
         )
 
         return bus_instance
-    
+
     def _create_fuel_bus(self):
         """
         Create a fuel bus instance with the fuel engine selected.
@@ -91,7 +91,7 @@ class Config:
         # Create a fuel engine instance
         engine_instance = FuelEngine(
             fuel=fuel_instance,
-            max_power=200,  # kW
+            max_power=200000,
             efficiency=0.35,  # 0 a 1
         )
 

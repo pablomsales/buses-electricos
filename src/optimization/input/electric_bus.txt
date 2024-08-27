@@ -1,8 +1,0 @@
-BUS TYPE: electric
-
-Description: "Breve descripcion de este fichero, datos separados por tabulaciones, etc."
-==========================================================================================
-
-FORMAT: min_value   max_value
-MASS:   xxxx    xxxx
-BATTERY CAPACITY:   xxxx    xxxx

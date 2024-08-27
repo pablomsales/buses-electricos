@@ -1,0 +1,27 @@
+{
+    "description": "Breve descripcion de este fichero.",
+    "parameters": {
+        "bus_mass": {
+            "min_value": "xxxx",
+            "max_value": "xxxx"
+        },
+        "engine_power": {
+            "min_value": "xxxx",
+            "max_value": "xxxx"
+        },
+        "battery": {
+            "capacity": {
+                "min_value": "xxxx",
+                "max_value": "xxxx"
+            },
+            "mass": {
+                "min_value": "xxxx",
+                "max_value": "xxxx"
+            },
+            "time_between_charges": {
+                "min_value": "xxxx",
+                "max_value": "xxxx"
+            }
+        }
+    }
+}

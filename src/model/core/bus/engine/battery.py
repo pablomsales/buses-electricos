@@ -113,7 +113,12 @@ class Battery:
 
     def _check_drained_battery(self, soc_percent: float) -> None:
         if soc_percent == 0:
-            print("DRAINED_BATTERY!!")
+            raise RuntimeError(
+                "The battery is completely drained. "
+                "Handle this exception according to the needs of the optimization module. "
+                "For instance, if you're using a loop, consider handling this exception to skip the iteration "
+                "without halting the execution of the program."
+            )
 
     def _calculate_current(self, ah_transferred: float, time_seconds: float) -> float:
         """

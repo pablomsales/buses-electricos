@@ -5,7 +5,7 @@ class BaseEngine:
 
     def __init__(self, max_power, efficiency):
         self._max_power = max_power  # in Watts
-        self._efficiency = efficiency  # in range [0, 1]
+        self.efficiency = efficiency  # in range [0, 1]
 
     @property
     def max_power(self):
@@ -30,6 +30,8 @@ class BaseEngine:
     def efficiency(self, value):
         if 0 < value <= 1:
             self._efficiency = value
+        else:
+            raise ValueError("Efficiency should be in the range (0, 1]")
 
     def _adjust_power(self, power):
         """

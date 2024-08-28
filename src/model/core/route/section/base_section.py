@@ -171,23 +171,44 @@ class BaseSection:
             [f"{k}: {v:.6f} g/s" for k, v in self.section_emissions.items()]
         )
 
-        return (
-            f"\n---------------------------------------------------"
-            f"\nSection from {self.start[0]} º, {self.start[1]} º, {round(self.start[2], 2)} m "
-            f"to\n{' ' * (len('Section from ')-1)} {self.end[0]} º, {self.end[1]} º, {round(self.end[2], 2)} m"
-            f"\n---------------------------------------------------"
-            f"\nSpeeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s, "
-            f"\nAir Resistance: {self.air_resistance:.2f} N, "
-            f"\nInertia: {self.inertia:.2f} N, "
-            f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
-            f"\nRolling Resistance: {self.rolling_resistance:.2f} N, "
-            f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
-            f"\nWork: {self.work:.2f} J"
-            f"\nRequired Power: {self.instant_power:.2f} W"
-            f"\nConsumption: {self.consumption}"
-            f"\n\nEmissions:\n{emissions_str}"
-            f"\n\nBattery SoC: {self.get_battery_state_of_charge()}"
-            f"\nBattery degradation:{self.get_battery_degradation_in_section()}"
-            f"\nBattery DoD (Health): {self.get_battery_state_of_health()}"
-            f"\n"
-        )
+        if self.bus.engine.electric:
+
+            return (
+                f"\n---------------------------------------------------"
+                f"\nSection from {self.start[0]} º, {self.start[1]} º, {round(self.start[2], 2)} m "
+                f"to\n{' ' * (len('Section from ')-1)} {self.end[0]} º, {self.end[1]} º, {round(self.end[2], 2)} m"
+                f"\n---------------------------------------------------"
+                f"\nSpeeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s, "
+                f"\nAir Resistance: {self.air_resistance:.2f} N, "
+                f"\nInertia: {self.inertia:.2f} N, "
+                f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
+                f"\nRolling Resistance: {self.rolling_resistance:.2f} N, "
+                f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
+                f"\nWork: {self.work:.2f} J"
+                f"\nRequired Power: {self.instant_power:.2f} W"
+                f"\nConsumption: {self.consumption}"
+                f"\n\nEmissions:\n{emissions_str}"
+                f"\n\nBattery SoC: {self.get_battery_state_of_charge()}"
+                f"\nBattery degradation:{self.get_battery_degradation_in_section()}"
+                f"\nBattery DoD (Health): {self.get_battery_state_of_health()}"
+                f"\n"
+            )
+        
+        else:
+            return (
+                f"\n---------------------------------------------------"
+                f"\nSection from {self.start[0]} º, {self.start[1]} º, {round(self.start[2], 2)} m "
+                f"to\n{' ' * (len('Section from ')-1)} {self.end[0]} º, {self.end[1]} º, {round(self.end[2], 2)} m"
+                f"\n---------------------------------------------------"
+                f"\nSpeeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s, "
+                f"\nAir Resistance: {self.air_resistance:.2f} N, "
+                f"\nInertia: {self.inertia:.2f} N, "
+                f"\nGrade Resistance: {self.grade_resistance:.2f} N, "
+                f"\nRolling Resistance: {self.rolling_resistance:.2f} N, "
+                f"\nTotal Resistance: {self.total_resistance:.2f} N\n"
+                f"\nWork: {self.work:.2f} J"
+                f"\nRequired Power: {self.instant_power:.2f} W"
+                f"\nConsumption: {self.consumption}"
+                f"\n\nEmissions:\n{emissions_str}"
+                f"\n"
+            )

@@ -26,6 +26,7 @@ class Route:
         self.bus = bus
         self.emissions = emissions
         self.sections = self._create_sections(data)
+        self.charging_points = ...
 
     def _create_sections(self, df: pd.DataFrame) -> list:
         """
@@ -156,6 +157,9 @@ class Route:
 
         # Return consolidated results along with the section start and end times
         return secciones
+    
+    def _create_charging_points(self, df: pd.DataFrame) -> list:
+        pass
 
     def plot_altitude_profile(self, output_dir: str):
         """

@@ -12,7 +12,7 @@ def main():
 
     data = os.path.join("data", "linea_d2_simulation.csv")
 
-    config = Config(electric=True)
+    config = Config(electric=False)
 
     model = Model(
         name=name,

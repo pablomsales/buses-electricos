@@ -2,7 +2,7 @@ class ChargingPoint:
     """
     Class to represent a charging point.
     """
-    def __init__(self, id, route, coordinates, max_power, distance, time):
+    def __init__(self, id, bus, coordinates, max_power, distance, time):
         """
         Initialize a ChargingPoint instance.
 
@@ -10,8 +10,8 @@ class ChargingPoint:
         ----------
         id : int
             Unique identifier for the charging point.
-        route : Route
-            Route object representing the route where the charging point is located.
+        bus : Bus
+            The bus instance that will be charged.
         coordinates : tuple
             Represents the coordinates of the charging point.
         max_power : float
@@ -22,7 +22,7 @@ class ChargingPoint:
             Time from the last point of the route to the charging point in minutes.
         """
         self.id = id
-        self._route = route
+        self._bus = bus
         self.coordinates = coordinates
         self.max_power = max_power
         self.distance = distance # kilometres
@@ -37,9 +37,9 @@ class ChargingPoint:
         tuple
             Tuple containing the electric consumption in Wh and Ah.
         """
-        power = self._route.bus.engine.max_power
+        power = self._bus.engine.max_power
         hours = self.time / 60 # convert minutes to hours
-        voltage = self._route.bus.engine.battery.voltage_v
+        voltage = self._bus.engine.battery.voltage_v
 
         # Compute consumption in Wh and Ah
         watts_hour = power * hours

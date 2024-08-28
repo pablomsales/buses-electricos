@@ -1,0 +1,116 @@
+{
+    "description": "Breve descripcion de este fichero.",
+    "charging_points": 
+    [
+
+        {
+            "id": "1",
+            "coordinates": {
+                "latitude": 43.35147621139517,
+                "longitude": -5.881030328650424
+            },
+            "power": "xxxx",
+            "distance_km": 1.3,
+            "time_min": 3
+        },
+
+        {
+            "id": "2",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "3",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "4",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "5",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "6",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "7",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "8",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "9",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        },
+
+        {
+            "id": "10",
+            "coordinates": {
+                "latitude": "xxxx",
+                "longitude": "xxxx"
+            },
+            "power": "xxxx",
+            "distance_km": "xxxx",
+            "time_min": "xxxx"
+        }
+    ]
+}

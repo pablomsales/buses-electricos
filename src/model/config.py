@@ -60,7 +60,7 @@ class Config:
 
         # Create an electrical engine instance
         engine_instance = ElectricalEngine(
-            max_power=250000,
+            max_power=240,
             efficiency=92,  # parametro estatico para datathon
             battery=battery_instance,
         )

@@ -51,7 +51,7 @@ class Config:
         """
         # Create a battery instance
         battery_instance = Battery(
-            initial_capacity_ah=1225,
+            initial_capacity_kWh=2977,
             voltage_v=400,
             max_cycles=3000,  # parametro estatico para datathon
             initial_soc_percent=100,  # parametro estatico para datathon

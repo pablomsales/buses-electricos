@@ -5,7 +5,7 @@ class Battery:
 
     def __init__(
         self,
-        initial_capacity_ah: float,
+        initial_capacity_kWh: float,
         voltage_v: float,
         max_cycles: int,
         initial_soc_percent: float,
@@ -16,8 +16,8 @@ class Battery:
 
         Parameters
         ----------
-        initial_capacity_ah : float
-            The initial capacity of the battery in Ampere-hours.
+        initial_capacity_kWh : float
+            The initial capacity of the battery in kWh.
         max_cycles : int
             The maximum number of charge-discharge cycles the battery can endure.
         initial_soc_percent : float
@@ -27,14 +27,26 @@ class Battery:
         min_state_of_health : float
             The minimum allowed battery health as a percentage.
         """
-        self._initial_capacity_ah = initial_capacity_ah
-        self.current_capacity_ah = initial_capacity_ah
+        self.voltage_v = voltage_v
+        self._initial_capacity_ah = self._convert_kWh_to_Ah(initial_capacity_kWh)
+        self.current_capacity_ah = self._convert_kWh_to_Ah(initial_capacity_kWh)
         self._max_cycles = max_cycles
         self._completed_cycles = 0
         self.state_of_charge_percent = initial_soc_percent
-        self.voltage_v = voltage_v
         self.min_state_of_health = min_state_of_health
         self._degradation_in_section = 0.0
+
+    def _convert_kWh_to_Ah(self, kWh: float) -> float:
+        """
+        Convert energy in kilowatt-hours to ampere-hours based on the battery voltage.
+
+        :param kWh: Energy in kilowatt-hours
+        :return: Capacity in ampere-hours
+        """
+        if self.voltage_v <= 0:
+            raise ValueError("Voltage must be greater than zero.")
+
+        return (kWh * 1000) / self.voltage_v
 
     @property
     def degradation_rate(self) -> float:

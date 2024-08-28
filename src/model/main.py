@@ -19,7 +19,7 @@ def main():
         filepath=data,
         bus=config.create_bus(),
         emissions=config.create_emissions(),
-        mode="simulation"
+        mode="simulation",
     )
 
     model.consumption_and_emissions()

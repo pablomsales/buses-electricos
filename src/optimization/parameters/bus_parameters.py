@@ -30,3 +30,12 @@ class BusParameters:
         except json.JSONDecodeError:
             print(f"Error: The file {path} is not a valid JSON file.")
             return None
+
+    def get_parameters(self) -> list[tuple]:
+        return [
+            self.bus_mass.range,
+            self.engine_power.range,
+            self.battery_capacity.range,
+            self.battery_mass.range,
+            self.time_between_charges.range,
+        ]

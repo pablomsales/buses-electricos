@@ -23,8 +23,7 @@ def main():
     bounds = opt_params.get_parameters()
 
     # Initialize Fitness Function
-    # fitness_func = Fitness()
-    fitness_func = ...
+    fitness_func = ...  # Fitness()
 
     # Run optimization
     optimizer = DifferentialEvolution()

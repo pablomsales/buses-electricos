@@ -12,7 +12,9 @@ class BusParameters:
         self.engine_power = Parameter(**self.parameters["engine_power"])
         self.battery_capacity = Parameter(**self.parameters["battery"]["capacity"])
         self.battery_mass = Parameter(**self.parameters["battery"]["mass"])
-        self.time_between_charges = Parameter(**self.parameters["battery"]["mass"])
+        self.time_between_charges = Parameter(
+            **self.parameters["battery"]["time_between_charges"]
+        )
 
     def _load_parameters(path):
         # Open the JSON file and load its content

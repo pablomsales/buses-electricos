@@ -19,13 +19,15 @@ def main():
         charging_points=charging_points,
     )
 
+    # get a list with the parameters bounds
+    bounds = opt_params.get_parameters()
+
     # Initialize Fitness Function
-    # fitness_func = Fitness()
-    fitness_func = ...
+    fitness_func = ...  # Fitness()
 
     # Run optimization
     optimizer = DifferentialEvolution()
-    best_result = optimizer.optimize(fitness_func, opt_params)
+    best_result = optimizer.optimize(fitness_func, bounds)
 
     print(best_result)
 

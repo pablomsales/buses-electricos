@@ -10,7 +10,7 @@ def main():
 
     name = "linea_d2_simulation_electric"
 
-    data = os.path.join("data", "linea_d2_simulation.csv")
+    data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
     config = Config(electric=True)
 

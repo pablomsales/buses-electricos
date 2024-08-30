@@ -12,7 +12,9 @@ class BusParameters:
         self.engine_power = Parameter(**self.parameters["engine_power"])
         self.battery_capacity = Parameter(**self.parameters["battery"]["capacity"])
         self.battery_mass = Parameter(**self.parameters["battery"]["mass"])
-        self.time_between_charges = Parameter(**self.parameters["battery"]["mass"])
+        self.time_between_charges = Parameter(
+            **self.parameters["battery"]["time_between_charges"]
+        )
 
     def _load_parameters(path):
         # Open the JSON file and load its content
@@ -28,3 +30,12 @@ class BusParameters:
         except json.JSONDecodeError:
             print(f"Error: The file {path} is not a valid JSON file.")
             return None
+
+    def get_parameters(self) -> list[tuple]:
+        return [
+            self.bus_mass.range,
+            self.engine_power.range,
+            self.battery_capacity.range,
+            self.battery_mass.range,
+            self.time_between_charges.range,
+        ]

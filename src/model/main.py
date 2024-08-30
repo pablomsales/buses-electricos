@@ -3,7 +3,7 @@ from time import time
 
 from core.model import Model
 
-from model.model_config import ModelConfig
+from model_config import ModelConfig
 
 
 def main():
@@ -22,6 +22,8 @@ def main():
         emissions=config.create_emissions(),
         mode="simulation",
     )
+
+    model.run(charging_point_id=1)
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

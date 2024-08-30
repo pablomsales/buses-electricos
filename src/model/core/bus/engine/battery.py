@@ -102,6 +102,52 @@ class Battery:
         # Finally, update the SoC percentage
         self.state_of_charge_percent = updated_soc_percent
 
+    def charge_in_charging_point(self, power: int, desired_soc: float = 80.0) -> None:
+        """
+        Charge the battery in a charging point.
+
+        Parameters
+        ----------
+        power : int
+            The power in Watts.
+        desired_soc : float
+            The desired state of charge as a percentage (0-100).
+        """
+        # Calculate the time needed to reach the desired SoC
+        time_seconds = self._calculate_time_to_charge(power, desired_soc)
+
+        # Convert Watts to Ah
+        ah_transferred = self._calculate_current(power=power) * (time_seconds / 3600)
+
+        # Update the state of charge and apply degradation
+        self.update_soc_and_degradation(ah_transferred, time_seconds)
+
+    def _calculate_time_to_charge(self, power: int, desired_soc: float) -> float:
+        """
+        Calculate the time needed to charge the battery to a desired state of charge.
+
+        Parameters
+        ----------
+        power : int
+            The power in Watts.
+        desired_soc : float
+            The desired state of charge as a percentage (0-100).
+
+        Returns
+        -------
+        float
+            The time needed to charge the battery in seconds.
+        """
+        if power <= 0:
+            raise ValueError("La potencia debe ser mayor que 0.")
+
+        # Calculate the amount of charge needed to reach the desired SoC
+        desired_soc_ah = (desired_soc / 100) * self.current_capacity_ah
+        charge_needed = desired_soc_ah - self._get_soc_in_ah()
+
+        # Calculate the time needed to charge the battery
+        return (charge_needed * 3600) / power
+
     def _compute_new_soc(self, ah_transferred: float) -> float:
         """
         Updates the state of charge by a given amount in Ampere-hours.
@@ -132,18 +178,35 @@ class Battery:
                 "without halting the execution of the program."
             )
 
-    def _calculate_current(self, ah_transferred: float, time_seconds: float) -> float:
+    def _calculate_current(self, ah_transferred: float = None, time_seconds: float = None, power: int = None) -> float:
         """
-        Calculate the electric current in Amperes.
+        Calculate the electric current in Amperes based on the power, or the transferred charge and time.
 
         Parameters
         ----------
         ah_transferred : float
-            The charge amount in Ampere-hours.
+            The amount of input or output charge in Ampere-hours.
         time_seconds : float
-            The time duration in seconds.
+            The duration time of the section in seconds.
+        power : int
+            The power in Watts.
+        
+        Returns
+        -------
+        float
+            The electric current in Amperes.
         """
-        return ah_transferred / (time_seconds / 3600)
+        if power:
+            if power <= 0:
+                raise ValueError("La potencia debe ser mayor que 0.")
+            return power / self.voltage_v
+
+        if ah_transferred and time_seconds:
+            if ah_transferred <= 0 or time_seconds <= 0:
+                raise ValueError("La capacidad en Ah y el tiempo en segundos deben ser mayores que 0.")
+            return ah_transferred / (time_seconds / 3600)
+
+        raise ValueError("Debe proporcionar 'power', o ambos 'ah_transferred' y 'time_seconds' para calcular la intensidad.")
 
     def _apply_degradation(
         self, updated_soc_percent: float, electric_current: float

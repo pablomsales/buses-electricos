@@ -21,7 +21,7 @@ class ModelConfig:
         self.electric = electric
         self.euro_standard = euro_standard
 
-    def create_bus(self, initial_capacity_kWh, max_power, bus_mass):
+    def create_bus(self):
         """
         Create a bus instance with the engine and fuel selected.
 
@@ -32,18 +32,16 @@ class ModelConfig:
         """
         if self.electric:
             # Create an electric bus instance
-            bus_instance = self._create_electric_bus(
-                initial_capacity_kWh, max_power, bus_mass
-            )
+            bus_instance = self._create_electric_bus()
 
         else:
             # Create a fuel bus instance
-            bus_instance = self._create_fuel_bus(max_power, bus_mass)
+            bus_instance = self._create_fuel_bus()
 
         return bus_instance
 
     def _create_electric_bus(
-        self, initial_capacity_kWh=294, max_power=240000, bus_mass=20000
+        self, initial_capacity_kWh=392, max_power=240000, bus_mass=20000
     ):
         """
         Create an electric bus instance with the battery and electrical engine selected.

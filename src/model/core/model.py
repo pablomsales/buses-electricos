@@ -24,10 +24,84 @@ class Model:
 
         self._mode = mode
         self._data = self._load_data(filepath, mode)
-        self._bus = bus
+        self.bus = bus
         self.route = Route(
             data=self._data, bus=bus, emissions=emissions, mode=self._mode
         )
+
+    def cummulative_consumption_and_emissions(self):
+        """
+        Calculate and accumulate consumption and emissions data across all sections.
+        
+        Returns:
+            A dictionary with accumulated values for consumption in Wh, emissions in grams, and battery degradation.
+        """
+        # Inicializar acumuladores para los valores deseados
+        total_wh = 0.0
+        total_emissions = 0.0
+        total_battery_degradation = 0.0
+
+        # Iterar a través de las secciones de la ruta y acumular los datos necesarios
+        for sect in self.route.sections:
+            # Extraer valores de consumo y emisiones
+            sect_emissions = [float(value) for value in sect.section_emissions.values()]
+            sect_consumption = [float(value) for value in sect.consumption.values()]
+
+            # Duración de la sección en segundos
+            duration = sect.end_time - sect.start_time
+
+            # Acumular Wh y degradación de batería
+            total_wh += sect_consumption[0]  # "Wh"
+            total_battery_degradation += sect.get_battery_degradation_in_section()  # "battery_degradation" in 0-1
+
+            # Acumular todas las emisiones en gramos
+            total_emissions += sum(emission * duration for emission in sect_emissions) # grams
+
+        # Devolver una lista con los valores acumulados
+        return [total_wh, total_emissions, total_battery_degradation]
+    
+    def soc(self):
+        """
+        Get the state of charge (SOC) of the battery.
+        """
+        return self.bus.engine.get_battery_state_of_charge()
+
+    def run(self, charging_point_id: int, n_iters: int = 1):
+        soc = self.soc()
+        print(soc)
+
+        power = self._get_param_by_charging_point_id(f"{charging_point_id}", "power_watts")
+
+        if soc < 20.0:
+            self.bus.engine.battery.charge_in_charging_point(power=power)
+        print(self.soc())
+
+        consumption, emissions, battery_degradation = self.cummulative_consumption_and_emissions()
+        print(self.soc())
+
+        for _ in range(n_iters):
+            new_consumption, new_emissions, new_battery_degradation = self.cummulative_consumption_and_emissions()
+            consumption += new_consumption
+            emissions += new_emissions
+            battery_degradation += new_battery_degradation
+            print(self.soc())
+        
+        print(f"Consumption: {consumption}")
+        print(f"Emissions: {emissions}")
+        print(f"Battery degradation: {battery_degradation}")
+
+    def _get_param_by_charging_point_id(self, charging_point_id: str, param: str):
+        """
+        Get a parameter value for a specific charging point.
+
+        Args:
+            charging_point_id (int): ID of the charging point.
+            param (str): Name of the parameter to get.
+        
+        Returns:
+            The value of the parameter.
+        """
+        return self.route.charging_points[charging_point_id][param]
 
     def consumption_and_emissions(self) -> None:
         """
@@ -36,7 +110,7 @@ class Model:
         filename = os.path.join(self._output_dir, "output.csv")
 
         # Define headers based on engine type
-        if self._bus.engine.electric:
+        if self.bus.engine.electric:
             header = [
                 "start",
                 "end",
@@ -87,7 +161,7 @@ class Model:
                 *sect_emissions,
             ]
 
-            if self._bus.engine.electric:
+            if self.bus.engine.electric:
                 row.append(sect.get_battery_degradation_in_section())
 
             rows.append(row)

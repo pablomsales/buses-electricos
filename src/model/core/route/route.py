@@ -1,3 +1,4 @@
+import json
 import os
 
 import folium
@@ -26,7 +27,8 @@ class Route:
         self.bus = bus
         self.emissions = emissions
         self.sections = self._create_sections(data)
-        self.charging_points = ...
+        self.length_km = 10.61
+        self.charging_points = self._load_charging_points("data\optimization_data\charging_points.json")
 
     def _create_sections(self, df: pd.DataFrame) -> list:
         """
@@ -158,8 +160,38 @@ class Route:
         # Return consolidated results along with the section start and end times
         return secciones
     
-    def _create_charging_points(self, df: pd.DataFrame) -> list:
-        pass
+    def _load_charging_points(self, file_path: str) -> dict:
+        # Abrir y cargar el archivo JSON
+        with open(file_path, 'r') as archivo:
+            json_data = json.load(archivo)
+        
+        # Leer la lista de puntos de carga desde el JSON
+        charging_points = json_data.get("charging_points", [])
+        
+        # Crear un diccionario para almacenar los resultados
+        puntos = {}
+        
+        # Iterar sobre cada punto de carga y extraer los datos requeridos
+        for point in charging_points:
+            # Extraer los valores requeridos
+            id_ = point.get("id")
+            power_watts = point.get("power_watts")
+            distance_km = point.get("distance_km")
+            time_min = point.get("time_min")
+            
+            # Añadir una entrada al diccionario con la ID como clave
+            # y un diccionario con las claves power, distance y time como valor
+            puntos[id_] = {
+                "power_watts": power_watts,
+                "distance_km": distance_km,
+                "time_min": time_min
+            }
+        
+        return puntos
+
+    @property
+    def lenght_km(self):
+        return self.length_km
 
     def plot_altitude_profile(self, output_dir: str):
         """

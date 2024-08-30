@@ -1,8 +1,9 @@
 import os
 from time import time
 
-from config import Config
 from core.model import Model
+
+from model.model_config import ModelConfig
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
 
     data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
-    config = Config(electric=True)
+    config = ModelConfig(electric=True)
 
     model = Model(
         name=name,

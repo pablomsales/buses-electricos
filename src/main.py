@@ -1,6 +1,7 @@
 import os
 
-from optimization.algorithms.differential_evolution import DifferentialEvolution
+from scipy.optimize import differential_evolution
+
 from optimization.fitness import Fitness
 from optimization.parameters.optimization_parameters import OptimizationParameters
 
@@ -23,11 +24,10 @@ def main():
     bounds = opt_params.get_parameters()
 
     # Initialize Fitness Function
-    fitness_func = ...  # Fitness()
+    fitness_func = Fitness()
 
     # Run optimization
-    optimizer = DifferentialEvolution()
-    best_result = optimizer.optimize(fitness_func, bounds)
+    best_result = differential_evolution(fitness_func.evaluate, bounds)
 
     print(best_result)
 

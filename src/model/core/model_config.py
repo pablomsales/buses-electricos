@@ -1,3 +1,6 @@
+import os
+
+import pandas as pd
 from core.bus.bus import Bus
 from core.bus.engine.battery import Battery
 from core.bus.engine.electrical_engine import ElectricalEngine
@@ -7,7 +10,7 @@ from core.route.emissions import Emissions
 
 
 class ModelConfig:
-    def __init__(self, electric, euro_standard="EURO_6"):
+    def __init__(self, electric: bool, name: str, filepath: str, mode: str):
         """
         Class to create the configuration of the bus and emissions.
 
@@ -18,31 +21,63 @@ class ModelConfig:
         euro_standard : str, optional
             The EURO standard of the bus, by default "EURO_6"
         """
-        self.electric = electric
-        self.euro_standard = euro_standard
+        self.name = name
+        self._validate_mode(mode)
+        self._validate_filepath(filepath)
+        self.filepath = filepath
+        self.output_dir = self._create_output_dir(name)
 
-    def create_bus(self):
+        self.mode = mode
+        self.electric = electric
+
+    @staticmethod
+    def _validate_mode(mode: str) -> None:
+        if mode not in {"real", "simulation"}:
+            raise ValueError("Expected parameter mode as 'real' or 'simulation'.")
+
+    @staticmethod
+    def _validate_filepath(filepath: str) -> None:
+        if not filepath:
+            raise ValueError(
+                "No file path provided. Please provide a file path to load data."
+            )
+        if not filepath.endswith(".csv"):
+            raise ValueError("Unsupported file format. Only .csv is supported.")
+
+    def _create_output_dir(self, dir_name):
+        final_path = os.path.join("outputs", dir_name)
+        os.makedirs(final_path, exist_ok=True)
+        return final_path
+
+    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
         """
-        Create a bus instance with the engine and fuel selected.
+        Load and process data from a CSV file based on the mode.
 
         Returns
-        -------
-        Bus
-            The bus instance created
+        --------
+        pd.DataFrame: Processed data as a DataFrame.
         """
-        if self.electric:
-            # Create an electric bus instance
-            bus_instance = self._create_electric_bus()
+        df = pd.read_csv(filepath)
+        if mode == "real":
+            return self._process_real_data(df)
+        elif mode == "simulation":
+            return self._process_simulation_data(df)
 
-        else:
-            # Create a fuel bus instance
-            bus_instance = self._create_fuel_bus()
+    @property
+    def bus(self):
+        return self._bus
 
-        return bus_instance
+    @bus.setter
+    def bus(self, initial_capacity_kWh=392, max_power=240000, bus_mass=20000):
+        if not hasattr(self, "_bus"):
+            if self.electric:
+                self._bus = self._create_electric_bus(
+                    initial_capacity_kWh, max_power, bus_mass
+                )
+            else:
+                self._bus = self._create_fuel_bus(max_power, bus_mass)
 
-    def _create_electric_bus(
-        self, initial_capacity_kWh=392, max_power=240000, bus_mass=20000
-    ):
+    def _create_electric_bus(self, initial_capacity_kWh, max_power, bus_mass):
         """
         Create an electric bus instance with the battery and electrical engine selected.
 
@@ -78,7 +113,7 @@ class ModelConfig:
 
         return bus_instance
 
-    def _create_fuel_bus(self, max_power=240000, bus_mass=20000):
+    def _create_fuel_bus(self, max_power, bus_mass):
         """
         Create a fuel bus instance with the fuel engine selected.
 
@@ -108,18 +143,10 @@ class ModelConfig:
 
         return bus_instance
 
-    def create_emissions(self):
-        """
-        Create an emissions instance with the EURO standard selected.
+    @property
+    def emissions(self):
+        return self._emissions
 
-        Returns
-        -------
-        Emissions
-            The emissions instance created
-        """
-        # Crear una instancia de Emissions con el estándar EURO deseado
-        emissions_instance = Emissions(
-            euro_standard=self.euro_standard,
-            electric=self.electric,
-        )
-        return emissions_instance
+    @emissions.setter
+    def emissions(self, euro_standard="EURO_6"):
+        self._emissions = Emissions(euro_standard=euro_standard, electric=self.electric)

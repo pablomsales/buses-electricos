@@ -2,8 +2,7 @@ import os
 from time import time
 
 from core.model import Model
-
-from model_config import ModelConfig
+from core.model_config import ModelConfig
 
 
 def main():
@@ -13,15 +12,14 @@ def main():
 
     data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
-    config = ModelConfig(electric=True)
-
-    model = Model(
+    model_config = ModelConfig(
+        electric=True,
         name=name,
         filepath=data,
-        bus=config.create_bus(),
-        emissions=config.create_emissions(),
         mode="simulation",
     )
+    model_config.bus(initial_capacity_kWh=294, max_power=230000, bus_mass=20000)
+    model = Model(config=model_config)
 
     model.run(charging_point_id=1)
 

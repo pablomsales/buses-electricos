@@ -2,11 +2,12 @@ import csv
 import os
 
 import pandas as pd
+from core.model_config import ModelConfig
 from core.route.route import Route
 
 
 class Model:
-    def __init__(self, name: str, filepath: str, bus, emissions, mode: str):
+    def __init__(self, config: ModelConfig):
         """
         Initialize a Model instance.
 
@@ -17,22 +18,96 @@ class Model:
             emissions: Instance of the Emissions class.
             mode (str): Mode of operation, either 'real' or 'simulation'.
         """
-        self.name = name
-        self._validate_mode(mode)
-        self._validate_filepath(filepath)
-        self._output_dir = self._create_output_dir(name)
+        self._config = config
+        self.name = self._config.name
 
-        self._mode = mode
-        self._data = self._load_data(filepath, mode)
-        self.bus = bus
+        self._mode = self._config.mode
+        self._data = self._load_data(self._config.filepath, self.mode)
+        self.bus = self._config.bus
         self.route = Route(
-            data=self._data, bus=bus, emissions=emissions, mode=self._mode
+            data=self._data,
+            bus=self.bus,
+            emissions=self._config.emissions,
+            mode=self._mode,
         )
+
+    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
+        """
+        Load and process data from a CSV file based on the mode.
+
+        Returns
+        --------
+        pd.DataFrame: Processed data as a DataFrame.
+        """
+        df = pd.read_csv(filepath)
+        if mode == "real":
+            return self._process_real_data(df)
+        elif mode == "simulation":
+            return self._process_simulation_data(df)
+
+    @staticmethod
+    def _process_real_data(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process data to work in real mode, so it gets real values for speed & time
+        """
+        df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
+        df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
+
+        # Check and handle the first non-zero time entry
+        if df.iloc[0]["time"] == 0:
+            first_non_zero_index = df[df["time"] != 0].index[0]
+            df = df.iloc[first_non_zero_index - 1 :]
+
+        return df
+
+    @staticmethod
+    def _process_simulation_data(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Process data to work in simulation mode, e.g., setting up speed limits and other parameters.
+
+        Returns:
+        --------
+        pd.DataFrame: Processed data as a DataFrame ready for simulation.
+        """
+        # Suponiendo que las columnas relevantes están presentes en el archivo CSV
+        df.columns = ["latitude", "longitude", "altitude", "speed_limit"]
+
+        return df
+
+    def run(self, charging_point_id: int, n_iters: int = 1):
+        soc = self.soc()
+        print(soc)
+
+        power = self._get_param_by_charging_point_id(
+            f"{charging_point_id}", "power_watts"
+        )
+
+        if soc < 20.0:
+            self.bus.engine.battery.charge_in_charging_point(power=power)
+        print(self.soc())
+
+        consumption, emissions, battery_degradation = (
+            self.cummulative_consumption_and_emissions()
+        )
+        print(self.soc())
+
+        for _ in range(n_iters):
+            new_consumption, new_emissions, new_battery_degradation = (
+                self.cummulative_consumption_and_emissions()
+            )
+            consumption += new_consumption
+            emissions += new_emissions
+            battery_degradation += new_battery_degradation
+            print(self.soc())
+
+        print(f"Consumption: {consumption}")
+        print(f"Emissions: {emissions}")
+        print(f"Battery degradation: {battery_degradation}")
 
     def cummulative_consumption_and_emissions(self):
         """
         Calculate and accumulate consumption and emissions data across all sections.
-        
+
         Returns:
             A dictionary with accumulated values for consumption in Wh, emissions in grams, and battery degradation.
         """
@@ -52,43 +127,23 @@ class Model:
 
             # Acumular Wh y degradación de batería
             total_wh += sect_consumption[0]  # "Wh"
-            total_battery_degradation += sect.get_battery_degradation_in_section()  # "battery_degradation" in 0-1
+            total_battery_degradation += (
+                sect.get_battery_degradation_in_section()
+            )  # "battery_degradation" in 0-1
 
             # Acumular todas las emisiones en gramos
-            total_emissions += sum(emission * duration for emission in sect_emissions) # grams
+            total_emissions += sum(
+                emission * duration for emission in sect_emissions
+            )  # grams
 
         # Devolver una lista con los valores acumulados
         return [total_wh, total_emissions, total_battery_degradation]
-    
+
     def soc(self):
         """
         Get the state of charge (SOC) of the battery.
         """
         return self.bus.engine.get_battery_state_of_charge()
-
-    def run(self, charging_point_id: int, n_iters: int = 1):
-        soc = self.soc()
-        print(soc)
-
-        power = self._get_param_by_charging_point_id(f"{charging_point_id}", "power_watts")
-
-        if soc < 20.0:
-            self.bus.engine.battery.charge_in_charging_point(power=power)
-        print(self.soc())
-
-        consumption, emissions, battery_degradation = self.cummulative_consumption_and_emissions()
-        print(self.soc())
-
-        for _ in range(n_iters):
-            new_consumption, new_emissions, new_battery_degradation = self.cummulative_consumption_and_emissions()
-            consumption += new_consumption
-            emissions += new_emissions
-            battery_degradation += new_battery_degradation
-            print(self.soc())
-        
-        print(f"Consumption: {consumption}")
-        print(f"Emissions: {emissions}")
-        print(f"Battery degradation: {battery_degradation}")
 
     def _get_param_by_charging_point_id(self, charging_point_id: str, param: str):
         """
@@ -97,7 +152,7 @@ class Model:
         Args:
             charging_point_id (int): ID of the charging point.
             param (str): Name of the parameter to get.
-        
+
         Returns:
             The value of the parameter.
         """
@@ -107,7 +162,7 @@ class Model:
         """
         Calculate and save the consumption and emissions data to an output CSV file.
         """
-        filename = os.path.join(self._output_dir, "output.csv")
+        filename = os.path.join(self._config.output_dir, "output.csv")
 
         # Define headers based on engine type
         if self.bus.engine.electric:
@@ -176,72 +231,10 @@ class Model:
         """
         Plot and save combined profiles for the route.
         """
-        return self.route.plot_combined_profiles(output_dir=self._output_dir)
+        return self.route.plot_combined_profiles(output_dir=self._config.output_dir)
 
     def plot_map(self):
         """
         Plot and save the map for the route.
         """
-        return self.route.plot_map(output_dir=self._output_dir)
-
-    @staticmethod
-    def _validate_mode(mode: str) -> None:
-        if mode not in {"real", "simulation"}:
-            raise ValueError("Expected parameter mode as 'real' or 'simulation'.")
-
-    @staticmethod
-    def _validate_filepath(filepath: str) -> None:
-        if not filepath:
-            raise ValueError(
-                "No file path provided. Please provide a file path to load data."
-            )
-        if not filepath.endswith(".csv"):
-            raise ValueError("Unsupported file format. Only .csv is supported.")
-
-    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
-        """
-        Load and process data from a CSV file based on the mode.
-
-        Returns
-        --------
-        pd.DataFrame: Processed data as a DataFrame.
-        """
-        df = pd.read_csv(filepath)
-        if mode == "real":
-            return self._process_real_data(df)
-        elif mode == "simulation":
-            return self._process_simulation_data(df)
-
-    @staticmethod
-    def _process_real_data(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Process data to work in real mode, so it gets real values for speed & time
-        """
-        df = df.iloc[:, [2, 3, 4, 6, 8, 9]]
-        df.columns = ["time", "latitude", "longitude", "altitude", "distance", "speed"]
-
-        # Check and handle the first non-zero time entry
-        if df.iloc[0]["time"] == 0:
-            first_non_zero_index = df[df["time"] != 0].index[0]
-            df = df.iloc[first_non_zero_index - 1 :]
-
-        return df
-
-    @staticmethod
-    def _process_simulation_data(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Process data to work in simulation mode, e.g., setting up speed limits and other parameters.
-
-        Returns:
-        --------
-        pd.DataFrame: Processed data as a DataFrame ready for simulation.
-        """
-        # Suponiendo que las columnas relevantes están presentes en el archivo CSV
-        df.columns = ["latitude", "longitude", "altitude", "speed_limit"]
-
-        return df
-
-    def _create_output_dir(self, dir_name):
-        final_path = os.path.join("outputs", dir_name)
-        os.makedirs(final_path, exist_ok=True)
-        return final_path
+        return self.route.plot_map(output_dir=self._config.output_dir)

@@ -1,6 +1,6 @@
 import os
 
-from model.model_config import ModelConfig
+from model.core.model_config import ModelConfig
 from src.model.core.model import Model
 
 

@@ -178,7 +178,12 @@ class Battery:
                 "without halting the execution of the program."
             )
 
-    def _calculate_current(self, ah_transferred: float = None, time_seconds: float = None, power: int = None) -> float:
+    def _calculate_current(
+        self,
+        ah_transferred: float = None,
+        time_seconds: float = None,
+        power: int = None,
+    ) -> float:
         """
         Calculate the electric current in Amperes based on the power, or the transferred charge and time.
 
@@ -190,7 +195,7 @@ class Battery:
             The duration time of the section in seconds.
         power : int
             The power in Watts.
-        
+
         Returns
         -------
         float
@@ -202,11 +207,13 @@ class Battery:
             return power / self.voltage_v
 
         if ah_transferred and time_seconds:
-            if ah_transferred <= 0 or time_seconds <= 0:
-                raise ValueError("La capacidad en Ah y el tiempo en segundos deben ser mayores que 0.")
+            if time_seconds <= 0:
+                raise ValueError("El tiempo en segundos debe ser mayor que 0.")
             return ah_transferred / (time_seconds / 3600)
 
-        raise ValueError("Debe proporcionar 'power', o ambos 'ah_transferred' y 'time_seconds' para calcular la intensidad.")
+        raise ValueError(
+            "Debe proporcionar 'power', o ambos 'ah_transferred' y 'time_seconds' para calcular la intensidad."
+        )
 
     def _apply_degradation(
         self, updated_soc_percent: float, electric_current: float

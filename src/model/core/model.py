@@ -24,6 +24,7 @@ class Model:
         self._mode = self._config.mode
         self._data = self._load_data(self._config.filepath, self._mode)
         self.bus = self._config.bus
+        self.charging_point_id = self._config.charging_point_id
         self.route = Route(
             data=self._data,
             bus=self.bus,
@@ -74,37 +75,33 @@ class Model:
 
         return df
 
-    def run(self, charging_point_id: int, n_iters: int = 1):
+    def run(self, n_iters: int = 1):
         soc = self.soc()
-        print(soc)
 
         power = self._get_param_by_charging_point_id(
-            f"{charging_point_id}", "power_watts"
+            f"{self.charging_point_id}", "power_watts"
         )
 
         if soc < 20.0:
             self.bus.engine.battery.charge_in_charging_point(power=power)
-        print(self.soc())
 
         consumption, emissions, battery_degradation = (
-            self.cummulative_consumption_and_emissions()
+            self.cumulative_consumption_and_emissions()
         )
-        print(self.soc())
 
         for _ in range(n_iters):
             new_consumption, new_emissions, new_battery_degradation = (
-                self.cummulative_consumption_and_emissions()
+                self.cumulative_consumption_and_emissions()
             )
             consumption += new_consumption
             emissions += new_emissions
             battery_degradation += new_battery_degradation
-            print(self.soc())
 
         print(f"Consumption: {consumption}")
         print(f"Emissions: {emissions}")
         print(f"Battery degradation: {battery_degradation}")
 
-    def cummulative_consumption_and_emissions(self):
+    def cumulative_consumption_and_emissions(self):
         """
         Calculate and accumulate consumption and emissions data across all sections.
 

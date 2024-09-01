@@ -17,13 +17,14 @@ def main():
         name=name,
         filepath=data,
         mode="simulation",
+        charging_point_id=1,
         initial_capacity_kWh=294,
         engine_max_power=230000,
         bus_mass=20000,
     )
     model = Model(config=model_config)
 
-    model.run(charging_point_id=1)
+    model.run(n_iters=1)
 
     print(f"Tiempo ejecucion: {time() - start_time}")
 

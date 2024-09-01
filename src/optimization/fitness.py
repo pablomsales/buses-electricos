@@ -7,7 +7,6 @@ from src.model.core.model import Model
 class Fitness:
 
     def __init__(self, weights: dict):
-        self.model_config = ModelConfig(electric=True)
         self.weights = self._initialize_weights(weights)
 
     def _initialize_weights(self, weights):
@@ -80,28 +79,21 @@ class Fitness:
         Run the model simulation with the given parameters.
         """
 
-        # Set up the bus and emissions in ModelConfig
-        bus = self.model_config.create_bus(
-            initial_capacity_kWh=params["battery_capacity"],
-            engine_power=params["engine_power"],
-            bus_mass=params["total_bus_mass"],
-            time_between_charges=params["time_between_charges"],
-            charging_point_id=params["charging_point_id"],
-        )
-        emissions = self.model_config.create_emissions()
-        # !!! AÑADIR PARAMETRO CHARGING_POINT A ModelConfig
-
-        # Initialize and run the Model
-        model = Model(
+        model_config = ModelConfig(
+            electric=True,
             name="linea_d2_simulation_electric",
             filepath=os.path.join("data", "linea_d2", "linea_d2_simulation.csv"),
-            bus=bus,
-            emissions=emissions,
             mode="simulation",
+            charging_point_id=params["charging_point_id"],
+            initial_capacity_kWh=params["battery_capacity"],
+            engine_max_power=params["engine_power"],
+            bus_mass=params["total_bus_mass"],
+            time_between_charges=params["time_between_charges"],
         )
 
-        # Run the model and return the result
-        return model.run()
+        # Initialize and run the Model
+        model = Model(config=model_config)
+        return model.run(n_iters=1)
 
     def _get_fitness_value(self, result):
         """

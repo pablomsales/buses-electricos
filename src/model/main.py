@@ -18,6 +18,7 @@ def main():
         filepath=data,
         mode="simulation",
         charging_point_id=1,
+        # time_between_charges=??, # TODO
         initial_capacity_kWh=294,
         engine_max_power=230000,
         bus_mass=20000,

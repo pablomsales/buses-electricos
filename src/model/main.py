@@ -17,8 +17,10 @@ def main():
         name=name,
         filepath=data,
         mode="simulation",
+        initial_capacity_kWh=294,
+        engine_max_power=230000,
+        bus_mass=20000,
     )
-    model_config.bus(initial_capacity_kWh=294, max_power=230000, bus_mass=20000)
     model = Model(config=model_config)
 
     model.run(charging_point_id=1)

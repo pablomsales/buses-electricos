@@ -22,7 +22,7 @@ class Model:
         self.name = self._config.name
 
         self._mode = self._config.mode
-        self._data = self._load_data(self._config.filepath, self.mode)
+        self._data = self._load_data(self._config.filepath, self._mode)
         self.bus = self._config.bus
         self.route = Route(
             data=self._data,

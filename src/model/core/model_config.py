@@ -10,7 +10,17 @@ from core.route.emissions import Emissions
 
 
 class ModelConfig:
-    def __init__(self, electric: bool, name: str, filepath: str, mode: str):
+    def __init__(
+        self,
+        electric: bool,
+        name: str,
+        filepath: str,
+        mode: str,
+        initial_capacity_kWh=392,
+        engine_max_power=240000,
+        bus_mass=20000,
+        euro_standard="EURO_6",
+    ):
         """
         Class to create the configuration of the bus and emissions.
 
@@ -29,6 +39,8 @@ class ModelConfig:
 
         self.mode = mode
         self.electric = electric
+        self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
+        self.emissions = self._create_emissions(euro_standard)
 
     @staticmethod
     def _validate_mode(mode: str) -> None:
@@ -63,19 +75,11 @@ class ModelConfig:
         elif mode == "simulation":
             return self._process_simulation_data(df)
 
-    @property
-    def bus(self):
-        return self._bus
-
-    @bus.setter
-    def bus(self, initial_capacity_kWh=392, max_power=240000, bus_mass=20000):
-        if not hasattr(self, "_bus"):
-            if self.electric:
-                self._bus = self._create_electric_bus(
-                    initial_capacity_kWh, max_power, bus_mass
-                )
-            else:
-                self._bus = self._create_fuel_bus(max_power, bus_mass)
+    def _create_bus(self, initial_capacity_kWh, max_power, bus_mass):
+        if self.electric:
+            return self._create_electric_bus(initial_capacity_kWh, max_power, bus_mass)
+        else:
+            return self._create_fuel_bus(max_power, bus_mass)
 
     def _create_electric_bus(self, initial_capacity_kWh, max_power, bus_mass):
         """
@@ -143,10 +147,5 @@ class ModelConfig:
 
         return bus_instance
 
-    @property
-    def emissions(self):
-        return self._emissions
-
-    @emissions.setter
-    def emissions(self, euro_standard="EURO_6"):
-        self._emissions = Emissions(euro_standard=euro_standard, electric=self.electric)
+    def _create_emissions(self, euro_standard):
+        return Emissions(euro_standard=euro_standard, electric=self.electric)

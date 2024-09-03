@@ -17,7 +17,7 @@ class ModelConfig:
         filepath: str,
         mode: str,
         charging_point_id: int,
-        time_between_charges: int,
+        # time_between_charges: int,
         initial_capacity_kWh=392,
         engine_max_power=240000,
         bus_mass=20000,
@@ -44,7 +44,7 @@ class ModelConfig:
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
         self.charging_point_id = charging_point_id
-        self.time_between_charges = time_between_charges
+        # self.time_between_charges = time_between_charges
 
     @staticmethod
     def _validate_mode(mode: str) -> None:

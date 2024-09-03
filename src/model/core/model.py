@@ -25,7 +25,7 @@ class Model:
         self._data = self._load_data(self._config.filepath, self._mode)
         self.bus = self._config.bus
         self.charging_point_id = self._config.charging_point_id
-        self.time_between_charges = self._config.time_between_charges
+        # self.time_between_charges = self._config.time_between_charges
         self.route = Route(
             data=self._data,
             bus=self.bus,

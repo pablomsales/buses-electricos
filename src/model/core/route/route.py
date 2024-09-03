@@ -13,7 +13,7 @@ class Route:
     Class to represent a route with multiple sections.
     """
 
-    def __init__(self, data: pd.DataFrame, bus, emissions, mode: str):
+    def __init__(self, data: pd.DataFrame, bus, emissions, simulation: bool):
         """
         Initialize the Route with provided data, bus, emissions, and mode.
 
@@ -21,9 +21,9 @@ class Route:
             data (pd.DataFrame): DataFrame containing route information.
             bus: Instance of the Bus class.
             emissions: Instance of the Emissions class.
-            mode (str): Mode of operation, either 'real' or 'simulation'.
+            simulation (bool): Whether the route is in simulation mode or not.
         """
-        self._mode = mode
+        self._simulation = simulation
         self.bus = bus
         self.emissions = emissions
         self.sections = self._create_sections(data)
@@ -34,23 +34,18 @@ class Route:
 
     def _create_sections(self, df: pd.DataFrame) -> list:
         """
-        Creates the sections of the route based on the mode.
+        Creates the sections of the route based on the selected mode (simulation or real).
 
         Args:
             df (pd.DataFrame): DataFrame containing route information.
 
         Returns:
             list: A list of sections created for the route.
-
-        Raises:
-            ValueError: If the mode is invalid.
         """
-        if self._mode == "real":
-            return self._process_real_sections(df)
-        elif self._mode == "simulation":
+        if self._simulation:
             return self._process_simulated_sections(df)
         else:
-            raise ValueError("Invalid mode. Mode should be 'real' or 'simulation'.")
+            return self._process_real_sections(df)
 
     def _process_real_sections(self, df: pd.DataFrame) -> list:
         """

@@ -16,7 +16,7 @@ def main():
         electric=True,
         name=name,
         filepath=data,
-        mode="simulation",
+        simulation=True,
         charging_point_id=1,
         # time_between_charges=??, # TODO
         initial_capacity_kWh=294,

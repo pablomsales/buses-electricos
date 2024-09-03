@@ -16,13 +16,13 @@ class Model:
             filepath (str): Path to the input data CSV file.
             bus: Instance of the Bus class.
             emissions: Instance of the Emissions class.
-            mode (str): Mode of operation, either 'real' or 'simulation'.
+            simulation (bool): Whether the model is in simulation mode or not.
         """
         self._config = config
         self.name = self._config.name
 
-        self._mode = self._config.mode
-        self._data = self._load_data(self._config.filepath, self._mode)
+        self._simulation = self._config.simulation
+        self._data = self._load_data(self._config.filepath, self._simulation)
         self.bus = self._config.bus
         self.charging_point_id = self._config.charging_point_id
         # self.time_between_charges = self._config.time_between_charges
@@ -30,22 +30,23 @@ class Model:
             data=self._data,
             bus=self.bus,
             emissions=self._config.emissions,
-            mode=self._mode,
+            simulation=self._simulation,
         )
 
-    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
+    def _load_data(self, filepath: str, simulation: bool) -> pd.DataFrame:
         """
-        Load and process data from a CSV file based on the mode.
+        Load and process data from a CSV file based on if it is simulation data or real data.
 
         Returns
         --------
         pd.DataFrame: Processed data as a DataFrame.
         """
         df = pd.read_csv(filepath)
-        if mode == "real":
-            return self._process_real_data(df)
-        elif mode == "simulation":
+        
+        if simulation:
             return self._process_simulation_data(df)
+        else:
+            return self._process_real_data(df)
 
     @staticmethod
     def _process_real_data(df: pd.DataFrame) -> pd.DataFrame:

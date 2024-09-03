@@ -15,7 +15,7 @@ class ModelConfig:
         electric: bool,
         name: str,
         filepath: str,
-        mode: str,
+        simulation: bool,
         charging_point_id: int,
         # time_between_charges: int,
         initial_capacity_kWh=392,
@@ -34,22 +34,16 @@ class ModelConfig:
             The EURO standard of the bus, by default "EURO_6"
         """
         self.name = name
-        self._validate_mode(mode)
         self._validate_filepath(filepath)
         self.filepath = filepath
         self.output_dir = self._create_output_dir(name)
 
-        self.mode = mode
+        self.simulation = simulation
         self.electric = electric
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
         self.charging_point_id = charging_point_id
         # self.time_between_charges = time_between_charges
-
-    @staticmethod
-    def _validate_mode(mode: str) -> None:
-        if mode not in {"real", "simulation"}:
-            raise ValueError("Expected parameter mode as 'real' or 'simulation'.")
 
     @staticmethod
     def _validate_filepath(filepath: str) -> None:
@@ -65,19 +59,20 @@ class ModelConfig:
         os.makedirs(final_path, exist_ok=True)
         return final_path
 
-    def _load_data(self, filepath: str, mode: str) -> pd.DataFrame:
+    def _load_data(self, filepath: str, simulation: bool) -> pd.DataFrame:
         """
-        Load and process data from a CSV file based on the mode.
+        Load and process data from a CSV file based on if it is simulation data or real data.
 
         Returns
         --------
         pd.DataFrame: Processed data as a DataFrame.
         """
         df = pd.read_csv(filepath)
-        if mode == "real":
-            return self._process_real_data(df)
-        elif mode == "simulation":
+        
+        if simulation:
             return self._process_simulation_data(df)
+        else:
+            return self._process_real_data(df)
 
     def _create_bus(self, initial_capacity_kWh, max_power, bus_mass):
         if self.electric:

@@ -111,9 +111,9 @@ class Model:
             emissions += new_emissions
             battery_degradation += new_battery_degradation
 
-        print(f"Consumption: {consumption}")
-        print(f"Emissions: {emissions}")
-        print(f"Battery degradation: {battery_degradation}")
+        print(f"Consumption: {round(consumption/1000)} kWh")
+        print(f"Emissions: {round(emissions)} grams")
+        print(f"Battery degradation: {battery_degradation}%")
 
     def cumulative_consumption_and_emissions(self):
         """

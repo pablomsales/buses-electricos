@@ -19,15 +19,15 @@ def main():
         simulation=True,
         charging_point_id=1,
         # time_between_charges=??, # TODO
-        initial_capacity_kWh=588,
-        engine_max_power=230, # kW
+        initial_capacity_kWh=98 * 4,
+        engine_max_power=230,  # kW
         bus_mass=20000,
     )
     model = Model(config=model_config)
 
     model.run()
 
-    print(f"Tiempo ejecucion: {time() - start_time}")
+    print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 
 
 if __name__ == "__main__":

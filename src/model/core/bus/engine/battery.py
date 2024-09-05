@@ -120,7 +120,7 @@ class Battery:
         ah_transferred = self._calculate_current(power=power) * (time_seconds / 3600)
 
         # Update the state of charge and apply degradation
-        self.update_soc_and_degradation(ah_transferred, time_seconds)
+        self.update_soc_and_degradation(-ah_transferred, time_seconds)
 
     def _calculate_time_to_charge(self, power: int, desired_soc: float) -> float:
         """
@@ -146,7 +146,7 @@ class Battery:
         charge_needed = desired_soc_ah - self._get_soc_in_ah()
 
         # Calculate the time needed to charge the battery
-        return (charge_needed * 3600) / power
+        return ((charge_needed * self.voltage_v) / power) * 3600
 
     def _compute_new_soc(self, ah_transferred: float) -> float:
         """

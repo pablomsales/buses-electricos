@@ -77,21 +77,33 @@ class Model:
 
         return df
 
-    def run(self, n_iters: int = 1):
-        soc = self.soc()
+    def run(self, n_iters: int = 16):
 
         power = self._get_param_by_charging_point_id(
             f"{self.charging_point_id}", "power_watts"
         )
 
-        if soc < 20.0:
-            self.bus.engine.battery.charge_in_charging_point(power=power)
-
-        consumption, emissions, battery_degradation = (
-            self.cumulative_consumption_and_emissions()
+        distance_of_charging_point = self._get_param_by_charging_point_id(
+            f"{self.charging_point_id}", "distance_km"
         )
 
+        route_length_km = self.route.length_km
+
+        # Calcular el factor para ajustar el consumo y las emisiones
+        factor = (route_length_km + distance_of_charging_point) / route_length_km
+
+        consumption, emissions, battery_degradation = 0, 0, 0
+
         for _ in range(n_iters):
+            if self.soc() < 20.0:
+                # Carga la batería en el punto de carga
+                self.bus.engine.battery.charge_in_charging_point(power=power)
+
+                # Ajustar los valores usando el factor calculado
+                new_consumption, new_emissions, new_battery_degradation = (
+                    x * factor for x in (new_consumption, new_emissions, new_battery_degradation)
+                )
+                
             new_consumption, new_emissions, new_battery_degradation = (
                 self.cumulative_consumption_and_emissions()
             )

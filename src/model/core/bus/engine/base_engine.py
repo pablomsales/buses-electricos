@@ -4,7 +4,7 @@ class BaseEngine:
     """
 
     def __init__(self, max_power, efficiency):
-        self._max_power = max_power  # in Watts
+        self._max_power = max_power * 1000  # in Watts
         self.efficiency = efficiency  # in range [0, 1]
 
     @property

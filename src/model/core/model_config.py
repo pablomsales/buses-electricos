@@ -19,7 +19,7 @@ class ModelConfig:
         charging_point_id: int,
         # time_between_charges: int,
         initial_capacity_kWh=392,
-        engine_max_power=240000,
+        engine_max_power=240, # kW
         bus_mass=20000,
         euro_standard="EURO_6",
     ):

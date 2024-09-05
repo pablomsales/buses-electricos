@@ -18,15 +18,16 @@ def main():
         filepath=data,
         simulation=True,
         charging_point_id=1,
-        min_battery_charge=35,
-        max_battery_charge=70,
+        min_battery_charge=20,
+        max_battery_charge=80,
         initial_capacity_kWh=98 * 4,
         engine_max_power=230,  # kW
         bus_mass=20000,
     )
     model = Model(config=model_config)
 
-    model.run(n_iters=16 * 365)
+    model.run(n_iters=32)
+    print(f"\nCoste total: {model.cost}€")
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

@@ -34,6 +34,7 @@ class Model:
             emissions=self._config.emissions,
             simulation=self._simulation,
         )
+        self.cost = self._config.cost
 
     def _load_data(self, filepath: str, simulation: bool) -> pd.DataFrame:
         """
@@ -115,6 +116,12 @@ class Model:
             consumption += new_consumption
             emissions += new_emissions
             battery_degradation += new_battery_degradation
+
+        # Guardar los resultados finales en un archivo CSV
+        with open(os.path.join('simulation_results', 'simulation_results.csv'), mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['consumption', 'emissions', 'battery_degradation'])
+            writer.writerow([consumption, emissions, battery_degradation])
 
         # print(f"Consumption: {round(consumption/1000)} kWh")
         # print(f"Emissions: {round(emissions)} grams")

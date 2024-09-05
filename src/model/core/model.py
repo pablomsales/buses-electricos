@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from core.model_config import ModelConfig
 from core.route.route import Route
+from tqdm import tqdm
 
 
 class Model:
@@ -95,7 +96,7 @@ class Model:
 
         consumption, emissions, battery_degradation = 0, 0, 0
 
-        for _ in range(n_iters):
+        for _ in tqdm(range(n_iters)):
             if self.soc() < self.min_battery_charge:
                 # Carga la batería en el punto de carga
                 self.bus.engine.battery.charge_in_charging_point(

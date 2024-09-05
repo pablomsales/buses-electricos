@@ -17,9 +17,10 @@ class ModelConfig:
         filepath: str,
         simulation: bool,
         charging_point_id: int,
-        # time_between_charges: int,
+        min_battery_charge: float = 20,
+        max_battery_charge: float = 80,
         initial_capacity_kWh=392,
-        engine_max_power=240, # kW
+        engine_max_power=240,  # kW
         bus_mass=20000,
         euro_standard="EURO_6",
     ):
@@ -43,7 +44,8 @@ class ModelConfig:
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
         self.charging_point_id = charging_point_id
-        # self.time_between_charges = time_between_charges
+        self.min_battery_charge = min_battery_charge
+        self.max_battery_charge = max_battery_charge
 
     @staticmethod
     def _validate_filepath(filepath: str) -> None:
@@ -68,7 +70,7 @@ class ModelConfig:
         pd.DataFrame: Processed data as a DataFrame.
         """
         df = pd.read_csv(filepath)
-        
+
         if simulation:
             return self._process_simulation_data(df)
         else:

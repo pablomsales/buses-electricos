@@ -102,7 +102,7 @@ class Battery:
         # Finally, update the SoC percentage
         self.state_of_charge_percent = updated_soc_percent
 
-    def charge_in_charging_point(self, power: int, desired_soc: float = 80.0) -> None:
+    def charge_in_charging_point(self, power: int, desired_soc: float) -> None:
         """
         Charge the battery in a charging point.
 

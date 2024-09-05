@@ -25,7 +25,8 @@ class Model:
         self._data = self._load_data(self._config.filepath, self._simulation)
         self.bus = self._config.bus
         self.charging_point_id = self._config.charging_point_id
-        # self.time_between_charges = self._config.time_between_charges
+        self.min_battery_charge = self._config.min_battery_charge
+        self.max_battery_charge = self._config.max_battery_charge
         self.route = Route(
             data=self._data,
             bus=self.bus,
@@ -42,7 +43,7 @@ class Model:
         pd.DataFrame: Processed data as a DataFrame.
         """
         df = pd.read_csv(filepath)
-        
+
         if simulation:
             return self._process_simulation_data(df)
         else:
@@ -95,15 +96,18 @@ class Model:
         consumption, emissions, battery_degradation = 0, 0, 0
 
         for _ in range(n_iters):
-            if self.soc() < 20.0:
+            if self.soc() < self.min_battery_charge:
                 # Carga la batería en el punto de carga
-                self.bus.engine.battery.charge_in_charging_point(power=power)
+                self.bus.engine.battery.charge_in_charging_point(
+                    power=power, desired_soc=self.max_battery_charge
+                )
 
                 # Ajustar los valores usando el factor calculado
                 new_consumption, new_emissions, new_battery_degradation = (
-                    x * factor for x in (new_consumption, new_emissions, new_battery_degradation)
+                    x * factor
+                    for x in (new_consumption, new_emissions, new_battery_degradation)
                 )
-                
+
             new_consumption, new_emissions, new_battery_degradation = (
                 self.cumulative_consumption_and_emissions()
             )
@@ -113,7 +117,7 @@ class Model:
 
         print(f"Consumption: {round(consumption/1000)} kWh")
         print(f"Emissions: {round(emissions)} grams")
-        print(f"Battery degradation: {battery_degradation}%")
+        print(f"Battery degradation: {round(battery_degradation, 6)}%")
 
     def cumulative_consumption_and_emissions(self):
         """

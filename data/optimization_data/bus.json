@@ -22,10 +22,15 @@
                 "max_value": 3000,
                 "unit": "kg"
             },
-            "time_between_charges": {
-                "min_value": 60,
-                "max_value": 1440,
-                "unit": "minutes"
+            "min_charge": {
+                "min_value": 5,
+                "max_value": 45,
+                "unit": "percentage"
+            },
+            "max_charge": {
+                "min_value": 55,
+                "max_value": 100,
+                "unit": "percentage"
             }
         }
     }

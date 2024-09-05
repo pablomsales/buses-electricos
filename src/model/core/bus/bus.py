@@ -110,6 +110,9 @@ class Bus:
     def get_battery_state_of_health(self):
         return self.engine.get_battery_state_of_health()
 
+    def get_battery_capacity_kWh(self):
+        return self.engine.get_battery_capacity_kWh()
+
     def __str__(self):
         return (
             f"Bus Characteristics:\n"

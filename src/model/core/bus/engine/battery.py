@@ -28,6 +28,7 @@ class Battery:
             The minimum allowed battery health as a percentage.
         """
         self.voltage_v = voltage_v
+        self.initial_capacity_kWh = initial_capacity_kWh
         self._initial_capacity_ah = self._convert_kWh_to_Ah(initial_capacity_kWh)
         self.current_capacity_ah = self._convert_kWh_to_Ah(initial_capacity_kWh)
         self._max_cycles = max_cycles
@@ -113,14 +114,14 @@ class Battery:
         desired_soc : float
             The desired state of charge as a percentage (0-100).
         """
-        print("------ Charging battery ------")
-        print(f"Initial SoC: {round(self.state_of_charge_percent, 2)}%")
-        print(f"End SoC: {round(desired_soc, 2)}%")
+        # print("------ Charging battery ------")
+        # print(f"Initial SoC: {round(self.state_of_charge_percent, 2)}%")
+        # print(f"End SoC: {round(desired_soc, 2)}%")
 
         # Calculate the time needed to reach the desired SoC
         time_seconds = self._calculate_time_to_charge(power, desired_soc)
-        print(f"Time of charge: {round(time_seconds/60)} minutes")
-        print("------------------------------")
+        # print(f"Time of charge: {round(time_seconds/60)} minutes")
+        # print("------------------------------")
 
         # Convert Watts to Ah
         ah_transferred = self._calculate_current(power=power) * (time_seconds / 3600)

@@ -26,7 +26,7 @@ def main():
     )
     model = Model(config=model_config)
 
-    model.run()
+    model.run(n_iters=16 * 365)
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

@@ -13,7 +13,7 @@ def main():
     data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
     model_config = ModelConfig(
-        electric=True,
+        electric=False,
         name=name,
         filepath=data,
         simulation=True,
@@ -26,7 +26,7 @@ def main():
     )
     model = Model(config=model_config)
 
-    model.run(n_iters=32)
+    model.run()
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

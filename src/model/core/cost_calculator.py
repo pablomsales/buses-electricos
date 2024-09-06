@@ -1,7 +1,3 @@
-import csv
-import os
-
-
 class CostCalculator:
     def __init__(self, bus, electricity_cost, battery_capacity_cost):
         self.bus = bus

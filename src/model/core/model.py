@@ -34,7 +34,8 @@ class Model:
             emissions=self._config.emissions,
             simulation=self._simulation,
         )
-        self.cost_calculator = self._config.cost_calculator
+        if self.bus.engine.electric:
+            self.cost_calculator = self._config.cost_calculator
 
     def _load_data(self, filepath: str, simulation: bool) -> pd.DataFrame:
         """
@@ -81,6 +82,15 @@ class Model:
         return df
 
     def run(self, n_iters: int = 16):
+        """
+        Run the simulation.
+        """
+        if self.bus.engine.electric:
+            self._run_electric(n_iters=n_iters)
+        else:
+            self._run_combustion(n_iters=n_iters)
+
+    def _run_electric(self, n_iters):
         power = self._get_param_by_charging_point_id(
             f"{self.charging_point_id}", "power_watts"
         )
@@ -110,7 +120,7 @@ class Model:
             self.bus.update_num_travellers()
 
             # Obtener valores acumulados de consumo y emisiones por sección
-            new_consumption, *new_emissions, new_battery_degradation = self.cumulative_consumption_and_emissions()
+            new_consumption, *new_emissions, new_battery_degradation = self._cumulative_consumption_and_emissions_electric()
 
             # Ajustar los valores usando el factor calculado
             new_consumption *= factor
@@ -130,7 +140,7 @@ class Model:
 
         # Guardar los resultados finales en un archivo CSV
         with open(
-            os.path.join("simulation_results", "simulation_results.csv"),
+            os.path.join("simulation_results", "electric_simulation_results.csv"),
             mode="w",
             newline="",
         ) as file:
@@ -158,7 +168,53 @@ class Model:
                 total_cost
             ])
 
-    def cumulative_consumption_and_emissions(self):
+    def _run_combustion(self, n_iters):
+        # Inicializar acumuladores para consumo y emisiones
+        consumption = 0.0
+        emissions = {'NOx': 0.0, 'CO': 0.0, 'HC': 0.0, 'PM': 0.0, 'CO2': 0.0}
+
+        for _ in tqdm(range(n_iters)):
+            # Actualizamos número de pasajeros manualmente
+            self.bus.update_num_travellers()
+
+            # Obtener valores acumulados de consumo y emisiones por sección
+            new_consumption, *new_emissions = self._cumulative_consumption_and_emissions_combustion()
+
+            # Acumular los valores
+            consumption += new_consumption
+
+            # Acumular emisiones individuales para cada contaminante
+            emissions_keys = ['NOx', 'CO', 'HC', 'PM', 'CO2']
+            for key, emission in zip(emissions_keys, new_emissions):
+                emissions[key] += emission
+
+        # Guardar los resultados finales en un archivo CSV
+        with open(
+            os.path.join("simulation_results", "combustion_simulation_results.csv"),
+            mode="w",
+            newline="",
+        ) as file:
+            writer = csv.writer(file)
+            writer.writerow(
+                [
+                    "consumption_L",
+                    "NOx_g",
+                    "CO_g",
+                    "HC_g",
+                    "PM_g",
+                    "CO2_g",
+                ]
+            )
+            writer.writerow([
+                consumption,
+                emissions['NOx'],
+                emissions['CO'],
+                emissions['HC'],
+                emissions['PM'],
+                emissions['CO2']
+            ])
+
+    def _cumulative_consumption_and_emissions_electric(self):
         """
         Calculate and accumulate consumption and emissions data across all sections.
 
@@ -198,6 +254,46 @@ class Model:
 
         # Crear la lista de retorno con los valores acumulados
         result = [total_wh] + list(total_emissions.values()) + [total_battery_degradation]
+
+        return result
+    
+    def _cumulative_consumption_and_emissions_combustion(self):
+        """
+        Calculate and accumulate consumption and emissions data across all sections.
+
+        Returns:
+            A list with accumulated values for consumption in Wh, emissions (NOx, CO, HC, PM, CO2) in grams, 
+            and battery degradation.
+        """
+        # Inicializar acumuladores para los valores deseados
+        total_L = 0.0
+        # Inicializar un diccionario para acumular cada contaminante por separado
+        total_emissions = {
+            'NOx': 0.0,
+            'CO': 0.0,
+            'HC': 0.0,
+            'PM': 0.0,
+            'CO2': 0.0
+        }
+
+        # Iterar a través de las secciones de la ruta y acumular los datos necesarios
+        for sect in self.route.sections:
+            # Duración de la sección en segundos
+            duration = sect.end_time - sect.start_time # seconds
+            # Extraer los valores de emisiones y consumo
+            sect_emissions = {key: float(value) for key, value in sect.section_emissions.items()}
+            sect_consumption = (float(sect.consumption["L/h"]) * duration) / 3600  # "L/h" -> "L"
+
+            # Acumular L
+            total_L += sect_consumption  # "L"
+
+            # Acumular las emisiones de cada contaminante multiplicadas por la duración
+            for contaminant, emission in total_emissions.items():
+                if contaminant in sect_emissions:
+                    total_emissions[contaminant] += sect_emissions[contaminant] * duration
+
+        # Crear la lista de retorno con los valores acumulados
+        result = [total_L] + list(total_emissions.values())
 
         return result
 

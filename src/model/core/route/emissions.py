@@ -31,9 +31,13 @@ class Emissions:
         Calculate emissions based on the given power in kW.
         Returns a dictionary with the emissions for NOx, CO, HC, PM, and CO2 in grams per second.
         """
+        # Si el vehículo es eléctrico, todas las emisiones son cero
+        if self._electric:
+            return {"NOx": 0, "CO": 0, "HC": 0, "PM": 0, "CO2": 0}
+
         emissions = self._calculate_pollutant_emissions(power_kw)
 
-        # add CO2 emissions
+        # Add CO2 emissions
         if fuel_consumption_rate != 0:
             emissions["CO2"] = self._calculate_co2_emissions(fuel_consumption_rate)
         else:
@@ -45,6 +49,9 @@ class Emissions:
         """
         Calculate emissions for NOx, CO, HC, and PM based on the given power in kW.
         """
+        # Si el vehículo es eléctrico, todas las emisiones son cero
+        if self._electric:
+            return {"NOx": 0, "CO": 0, "HC": 0, "PM": 0}
 
         # Si la potencia del motor es negativa, la ajustamos para evitar valores inválidos.
         if power_kw < 0:

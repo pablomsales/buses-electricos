@@ -17,7 +17,7 @@ class ModelConfig:
         name: str,
         filepath: str,
         simulation: bool,
-        charging_point_id: int,
+        charging_point_id: int = 1,
         min_battery_charge: float = 20,
         max_battery_charge: float = 80,
         initial_capacity_kWh=392,
@@ -87,11 +87,12 @@ class ModelConfig:
         self.electric = electric
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
-        self.cost_calculator = CostCalculator(
-            bus=self.bus,
-            electricity_cost=0.15,  # €/kWh # valores estaticos en datahon, no tocar
-            battery_capacity_cost=140,  # €/kWh # valores estaticos en datathon, no tocar
-        )
+        if self.electric:
+            self.cost_calculator = CostCalculator(
+                bus=self.bus,
+                electricity_cost=0.15,  # €/kWh # valores estaticos en datahon, no tocar
+                battery_capacity_cost=140,  # €/kWh # valores estaticos en datathon, no tocar
+            )
         self.charging_point_id = charging_point_id
         self.min_battery_charge = min_battery_charge
         self.max_battery_charge = max_battery_charge

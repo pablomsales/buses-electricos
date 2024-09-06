@@ -6,11 +6,6 @@
             "max_value": 20000,
             "unit": "kg"
         },
-        "engine_power": {
-            "min_value": 150000,
-            "max_value": 400000,
-            "unit": "Watts"
-        },
         "battery": {
             "capacity": {
                 "min_value": 230,

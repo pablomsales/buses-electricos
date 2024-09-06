@@ -27,7 +27,6 @@ def main():
     model = Model(config=model_config)
 
     model.run(n_iters=32)
-    print(f"\nCoste total: {model.cost}€")
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

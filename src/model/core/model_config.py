@@ -1,12 +1,12 @@
 import os
 
 import pandas as pd
-from core.cost_calculator import CostCalculator
 from core.bus.bus import Bus
 from core.bus.engine.battery import Battery
 from core.bus.engine.electrical_engine import ElectricalEngine
 from core.bus.engine.fuel_engine import FuelEngine
 from core.bus.fuel import Fuel
+from core.cost_calculator import CostCalculator
 from core.route.emissions import Emissions
 
 
@@ -24,8 +24,6 @@ class ModelConfig:
         engine_max_power=240,  # kW
         bus_mass=20000,
         euro_standard="EURO_6",
-        electricity_cost=0.15,  # €/kWh
-        battery_capacity_cost=200,  # €/kWh
     ):
         """
         Class to create the configuration of the bus and emissions.
@@ -46,10 +44,10 @@ class ModelConfig:
         self.electric = electric
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
-        self.cost = self._calculate_total_cost(
+        self.cost_calculator = CostCalculator(
             bus=self.bus,
-            electricity_cost=electricity_cost,  # €/kWh
-            battery_capacity_cost=battery_capacity_cost,  # €/kWh
+            electricity_cost=0.15,  # €/kWh # valores estaticos en datahon, no tocar
+            battery_capacity_cost=140,  # €/kWh # valores estaticos en datathon, no tocar
         )
         self.charging_point_id = charging_point_id
         self.min_battery_charge = min_battery_charge
@@ -158,12 +156,3 @@ class ModelConfig:
 
     def _create_emissions(self, euro_standard):
         return Emissions(euro_standard=euro_standard, electric=self.electric)
-
-    def _calculate_total_cost(self, bus, electricity_cost, battery_capacity_cost):
-        cc = CostCalculator(
-            bus=bus,
-            electricity_cost=electricity_cost,  # €/kWh
-            battery_capacity_cost=battery_capacity_cost,  # €/kWh
-            )
-        return cc.total_cost()
-    

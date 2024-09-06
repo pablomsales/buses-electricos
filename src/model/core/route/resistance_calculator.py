@@ -41,21 +41,21 @@ class ResistanceCalculator:
         """
         Calculate the inertia of the section.
         """
-        return self.bus.mass * self.acceleration
+        return self.bus.total_mass * self.acceleration
 
     @property
     def grade_resistance(self):
         """
         Calculate the grade resistance of the section.
         """
-        return self.bus.mass * GRAVITY * math.sin(math.radians(self.grade_angle))
+        return self.bus.total_mass * GRAVITY * math.sin(math.radians(self.grade_angle))
 
     @property
     def rolling_resistance(self):
         """
         Calculate the rolling resistance of the section.
         """
-        return self.bus.rolling_resistance_coefficient * self.bus.mass * GRAVITY
+        return self.bus.rolling_resistance_coefficient * self.bus.total_mass * GRAVITY
 
     @property
     def total_resistance(self):

@@ -110,6 +110,12 @@ class Model:
                     for x in (new_consumption, new_emissions, new_battery_degradation)
                 )
 
+            # Actualizamos numero de pasajeros manualmente
+            # NOTE: sería mas realista variar el numero de pasajeros en cada parada,
+            # pero a modo de solucion rapida se actualizan manualmente cada vez que se inicia
+            # la ruta
+            self.bus.update_num_travellers()
+
             new_consumption, new_emissions, new_battery_degradation = (
                 self.cumulative_consumption_and_emissions()
             )

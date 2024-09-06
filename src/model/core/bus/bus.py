@@ -1,3 +1,4 @@
+import numpy as np
 from core.bus.engine.base_engine import BaseEngine
 
 
@@ -8,7 +9,7 @@ class Bus:
 
     def __init__(
         self,
-        mass,
+        bus_mass,
         drag_coefficient,
         frontal_area,
         rolling_resistance_coefficient,
@@ -30,23 +31,28 @@ class Bus:
         engine : BaseEngine
             Engine object representing the bus engine.
         """
-        self._mass = mass
+        self.num_travellers = self.update_num_travellers()
+        self.bus_mass = bus_mass
         self._drag_coefficient = drag_coefficient
         self._frontal_area = frontal_area
         self._rolling_resistance_coefficient = rolling_resistance_coefficient
-        self.engine = engine  # Use the setter for validation
+        self.engine = engine
 
     @property
-    def mass(self):
+    def total_mass(self):
         """
-        Mass of the bus in kg
+        Total mass of the bus in kg
         """
-        return self._mass
+        return self.bus_mass + (self.num_travellers * 70)
 
-    @mass.setter
-    def mass(self, value):
+    @property
+    def bus_mass(self):
+        return self._bus_mass
+
+    @bus_mass.setter
+    def bus_mass(self, value):
         if value > 0:
-            self._mass = value
+            self._bus_mass = value
 
     @property
     def drag_coefficient(self):
@@ -100,6 +106,15 @@ class Bus:
             raise ValueError(
                 "Engine must be an instance of BaseEngine or its subclasses"
             )
+
+    @staticmethod
+    def update_num_travellers():
+        # Set seed
+        np.random.seed(16)
+        # Generate num of travellers
+        num_travellers = np.random.normal(loc=40, scale=30)
+        # Clipping to stablished bounds and rounding to int
+        return round(np.clip(num_travellers, 0, 146))
 
     def get_battery_state_of_charge(self):
         return self.engine.get_battery_state_of_charge()

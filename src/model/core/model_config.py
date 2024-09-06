@@ -115,7 +115,7 @@ class ModelConfig:
 
         # Create a bus instance
         bus_instance = Bus(
-            mass=bus_mass,
+            bus_mass=bus_mass,
             drag_coefficient=0.8,  # parametro estatico para datathon
             frontal_area=9.0,  # parametro estatico para datathon
             rolling_resistance_coefficient=0.01,  # parametro estatico para datathon
@@ -145,7 +145,7 @@ class ModelConfig:
 
         # Create a bus instance
         bus_instance = Bus(
-            mass=bus_mass,
+            bus_mass=bus_mass,
             drag_coefficient=0.8,
             frontal_area=9.0,
             rolling_resistance_coefficient=0.01,

@@ -81,7 +81,7 @@ class ModelConfig:
         self.name = name
         self._validate_filepath(filepath)
         self.filepath = filepath
-        self.output_dir = self._create_output_dir(name)
+        # self.output_dir = self._create_output_dir(name) # NO USAR DATATHON
 
         self.simulation = simulation
         self.electric = electric

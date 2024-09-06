@@ -1,5 +1,6 @@
 import numpy as np
 from core.bus.engine.base_engine import BaseEngine
+from utils.constants import TRAVELLER_WEIGHT
 
 
 class Bus:
@@ -43,7 +44,7 @@ class Bus:
         """
         Total mass of the bus in kg
         """
-        return self.bus_mass + (self.num_travellers * 70)
+        return self.bus_mass + (self.num_travellers * TRAVELLER_WEIGHT)
 
     @property
     def bus_mass(self):

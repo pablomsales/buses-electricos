@@ -12,7 +12,7 @@ def main():
 
     data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
-    ELECTRIC = True
+    ELECTRIC = False
 
     days = 1
 

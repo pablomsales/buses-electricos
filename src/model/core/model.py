@@ -168,6 +168,17 @@ class Model:
                 total_cost
             ])
 
+        return {
+            "consumption": consumption,
+            "NOx": emissions['NOx'],
+            "CO": emissions['CO'],
+            "HC": emissions['HC'],
+            "PM": emissions['PM'],
+            "CO2": emissions['CO2'],
+            "battery_degradation": battery_degradation,
+            "total_cost": total_cost
+        }
+
     def _run_combustion(self, n_iters):
         # Inicializar acumuladores para consumo y emisiones
         consumption = 0.0
@@ -213,6 +224,15 @@ class Model:
                 emissions['PM'],
                 emissions['CO2']
             ])
+
+        return {
+            "consumption": consumption,
+            "NOx": emissions['NOx'],
+            "CO": emissions['CO'],
+            "HC": emissions['HC'],
+            "PM": emissions['PM'],
+            "CO2": emissions['CO2']
+        }
 
     def _cumulative_consumption_and_emissions_electric(self):
         """

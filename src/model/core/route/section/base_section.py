@@ -146,7 +146,7 @@ class BaseSection:
         power_kw = self.instant_power / 1000  # Convert W to kW
 
         # gonna be 0 when ElectricalEngine, so will not interfere
-        fuel_consumption_rate = self.consumption["L/km"] / self.duration_time
+        fuel_consumption_rate = self.consumption["L/h"] / 3600  # Convert L/h to L/s
 
         return self.emissions.calculate_emissions(
             power_kw,

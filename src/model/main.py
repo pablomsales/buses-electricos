@@ -42,7 +42,7 @@ def main():
 
     model = Model(config=model_config)
 
-    model.run(n_iters=16*days)
+    model.run(n_days=days)
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

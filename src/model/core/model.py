@@ -81,14 +81,20 @@ class Model:
 
         return df
 
-    def run(self, n_iters: int = 16):
+    def run(self, n_days: int = 1):
         """
         Run the simulation.
+
+        Args:
+            n_days (int): Number of days you want to simulate, default is 1. One day has 16 iterations (routes).
+        
+        Returns:
+            A dictionary with the results of the simulation.
         """
         if self.bus.engine.electric:
-            self._run_electric(n_iters=n_iters)
+            self._run_electric(n_iters=n_days*16)
         else:
-            self._run_combustion(n_iters=n_iters)
+            self._run_combustion(n_iters=n_days*16)
 
     def _run_electric(self, n_iters):
         power = self._get_param_by_charging_point_id(
@@ -113,7 +119,7 @@ class Model:
         n_buses = 1
 
         # Inicializar el tiempo de conducción
-        availibility_time_s = 0.0
+        availability_time_s = 0.0
 
         # Inicializar acumuladores para consumo, emisiones y degradación de batería
         consumption = 0.0
@@ -156,7 +162,10 @@ class Model:
                 emissions[key] += emission
             
             # Actualizar el tiempo de disponibilidad
-            availibility_time_s += self.route.duration_time
+            availability_time_s += self.route.duration_time
+        
+        # Configurar el tiempo final de disponibilidad
+        availability_time_s -= unavailability_time_s
 
         bus_cost, consumption_cost = self.cost_calculator.calculate_costs(consumption)
 
@@ -178,7 +187,7 @@ class Model:
                     "battery_degradation_%",
                     "bus_cost",
                     "consumption_cost",
-                    "availibility_time_s",
+                    "availability_time_s",
                     "unavailability_time_s",
                     "n_buses"
                 ]
@@ -194,7 +203,7 @@ class Model:
                     battery_degradation,
                     bus_cost,
                     consumption_cost,
-                    availibility_time_s,
+                    availability_time_s,
                     unavailability_time_s,
                     n_buses
                 ]
@@ -210,7 +219,7 @@ class Model:
             "battery_degradation": battery_degradation,
             "bus_cost": bus_cost,
             "consumption_cost": consumption_cost,
-            "availibility_time_s": availibility_time_s,
+            "availability_time_s": availability_time_s,
             "unavailability_time_s": unavailability_time_s,
             "n_buses": n_buses
         }

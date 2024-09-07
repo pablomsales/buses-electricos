@@ -4,10 +4,10 @@ class CostCalculator:
         self.electricity_cost = electricity_cost  # €/kWh
         self.battery_capacity_cost = battery_capacity_cost  # €/kWh
 
-    def calculate_total_cost(self, consumption):
+    def calculate_costs(self, consumption):
         bus_cost = self._get_bus_cost()
         consumption_cost = self._get_consumption_cost(consumption)
-        return round(bus_cost + consumption_cost, 2)
+        return float(round(bus_cost, 2)), float(round(consumption_cost, 2))
 
     def _get_bus_cost(self):
         base_cost = 450000

@@ -12,7 +12,7 @@ def main():
 
     data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
 
-    ELECTRIC = False
+    ELECTRIC = True
 
     days = 1
 
@@ -29,7 +29,7 @@ def main():
             engine_max_power=230,  # kW
             bus_mass=20000,
         )
-    
+
     else:
         model_config = ModelConfig(
             electric=ELECTRIC,
@@ -42,7 +42,7 @@ def main():
 
     model = Model(config=model_config)
 
-    model.run(n_iters=16*days)
+    model.run(n_days=days)
 
     print(f"\nTiempo de ejecución: {round(time() - start_time, 2)}s")
 

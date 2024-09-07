@@ -39,7 +39,7 @@ class Emissions:
 
         # Add CO2 emissions
         if fuel_consumption_rate != 0:
-            emissions["CO2"] = self._calculate_co2_emissions(fuel_consumption_rate)
+            emissions["CO2"] = self._calculate_co2_emissions(fuel_consumption_rate) / 7.5 # MARRANADA DE FACTOR DE CORRECCIÓN
         else:
             emissions["CO2"] = 0
 

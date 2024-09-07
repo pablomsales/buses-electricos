@@ -99,10 +99,11 @@ class Model:
             f"{self.charging_point_id}", "distance_km"
         )
 
-        # Inicializar tiempo y convertimos a segundos
-        time_to_charging_point_s = (
-            self._get_param_by_charging_point_id(f"{self.time_min}", "time_min") * 60
+        # Inicializar tiempo
+        time_to_charging_point_s = self._get_param_by_charging_point_id(
+            f"{self.charging_point_id}", "time_min"
         )
+        time_to_charging_point_s *= 60  # convertimos a segundos
 
         route_length_km = self.route.length_km
 
@@ -148,6 +149,7 @@ class Model:
                 emissions[key] += emission
 
         total_cost = self.cost_calculator.calculate_total_cost(consumption)
+        total_time_below_min_soc = self.bus.get_total_time_below_min_soc()
 
         # Guardar los resultados finales en un archivo CSV
         with open(
@@ -166,6 +168,7 @@ class Model:
                     "CO2_g",
                     "battery_degradation_%",
                     "total_cost",
+                    "total_time_below_min_soc",
                 ]
             )
             writer.writerow(
@@ -178,6 +181,7 @@ class Model:
                     emissions["CO2"],
                     battery_degradation,
                     total_cost,
+                    total_time_below_min_soc,
                 ]
             )
 
@@ -190,6 +194,7 @@ class Model:
             "CO2": emissions["CO2"],
             "battery_degradation": battery_degradation,
             "total_cost": total_cost,
+            "total_time_below_min_soc": total_time_below_min_soc,
         }
 
     def _run_combustion(self, n_iters):

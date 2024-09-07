@@ -129,6 +129,9 @@ class Bus:
     def get_battery_capacity_kWh(self):
         return self.engine.get_battery_capacity_kWh()
 
+    def get_total_time_below_min_soc(self):
+        return self.engine.get_total_time_below_min_soc()
+
     def __str__(self):
         return (
             f"Bus Characteristics:\n"

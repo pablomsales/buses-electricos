@@ -1,3 +1,6 @@
+from time import time
+
+
 class Battery:
     """
     Class representing the battery of an electric vehicle.
@@ -10,6 +13,7 @@ class Battery:
         max_cycles: int,
         initial_soc_percent: float,
         min_state_of_health: float,
+        min_battery_charge: float,
     ):
         """
         Initialize a Battery instance.
@@ -36,6 +40,9 @@ class Battery:
         self.state_of_charge_percent = initial_soc_percent
         self.min_state_of_health = min_state_of_health
         self._degradation_in_section = 0.0
+        self.min_battery_charge = min_battery_charge
+        self.timer_start = None
+        self.total_time_below_min_soc = 0
 
     def _convert_kWh_to_Ah(self, kWh: float) -> float:
         """
@@ -102,6 +109,7 @@ class Battery:
 
         # Finally, update the SoC percentage
         self.state_of_charge_percent = updated_soc_percent
+        self.check_soc_under_minimum(self.state_of_charge_percent)
 
     def charge_in_charging_point(self, power: int, desired_soc: float) -> float:
         """
@@ -171,21 +179,33 @@ class Battery:
         )
         # Calculate the updated State of Charge percentage
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
-        self._check_drained_battery(updated_soc_percent)
+        # self._check_drained_battery(updated_soc_percent)
         return updated_soc_percent
 
     def _get_soc_in_ah(self) -> float:
         """Get the current state of charge in Ampere-hours."""
         return self.current_capacity_ah * (self.state_of_charge_percent / 100)
 
-    def _check_drained_battery(self, soc_percent: float) -> None:
-        if soc_percent == 0:
-            raise RuntimeError(
-                "The battery is completely drained. "
-                "Handle this exception according to the needs of the optimization module. "
-                "For instance, if you're using a loop, consider handling this exception to skip the iteration "
-                "without halting the execution of the program."
-            )
+    # def _check_drained_battery(self, soc_percent: float) -> None:
+    #     if soc_percent == 0:
+    #         raise RuntimeError(
+    #             "The battery is completely drained. "
+    #             "Handle this exception according to the needs of the optimization module. "
+    #             "For instance, if you're using a loop, consider handling this exception to skip the iteration "
+    #             "without halting the execution of the program."
+    #         )
+
+    def check_soc_under_minimum(self, soc_percent: float):
+        if soc_percent < self.min_battery_charge:
+            if self.timer_start is None:  # Si el cronómetro no ha iniciado
+                self.timer_start = time()  # Inicia el cronómetro
+        else:
+            if self.timer_start is not None:  # Si el cronómetro está corriendo
+                time_below_min = time() - self.timer_start
+                self.total_time_below_min_soc += (
+                    time_below_min  # Actualiza el tiempo total
+                )
+                self.timer_start = None  # Detén el cronómetro
 
     def _calculate_current(
         self,

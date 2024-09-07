@@ -20,26 +20,26 @@ class ModelConfig:
         charging_point_id: int = 1,
         min_battery_charge: float = 20,
         max_battery_charge: float = 80,
-        initial_capacity_kWh=392,
-        engine_max_power=240,  # kW
-        bus_mass=20000,
-        euro_standard="EURO_6",  # NO CAMBIAR
+        initial_capacity_kWh: float = 392,
+        engine_max_power: float = 240,  # kW
+        bus_mass: float = 20000,
+        euro_standard: str = "EURO_6",  # NO CAMBIAR
     ):
         """
-        Configuración para la simulación de un autobús y sus emisiones.
+        Configuración para la simulación de un autobús y sus características.
 
         Parameters
         ----------
         electric : bool
-            Indica si el autobús es eléctrico. Por defecto es True.
+            Indica si el autobús es eléctrico.
         name : str
             Nombre del modelo de autobús.
         filepath : str
             Ruta del archivo donde se almacenará la configuración y los resultados.
         simulation : bool
-            Indica si se está realizando una simulación. Por defecto es False.
-        charging_point_id : int
-            Identificador del punto de carga del autobús.
+            Indica si se está realizando una simulación.
+        charging_point_id : int, optional
+            Identificador del punto de carga del autobús. Por defecto es 1.
         min_battery_charge : float, optional
             Carga mínima de la batería en porcentaje. Por defecto es 20.
         max_battery_charge : float, optional
@@ -51,7 +51,7 @@ class ModelConfig:
         bus_mass : float, optional
             Masa del autobús en kg. Por defecto es 20000.
         euro_standard : str, optional
-            Norma EURO del autobús. Por defecto es "EURO_6". NO CAMBIAR
+            Norma EURO del autobús. Por defecto es "EURO_6". NO CAMBIAR.
 
         Attributes
         ----------
@@ -59,8 +59,6 @@ class ModelConfig:
             Nombre del modelo de autobús.
         filepath : str
             Ruta del archivo para guardar la configuración y los resultados.
-        output_dir : str
-            Directorio de salida para los resultados.
         simulation : bool
             Indica si se está realizando una simulación.
         electric : bool
@@ -68,9 +66,9 @@ class ModelConfig:
         bus : Bus
             Instancia de la clase Bus con la configuración inicial.
         emissions : Emissions
-            Instancia de la clase Emissions con la norma EURO.
-        cost_calculator : CostCalculator
-            Instancia de la clase CostCalculator para calcular los costos asociados.
+            Instancia de la clase Emissions basada en la norma EURO especificada.
+        cost_calculator : CostCalculator, optional
+            Instancia de la clase CostCalculator para calcular los costos asociados (solo si el autobús es eléctrico).
         charging_point_id : int
             Identificador del punto de carga del autobús.
         min_battery_charge : float
@@ -140,6 +138,23 @@ class ModelConfig:
             return self._process_real_data(df)
 
     def _create_bus(self, initial_capacity_kWh, max_power, bus_mass):
+        """
+        Crea una instancia de la clase Bus dependiendo de si el autobús es eléctrico o de combustible.
+
+        Parameters
+        ----------
+        initial_capacity_kWh : float
+            Capacidad inicial de la batería en kWh (solo se usa si el autobús es eléctrico).
+        max_power : float
+            Potencia máxima del motor en kW.
+        bus_mass : float
+            Masa del autobús en kg.
+
+        Returns
+        -------
+        Bus
+            Instancia de la clase Bus, ya sea eléctrica o de combustible.
+        """
         if self.electric:
             return self._create_electric_bus(initial_capacity_kWh, max_power, bus_mass)
         else:

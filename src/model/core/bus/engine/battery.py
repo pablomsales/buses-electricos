@@ -103,7 +103,7 @@ class Battery:
         # Finally, update the SoC percentage
         self.state_of_charge_percent = updated_soc_percent
 
-    def charge_in_charging_point(self, power: int, desired_soc: float) -> None:
+    def charge_in_charging_point(self, power: int, desired_soc: float) -> float:
         """
         Charge the battery in a charging point.
 
@@ -128,6 +128,8 @@ class Battery:
 
         # Update the state of charge and apply degradation
         self.update_soc_and_degradation(-ah_transferred, time_seconds)
+
+        return time_seconds
 
     def _calculate_time_to_charge(self, power: int, desired_soc: float) -> float:
         """

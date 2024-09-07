@@ -10,14 +10,29 @@ from tqdm import tqdm
 class Model:
     def __init__(self, config: ModelConfig):
         """
-        Initialize a Model instance.
+        Inicializa una instancia de la clase Model.
 
-        Args:
-            name (str): The name of the model.
-            filepath (str): Path to the input data CSV file.
-            bus: Instance of the Bus class.
-            emissions: Instance of the Emissions class.
-            simulation (bool): Whether the model is in simulation mode or not.
+        Parameters
+        ----------
+        config : ModelConfig
+            Instancia de la clase ModelConfig que contiene toda la configuración necesaria para el modelo.
+
+        Attributes
+        ----------
+        name : str
+            Nombre del modelo.
+        bus : Bus
+            Instancia de la clase Bus proveniente de la configuración.
+        charging_point_id : int
+            Identificador del punto de carga del autobús.
+        min_battery_charge : float
+            Carga mínima de la batería en porcentaje.
+        max_battery_charge : float
+            Carga máxima de la batería en porcentaje.
+        route : Route
+            Instancia de la clase Route que representa la ruta y las emisiones del autobús.
+        cost_calculator : CostCalculator, optional
+            Instancia de la clase CostCalculator para calcular costos, presente si el autobús es eléctrico.
         """
         self._config = config
         self.name = self._config.name
@@ -81,7 +96,7 @@ class Model:
 
         return df
 
-    def run(self, n_days: int = 1):
+    def run(self, n_days: int = 1) -> dict:
         """
         Run the simulation.
 
@@ -96,7 +111,33 @@ class Model:
         else:
             return self._run_combustion(n_iters=n_days * 16)
 
-    def _run_electric(self, n_iters):
+    def _run_electric(self, n_iters: int) -> dict:
+        """
+        Ejecuta una simulación del autobús eléctrico a lo largo de varias iteraciones.
+
+        Parameters
+        ----------
+        n_iters : int
+            Número de iteraciones de la simulación.
+
+        Returns
+        -------
+        dict
+            Un diccionario con los resultados de la simulación, incluyendo:
+            - "consumption" (float): Consumo acumulado en Wh.
+            - "NOx" (float): Emisiones acumuladas de NOx en gramos.
+            - "CO" (float): Emisiones acumuladas de CO en gramos.
+            - "HC" (float): Emisiones acumuladas de HC en gramos.
+            - "PM" (float): Emisiones acumuladas de partículas (PM) en gramos.
+            - "CO2" (float): Emisiones acumuladas de CO2 en gramos.
+            - "battery_degradation" (float): Degradación de la batería en porcentaje.
+            - "bus_cost" (float): Coste asociado al bus en euros.
+            - "consumption_cost" (float): Coste asociado al consumo energético en euros.
+            - "availability_time_s" (float): Tiempo disponible del bus en segundos.
+            - "unavailability_time_s" (float): Tiempo de inoperabilidad del bus en segundos.
+            - "n_buses" (int): Número de autobuses requeridos en la ruta.
+            - "total_time_below_min_soc_s" (float): Tiempo total en que el SoC estuvo por debajo del mínimo en segundos.
+        """
         power = self._get_param_by_charging_point_id(
             f"{self.charging_point_id}", "power_watts"
         )
@@ -229,7 +270,27 @@ class Model:
             "total_time_below_min_soc_s": total_time_below_min_soc_s,
         }
 
-    def _run_combustion(self, n_iters):
+    def _run_combustion(self, n_iters: int) -> dict:
+        """
+        Ejecuta una simulación del autobús de combustión interna a lo largo de varias iteraciones.
+
+        Parameters
+        ----------
+        n_iters : int
+            Número de iteraciones de la simulación.
+
+        Returns
+        -------
+        dict
+            Un diccionario con los resultados de la simulación, incluyendo:
+            - "consumption" (float): Consumo acumulado de combustible en litros.
+            - "NOx" (float): Emisiones acumuladas de NOx en gramos.
+            - "CO" (float): Emisiones acumuladas de CO en gramos.
+            - "HC" (float): Emisiones acumuladas de HC en gramos.
+            - "PM" (float): Emisiones acumuladas de partículas (PM) en gramos.
+            - "CO2" (float): Emisiones acumuladas de CO2 en gramos.
+        """
+
         # Inicializar acumuladores para consumo y emisiones
         consumption = 0.0
         emissions = {"NOx": 0.0, "CO": 0.0, "HC": 0.0, "PM": 0.0, "CO2": 0.0}
@@ -288,7 +349,7 @@ class Model:
             "CO2": emissions["CO2"],
         }
 
-    def _cumulative_consumption_and_emissions_electric(self):
+    def _cumulative_consumption_and_emissions_electric(self) -> list:
         """
         Calculate and accumulate consumption and emissions data across all sections.
 
@@ -296,6 +357,7 @@ class Model:
             A list with accumulated values for consumption in Wh, emissions (NOx, CO, HC, PM, CO2) in grams,
             and battery degradation.
         """
+
         # Inicializar acumuladores para los valores deseados
         total_wh = 0.0
         total_battery_degradation = 0.0
@@ -341,6 +403,7 @@ class Model:
             A list with accumulated values for consumption in Wh, emissions (NOx, CO, HC, PM, CO2) in grams,
             and battery degradation.
         """
+
         # Inicializar acumuladores para los valores deseados
         total_L = 0.0
         # Inicializar un diccionario para acumular cada contaminante por separado

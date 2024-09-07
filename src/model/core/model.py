@@ -100,14 +100,20 @@ class Model:
         )
 
         # Inicializar tiempo y convertimos a segundos
-        time_to_charging_point_s = (
-            self._get_param_by_charging_point_id(f"{self.time_min}", "time_min") * 60
-        )
+        time_to_charging_point_s = self._get_param_by_charging_point_id(
+            f"{self.charging_point_id}", "time_min"
+        ) * 60
 
         route_length_km = self.route.length_km
 
         # Calcular el factor para ajustar el consumo y las emisiones
         factor = (route_length_km + distance_of_charging_point) / route_length_km
+
+        # Inicializar número de buses en la ruta
+        n_buses = 1
+
+        # Inicializar el tiempo de conducción
+        availibility_time_s = 0.0
 
         # Inicializar acumuladores para consumo, emisiones y degradación de batería
         consumption = 0.0
@@ -124,6 +130,8 @@ class Model:
                 # agregamos tiempo de inoperabilidad del bus agregando el tiempo de carga
                 # y el tiempo de ida y vuelta al punto de carga (por eso t * 2)
                 unavailability_time_s += charging_time_s + 2 * time_to_charging_point_s
+                # añadimos un bus a la ruta
+                n_buses = 2
 
             # Actualizamos número de pasajeros manualmente
             self.bus.update_num_travellers()
@@ -146,8 +154,11 @@ class Model:
             emissions_keys = ["NOx", "CO", "HC", "PM", "CO2"]
             for key, emission in zip(emissions_keys, new_emissions):
                 emissions[key] += emission
+            
+            # Actualizar el tiempo de disponibilidad
+            availibility_time_s += self.route.duration_time
 
-        total_cost = self.cost_calculator.calculate_total_cost(consumption)
+        bus_cost, consumption_cost = self.cost_calculator.calculate_costs(consumption)
 
         # Guardar los resultados finales en un archivo CSV
         with open(
@@ -165,7 +176,11 @@ class Model:
                     "PM_g",
                     "CO2_g",
                     "battery_degradation_%",
-                    "total_cost",
+                    "bus_cost",
+                    "consumption_cost",
+                    "availibility_time_s",
+                    "unavailability_time_s",
+                    "n_buses"
                 ]
             )
             writer.writerow(
@@ -177,7 +192,11 @@ class Model:
                     emissions["PM"],
                     emissions["CO2"],
                     battery_degradation,
-                    total_cost,
+                    bus_cost,
+                    consumption_cost,
+                    availibility_time_s,
+                    unavailability_time_s,
+                    n_buses
                 ]
             )
 
@@ -189,7 +208,11 @@ class Model:
             "PM": emissions["PM"],
             "CO2": emissions["CO2"],
             "battery_degradation": battery_degradation,
-            "total_cost": total_cost,
+            "bus_cost": bus_cost,
+            "consumption_cost": consumption_cost,
+            "availibility_time_s": availibility_time_s,
+            "unavailability_time_s": unavailability_time_s,
+            "n_buses": n_buses
         }
 
     def _run_combustion(self, n_iters):

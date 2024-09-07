@@ -28,6 +28,7 @@ class Route:
         self.emissions = emissions
         self.sections = self._create_sections(data)
         self.length_km = 10.61
+        self.duration_time = self._route_duration_time()
         self.charging_points = self._load_charging_points(
             os.path.join("data", "optimization_data", "charging_points.json")
         )
@@ -156,6 +157,15 @@ class Route:
 
         # Return consolidated results along with the section start and end times
         return secciones
+    
+    def _route_duration_time(self):
+        """
+        Calculate the total duration of the route in seconds.
+        """
+        total_duration = 0
+        for section in self.sections:
+            total_duration += section.end_time - section.start_time
+        return total_duration
 
     def _load_charging_points(self, file_path: str) -> dict:
         # Abrir y cargar el archivo JSON

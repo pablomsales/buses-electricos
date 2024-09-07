@@ -3,7 +3,35 @@ from time import time
 
 class Battery:
     """
-    Class representing the battery of an electric vehicle.
+    Clase que representa la batería de un vehículo eléctrico, con funcionalidades
+    para gestionar su capacidad, ciclos de carga y degradación.
+
+    Attributes
+    ----------
+    voltage_v : float
+        Voltaje de la batería en voltios.
+    initial_capacity_kWh : float
+        Capacidad inicial de la batería en kWh.
+    _initial_capacity_ah : float
+        Capacidad inicial de la batería en amperios-hora (Ah), calculada a partir de la capacidad en kWh.
+    current_capacity_ah : float
+        Capacidad actual de la batería en amperios-hora (Ah).
+    _max_cycles : int
+        Número máximo de ciclos de carga-descarga permitidos para la batería.
+    _completed_cycles : int
+        Número de ciclos de carga-descarga completados.
+    state_of_charge_percent : float
+        Estado actual de carga de la batería como porcentaje.
+    min_state_of_health : float
+        Salud mínima permitida de la batería como porcentaje.
+    _degradation_in_section : float
+        Degradación acumulada de la batería en la sección actual.
+    min_battery_charge : float
+        Carga mínima de la batería en porcentaje.
+    timer_start : float or None
+        Momento en el que la batería cae por debajo del nivel mínimo de carga.
+    total_time_below_min_soc : float
+        Tiempo total (en segundos) que la batería ha pasado por debajo de la carga mínima permitida.
     """
 
     def __init__(
@@ -16,21 +44,22 @@ class Battery:
         min_battery_charge: float,
     ):
         """
-        Initialize a Battery instance.
-
         Parameters
         ----------
         initial_capacity_kWh : float
-            The initial capacity of the battery in kWh.
-        max_cycles : int
-            The maximum number of charge-discharge cycles the battery can endure.
-        initial_soc_percent : float
-            The initial State of Charge as a percentage.
+            Capacidad inicial de la batería en kWh.
         voltage_v : float
-            The voltage of the battery in volts.
+            Voltaje de la batería en voltios.
+        max_cycles : int
+            Número máximo de ciclos de carga-descarga que la batería puede soportar.
+        initial_soc_percent : float
+            Estado inicial de carga (State of Charge, SoC) como porcentaje.
         min_state_of_health : float
-            The minimum allowed battery health as a percentage.
+            Salud mínima de la batería permitida como porcentaje.
+        min_battery_charge : float
+            Carga mínima de la batería en porcentaje, antes de que sea necesario recargarla.
         """
+
         self.voltage_v = voltage_v
         self.initial_capacity_kWh = initial_capacity_kWh
         self._initial_capacity_ah = self._convert_kWh_to_Ah(initial_capacity_kWh)
@@ -161,8 +190,9 @@ class Battery:
     def _compute_new_soc(self, ah_transferred: float) -> float:
         """
         Updates the state of charge by a given amount in Ampere-hours.
-        It ensures that the SOC does not exceed the battery's capacity or
-        drop below zero.
+        It ensures that the SOC does not exceed the battery's capacity.
+        It doesn't handle the case of negative values of SoC because
+        of reasons for optimizing better the parameters of the bus.
         """
 
         # Get current state of charge in Ampere-hours
@@ -172,7 +202,6 @@ class Battery:
         )
         # Calculate the updated State of Charge percentage
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
-        # self._check_drained_battery(updated_soc_percent)
         return updated_soc_percent
 
     def _get_soc_in_ah(self) -> float:
@@ -180,6 +209,19 @@ class Battery:
         return self.current_capacity_ah * (self.state_of_charge_percent / 100)
 
     def check_soc_under_minimum(self, soc_percent: float):
+        """
+        Verifica si el estado de carga (SoC) de la batería está por debajo del mínimo permitido y gestiona
+        un cronómetro que mide el tiempo total en el que la batería ha estado por debajo de ese umbral.
+
+        Si el SoC está por debajo del nivel mínimo y el cronómetro no está activo, lo inicia.
+        Si el SoC sube por encima del nivel mínimo y el cronómetro está activo, calcula el tiempo transcurrido
+        por debajo del umbral y lo acumula en `total_time_below_min_soc`.
+
+        Parameters
+        ----------
+        soc_percent : float
+            El porcentaje actual del estado de carga (SoC) de la batería.
+        """
         if soc_percent < self.min_battery_charge:
             if self.timer_start is None:  # Si el cronómetro no ha iniciado
                 self.timer_start = time()  # Inicia el cronómetro

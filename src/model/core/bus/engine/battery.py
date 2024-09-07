@@ -122,15 +122,8 @@ class Battery:
         desired_soc : float
             The desired state of charge as a percentage (0-100).
         """
-        # print("------ Charging battery ------")
-        # print(f"Initial SoC: {round(self.state_of_charge_percent, 2)}%")
-        # print(f"End SoC: {round(desired_soc, 2)}%")
-
         # Calculate the time needed to reach the desired SoC
         time_seconds = self._calculate_time_to_charge(power, desired_soc)
-        # print(f"Time of charge: {round(time_seconds/60)} minutes")
-        # print("------------------------------")
-
         # Convert Watts to Ah
         ah_transferred = self._calculate_current(power=power) * (time_seconds / 3600)
 
@@ -174,8 +167,8 @@ class Battery:
 
         # Get current state of charge in Ampere-hours
         current_soc_ah = self._get_soc_in_ah()
-        updated_soc_in_ah = max(
-            0, min(current_soc_ah - ah_transferred, self.current_capacity_ah)
+        updated_soc_in_ah = min(
+            current_soc_ah - ah_transferred, self.current_capacity_ah
         )
         # Calculate the updated State of Charge percentage
         updated_soc_percent = (updated_soc_in_ah / self.current_capacity_ah) * 100
@@ -185,15 +178,6 @@ class Battery:
     def _get_soc_in_ah(self) -> float:
         """Get the current state of charge in Ampere-hours."""
         return self.current_capacity_ah * (self.state_of_charge_percent / 100)
-
-    # def _check_drained_battery(self, soc_percent: float) -> None:
-    #     if soc_percent == 0:
-    #         raise RuntimeError(
-    #             "The battery is completely drained. "
-    #             "Handle this exception according to the needs of the optimization module. "
-    #             "For instance, if you're using a loop, consider handling this exception to skip the iteration "
-    #             "without halting the execution of the program."
-    #         )
 
     def check_soc_under_minimum(self, soc_percent: float):
         if soc_percent < self.min_battery_charge:

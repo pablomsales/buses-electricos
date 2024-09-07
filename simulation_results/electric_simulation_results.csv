@@ -1,2 +1,2 @@
-consumption_Wh,NOx_g,CO_g,HC_g,PM_g,CO2_g,battery_degradation_%,bus_cost,consumption_cost,availability_time_s,unavailability_time_s,n_buses,total_time_below_min_soc
-307408.82554936194,0.0,0.0,0.0,0.0,0.0,0.0003612525190280659,504880.0,46111.32,27897.113359217,2260.1534688615266,2,0.2781527042388916
+consumption_Wh,NOx_g,CO_g,HC_g,PM_g,CO2_g,battery_degradation_%,bus_cost,consumption_cost,availability_time_s,unavailability_time_s,n_buses,total_time_below_min_soc_s
+307408.82554936194,0.0,0.0,0.0,0.0,0.0,0.0003612525190280659,504880.0,46111.32,27897.113359217,2260.1534688615266,2,0.26096248626708984

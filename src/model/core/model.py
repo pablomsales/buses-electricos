@@ -92,9 +92,9 @@ class Model:
             A dictionary with the results of the simulation.
         """
         if self.bus.engine.electric:
-            self._run_electric(n_iters=n_days * 16)
+            return self._run_electric(n_iters=n_days * 16)
         else:
-            self._run_combustion(n_iters=n_days * 16)
+            return self._run_combustion(n_iters=n_days * 16)
 
     def _run_electric(self, n_iters):
         power = self._get_param_by_charging_point_id(

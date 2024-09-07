@@ -161,14 +161,15 @@ class Model:
             emissions_keys = ["NOx", "CO", "HC", "PM", "CO2"]
             for key, emission in zip(emissions_keys, new_emissions):
                 emissions[key] += emission
-            
+
             # Actualizar el tiempo de disponibilidad
             availability_time_s += self.route.duration_time
-        
+
         # Configurar el tiempo final de disponibilidad
         availability_time_s -= unavailability_time_s
 
         bus_cost, consumption_cost = self.cost_calculator.calculate_costs(consumption)
+        total_time_below_min_soc = self.bus.get_total_time_below_min_soc()
 
         # Guardar los resultados finales en un archivo CSV
         with open(
@@ -190,7 +191,7 @@ class Model:
                     "consumption_cost",
                     "availability_time_s",
                     "unavailability_time_s",
-                    "n_buses"
+                    "n_buses",
                     "total_time_below_min_soc",
                 ]
             )
@@ -207,7 +208,7 @@ class Model:
                     consumption_cost,
                     availability_time_s,
                     unavailability_time_s,
-                    n_buses
+                    n_buses,
                     total_time_below_min_soc,
                 ]
             )
@@ -224,7 +225,7 @@ class Model:
             "consumption_cost": consumption_cost,
             "availability_time_s": availability_time_s,
             "unavailability_time_s": unavailability_time_s,
-            "n_buses": n_buses
+            "n_buses": n_buses,
             "total_time_below_min_soc": total_time_below_min_soc,
         }
 

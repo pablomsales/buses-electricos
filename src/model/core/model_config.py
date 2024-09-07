@@ -85,6 +85,8 @@ class ModelConfig:
 
         self.simulation = simulation
         self.electric = electric
+        self.min_battery_charge = min_battery_charge
+        self.max_battery_charge = max_battery_charge
         self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
         self.emissions = self._create_emissions(euro_standard)
         if self.electric:
@@ -94,8 +96,6 @@ class ModelConfig:
                 battery_capacity_cost=140,  # €/kWh # valores estaticos en datathon, no tocar
             )
         self.charging_point_id = charging_point_id
-        self.min_battery_charge = min_battery_charge
-        self.max_battery_charge = max_battery_charge
 
     @staticmethod
     def _validate_filepath(filepath: str) -> None:

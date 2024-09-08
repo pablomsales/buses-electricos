@@ -1,20 +1,22 @@
 from core.bus.engine.base_engine import BaseEngine
 from core.bus.fuel import Fuel
 
-
 class FuelEngine(BaseEngine):
     """
-    Represents a combustion engine.
+    Representa un motor de combustión.
     """
 
     def __init__(self, max_power, efficiency, fuel):
         """
-        Initialize a FuelEngine with the maximum power, efficiency, and fuel.
+        Inicializa un motor de combustión con la potencia máxima, eficiencia y combustible.
 
         Args:
-            max_power (float): The maximum power output of the engine in Watts.
-            efficiency (float): The efficiency of the engine (0 to 1).
-            fuel (Fuel): The fuel used by the engine.
+            max_power (float): La potencia máxima del motor en Watts.
+            efficiency (float): La eficiencia del motor en un rango de [0, 1].
+            fuel (Fuel): El combustible utilizado por el motor.
+
+        Raises:
+            ValueError: Si el combustible no es una instancia de la clase Fuel.
         """
         super().__init__(max_power, efficiency)
         if not isinstance(fuel, Fuel):
@@ -25,12 +27,24 @@ class FuelEngine(BaseEngine):
     @property
     def fuel(self):
         """
-        Fuel object representing the fuel used by the engine.
+        Obtiene el objeto Fuel que representa el combustible utilizado por el motor.
+
+        Returns:
+            Fuel: El combustible utilizado por el motor.
         """
         return self._fuel
 
     @fuel.setter
     def fuel(self, value):
+        """
+        Establece el combustible utilizado por el motor.
+
+        Args:
+            value (Fuel): El combustible nuevo para el motor.
+
+        Raises:
+            ValueError: Si el valor no es una instancia de la clase Fuel.
+        """
         if isinstance(value, Fuel):
             self._fuel = value
         else:
@@ -38,22 +52,24 @@ class FuelEngine(BaseEngine):
 
     def consumption(self, power, time, km) -> dict[str, float]:
         """
-        Calculate fuel consumption.
+        Calcula el consumo de combustible.
 
         Args:
-            power (float): The power demand in Watts.
-            time (float): The time period over which the power is applied in seconds.
-            km (float, optional): The distance covered in kilometers (if available).
+            power (float): La demanda de potencia en Watts.
+            time (float): El periodo de tiempo en segundos durante el cual se aplica la potencia.
+            km (float, opcional): La distancia recorrida en kilómetros (si está disponible).
 
         Returns:
-            dict[str, float]: A dictionary containing:
-                - "Wh": Always 0 for a combustion engine.
-                - "L/h": Liters of fuel consumed per hour.
-                - "L/km": Liters of fuel consumed per kilometer (if distance provided).
-        """
+            dict[str, float]: Un diccionario que contiene:
+                - "Wh": Siempre 0 para un motor de combustión.
+                - "L/h": Litros de combustible consumidos por hora.
+                - "L/km": Litros de combustible consumidos por kilómetro (si se proporciona la distancia).
 
-        # If power is negative, consumption is zero.
-        # NOTE: quizá no sea 0 y sea una constante
+        Notes:
+            Si la potencia es negativa, el consumo es cero.
+            NOTA: Podría no ser 0 y ser una constante, dependiendo del comportamiento del motor.
+        """
+        # Si la potencia es negativa, el consumo es cero.
         if power < 0:
             return {
                 "L/h": 0.0,
@@ -61,15 +77,15 @@ class FuelEngine(BaseEngine):
             }
 
         power = self._adjust_power(power)
-        lhv = self.fuel.lhv  # Lower Heating Value of the fuel
+        lhv = self.fuel.lhv  # Valor Calorífico Inferior del combustible
 
-        # Calculate the energy used
+        # Calcula la energía utilizada
         energy = (power * time) / self._efficiency
-        # Calculate fuel consumption in liters
+        # Calcula el consumo de combustible en litros
         litres = energy / lhv
 
         consumption = {
-            "L/h": litres / (time / 3600),  # Convert time from seconds to hours
+            "L/h": litres / (time / 3600),  # Convierte el tiempo de segundos a horas
             "L/km": litres / km if km is not None else None,
         }
 

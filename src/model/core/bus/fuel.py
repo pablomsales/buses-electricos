@@ -1,21 +1,20 @@
 from utils.constants import fuels_lhv
 
-
 class Fuel:
     """
-    Class representing a fuel type.
+    Clase que representa un tipo de combustible.
     """
 
     def __init__(self, fuel_type, lhv=None):
         """
-        Initialize a Fuel instance.
+        Inicializa una instancia de Fuel.
 
-        Parameters
-        ----------
-        fuel_type : str
-            The type of fuel.
-        lhv : float, optional
-            The Lower Heating Value of the fuel in J/L.
+        Args:
+            fuel_type (str): El tipo de combustible.
+            lhv (float, opcional): El Valor Calorífico Inferior (Lower Heating Value) del combustible en J/L.
+
+        Raises:
+            ValueError: Si el tipo de combustible no está en `fuels_lhv` y no se proporciona un LHV.
         """
         self._fuel_type = fuel_type
         if fuel_type in fuels_lhv:
@@ -24,18 +23,24 @@ class Fuel:
             if lhv:
                 self._lhv = lhv
             else:
-                raise ValueError("You must provide the LHV for this fuel type")
+                raise ValueError("Debe proporcionar el LHV para este tipo de combustible")
 
     @property
     def fuel_type(self):
         """
-        Fuel type.
+        Obtiene el tipo de combustible.
+
+        Returns:
+            str: Tipo de combustible.
         """
         return self._fuel_type
 
     @property
     def lhv(self):
         """
-        Lower Heating Volume of the fuel in J/L.
+        Obtiene el Valor Calorífico Inferior del combustible en J/L.
+
+        Returns:
+            float: Valor Calorífico Inferior (LHV) en J/L.
         """
         return self._lhv

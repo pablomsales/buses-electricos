@@ -11,7 +11,6 @@ def main():
     - Configura los parámetros del modelo en función de si es eléctrico o no.
     - Crea una instancia del modelo con la configuración proporcionada.
     - Ejecuta el modelo durante el número de días especificado.
-    - Imprime el tiempo total de ejecución de la simulación.
     """
     name = "linea_d2_simulation"
 

@@ -1,70 +1,69 @@
 from core.route.section.base_section import BaseSection
 from utils.constants import MAX_ACCELERATION, MAX_DECELERATION
 
-
 class SimulatedSection(BaseSection):
     """
-    Represents a section of a route that has been simulated.
+    Representa una sección de una ruta que ha sido simulada.
     """
 
     def __init__(
         self, coordinates, speed_limit, start_speed, start_time, bus, emissions
     ):
         """
-        Initialize a SimulatedSection with coordinates, bus, emissions, a single speed limit,
-        start speed, and start time.
+        Inicializa una SimulatedSection con coordenadas, un límite de velocidad, velocidad de inicio,
+        y tiempo de inicio.
 
         Args:
-            coordinates (tuple): A tuple containing start and end coordinates.
-            speed_limit (float): Speed limit (km/h) for the section.
-            start_speed (float): Speed at the beginning of the section (m/s).
-            start_time (float): Time at the beginning of the section (s).
-            bus: Instance of the Bus class.
-            emissions: Instance of the Emissions class.
+            coordinates (tuple): Una tupla que contiene coordenadas de inicio y fin.
+            speed_limit (float): Límite de velocidad (km/h) para la sección.
+            start_speed (float): Velocidad al comienzo de la sección (m/s).
+            start_time (float): Tiempo al comienzo de la sección (s).
+            bus: Instancia de la clase Bus.
+            emissions: Instancia de la clase Emissions.
         """
-        self._speed_limit = speed_limit / 3.6  # Convert km/h to m/s
+        self._speed_limit = speed_limit / 3.6  # Convertir km/h a m/s
         self._start_speed = start_speed
         self._start_time = start_time
         self._end_speed = 0.0
         self._end_time = 0.0
-        self.velocities = []  # List of average velocities
-        self.start_times = []  # List of start times
-        self.end_times = []  # List of end times
+        self.velocities = []  # Lista de velocidades promedio
+        self.start_times = []  # Lista de tiempos de inicio
+        self.end_times = []  # Lista de tiempos de fin
 
-        # Call base class to initialize necessary attributes
+        # Llamar a la clase base para inicializar atributos necesarios
         super().__init__(coordinates, bus, emissions)
 
-        # Process the section
+        # Procesar la sección
         self._process()
 
     def _process(self):
-        """Calculate the speed and time for the given section considering total resistance."""
-        dist = self.length  # Distance of the section
+        """Calcula la velocidad y el tiempo para la sección dada considerando la resistencia total."""
+        dist = self.length  # Distancia de la sección
         limit = self._speed_limit
 
-        # Calculate effective acceleration and deceleration based on total resistance
+        # Calcular la aceleración y desaceleración efectivas basadas en la resistencia total
         effective_max_acceleration, effective_max_deceleration = (
             self._calculate_effective_forces()
         )
 
-        # Calculate end speed based on the speed limit and start speed
+        # Calcular la velocidad final basada en el límite de velocidad y la velocidad de inicio
         self._end_speed, decel, accel = self._calculate_end_speed(
             limit, dist, effective_max_acceleration, effective_max_deceleration
         )
 
         self._acceleration = self._set_acceleration(decel, accel)
 
-        # Calculate the time required to traverse the section
+        # Calcular el tiempo requerido para atravesar la sección
         self._end_time = self._calculate_time(decel, accel, dist)
 
-        # Calculate and store the average speed
+        # Calcular y almacenar la velocidad promedio
         avg_speed = self._calculate_average_speed()
         self.velocities.append(avg_speed)
         self.start_times.append(self._start_time)
         self.end_times.append(self._end_time)
 
     def _calculate_effective_forces(self):
-        """Calculate effective acceleration and deceleration based on the total resistance."""
+        """Calcula la aceleración y desaceleración efectivas basadas en la resistencia total."""
         total_resistance = self.total_resistance  # N
         effective_max_acceleration = MAX_ACCELERATION - (
             total_resistance / self.bus.total_mass
@@ -75,8 +74,8 @@ class SimulatedSection(BaseSection):
         return effective_max_acceleration, effective_max_deceleration
 
     def _decelerate_to_stop(self, dist, effective_max_deceleration, step_size=1.0):
-        """Handles the case where the speed must be reduced to zero by reducinng the
-        initial speed while the calculated deceleration is greater than the maximum deceleration allowed.
+        """Maneja el caso donde la velocidad debe reducirse a cero reduciendo la velocidad inicial
+        mientras que la desaceleración calculada es mayor que la desaceleración máxima permitida.
         """
         self._end_speed = 0
         decel = self._calculate_instant_acceleration(
@@ -89,8 +88,8 @@ class SimulatedSection(BaseSection):
         return decel, None
 
     def _decelerate(self, limit, dist, effective_max_deceleration, step_size=1.0):
-        """Handles the case where the speed must be reduced to a certain limit by reducing the
-        initial speed while the calculated deceleration is greater than the maximum deceleration allowed.
+        """Maneja el caso donde la velocidad debe reducirse a un cierto límite reduciendo la velocidad
+        inicial mientras que la desaceleración calculada es mayor que la desaceleración máxima permitida.
         """
         self._end_speed = limit
         decel = self._calculate_instant_acceleration(
@@ -105,9 +104,9 @@ class SimulatedSection(BaseSection):
         return decel, None
 
     def _accelerate(self, limit, dist, effective_max_acceleration, step_size=1.0):
-        """Handles the case where the speed must be increased to a certain limit by accelerating the
-        necessary amount if the calculated acceleration is under the maximum acceleration allowed. When
-        not, the speed is reduced until the acceleration is under the maximum allowed.
+        """Maneja el caso donde la velocidad debe aumentarse a un cierto límite acelerando la cantidad
+        necesaria si la aceleración calculada está por debajo de la aceleración máxima permitida. De lo contrario,
+        la velocidad se reduce hasta que la aceleración esté por debajo del límite máximo permitido.
         """
         self._end_speed = limit
         accel = self._calculate_instant_acceleration(
@@ -124,7 +123,7 @@ class SimulatedSection(BaseSection):
     def _calculate_end_speed(
         self, limit, dist, effective_max_acceleration, effective_max_deceleration
     ):
-        """Determine the end speed, and possible acceleration or deceleration."""
+        """Determina la velocidad final y la posible aceleración o desaceleración."""
         if limit == 0:
             decel, accel = self._decelerate_to_stop(dist, effective_max_deceleration)
         elif limit < self._start_speed:
@@ -135,15 +134,15 @@ class SimulatedSection(BaseSection):
             self._end_speed = limit
             decel, accel = None, None
 
-        # Return the final end speed, deceleration, and acceleration
+        # Retornar la velocidad final, desaceleración y aceleración
         return self._end_speed, decel, accel
 
     def _calculate_instant_acceleration(self, start_speed, end_speed, dist):
-        """Calculate the instantaneous acceleration for the section."""
+        """Calcula la aceleración instantánea para la sección."""
         return (end_speed**2 - start_speed**2) / (2 * dist)
 
     def _set_acceleration(self, decel, accel):
-        """Set the acceleration based on the deceleration and acceleration values."""
+        """Establece la aceleración basada en los valores de desaceleración y aceleración."""
         if accel is not None and decel is None:
             return accel
         elif decel is not None and accel is None:
@@ -152,7 +151,7 @@ class SimulatedSection(BaseSection):
             return 0.0
 
     def _calculate_time(self, decel, accel, dist):
-        """Calculate the time required to traverse the section."""
+        """Calcula el tiempo requerido para atravesar la sección."""
         if decel is not None and decel < 0:
             time = (self._start_speed - self._end_speed) / abs(
                 decel
@@ -166,6 +165,12 @@ class SimulatedSection(BaseSection):
 
     @property
     def acceleration(self):
+        """
+        Obtiene la aceleración de la sección.
+
+        Returns:
+            float: Aceleración en m/s².
+        """
         return self._acceleration
 
     @acceleration.setter
@@ -174,6 +179,12 @@ class SimulatedSection(BaseSection):
 
     @property
     def start_speed(self):
+        """
+        Obtiene la velocidad de inicio de la sección.
+
+        Returns:
+            float: Velocidad de inicio en m/s.
+        """
         return self._start_speed
 
     @start_speed.setter
@@ -182,6 +193,12 @@ class SimulatedSection(BaseSection):
 
     @property
     def end_speed(self):
+        """
+        Obtiene la velocidad final de la sección.
+
+        Returns:
+            float: Velocidad final en m/s.
+        """
         return self._end_speed
 
     @end_speed.setter
@@ -190,6 +207,12 @@ class SimulatedSection(BaseSection):
 
     @property
     def start_time(self):
+        """
+        Obtiene el tiempo de inicio de la sección.
+
+        Returns:
+            float: Tiempo de inicio en segundos.
+        """
         return self._start_time
 
     @start_time.setter
@@ -198,6 +221,12 @@ class SimulatedSection(BaseSection):
 
     @property
     def end_time(self):
+        """
+        Obtiene el tiempo final de la sección.
+
+        Returns:
+            float: Tiempo final en segundos.
+        """
         return self._end_time
 
     @end_time.setter
@@ -206,11 +235,11 @@ class SimulatedSection(BaseSection):
 
     def __str__(self):
         return (
-            f"Simulated Section from {self._start[0]} º, {self._start[1]} º, {round(self._start[2], 2)} m "
-            f"to {self._end[0]} º, {self._end[1]} º, {round(self._end[2], 2)} m\n"
-            f"Speeds: {round(self.start_speed, 2)} m/s to {round(self.end_speed, 2)} m/s\n"
-            f"Time Elapsed: {round(self.duration_time, 2)} s\n"
-            f"Distance: {round(self.length, 2)} m\n"
-            f"Total Resistance: {round(self.total_resistance, 2)} N\n"
-            f"Calculated Acceleration/Deceleration: {round(self.acceleration, 2)} m/s^2\n"
+            f"Sección simulada desde {self._start[0]} º, {self._start[1]} º, {round(self._start[2], 2)} m "
+            f"hacia {self._end[0]} º, {self._end[1]} º, {round(self._end[2], 2)} m\n"
+            f"Velocidades: {round(self.start_speed, 2)} m/s a {round(self.end_speed, 2)} m/s\n"
+            f"Tiempo transcurrido: {round(self.duration_time, 2)} s\n"
+            f"Distancia: {round(self.length, 2)} m\n"
+            f"Resistencia total: {round(self.total_resistance, 2)} N\n"
+            f"Aceleración/Desaceleración calculada: {round(self.acceleration, 2)} m/s²\n"
         )

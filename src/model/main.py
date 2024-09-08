@@ -17,7 +17,7 @@ def main():
 
     data = os.path.join(PROJECT_ROOT, "data", "linea_d2", "linea_d2_simulation.csv")
 
-    ELECTRIC = False
+    ELECTRIC = True
 
     days = 1
 

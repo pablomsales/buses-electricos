@@ -5,18 +5,23 @@ from utils.constants import AIR_DENSITY, GRAVITY
 
 class ResistanceCalculator:
     """
-    Calculate the resistances of a section of a route.
+    Calcula las resistencias en una sección de una ruta para un autobús.
     """
 
     def __init__(self, bus, average_speed, acceleration, grade_angle):
         """
-        Initialize a ResistanceCalculator with a bus, average speed, acceleration, and grade angle.
+        Inicializa el ResistanceCalculator con un autobús, velocidad promedio, aceleración y ángulo de inclinación.
 
-        Args:
-            bus: Instance of the Bus class.
-            average_speed (float): Average speed of the section in m/s.
-            acceleration (float): Acceleration of the bus in m/s².
-            grade_angle (float): Grade angle of the section in degrees.
+        Parámetros
+        ----------
+        bus : Bus
+            Instancia de la clase Bus.
+        average_speed : float
+            Velocidad promedio de la sección en m/s.
+        acceleration : float
+            Aceleración del autobús en m/s².
+        grade_angle : float
+            Ángulo de inclinación de la sección en grados.
         """
         self.bus = bus
         self.average_speed = average_speed
@@ -26,7 +31,12 @@ class ResistanceCalculator:
     @property
     def air_resistance(self):
         """
-        Calculate the air resistance of the section.
+        Calcula la resistencia aerodinámica de la sección.
+
+        Returns
+        -------
+        float
+            Resistencia aerodinámica en Newtons (N).
         """
         return (
             0.5
@@ -39,28 +49,48 @@ class ResistanceCalculator:
     @property
     def inertia(self):
         """
-        Calculate the inertia of the section.
+        Calcula la resistencia inercial de la sección.
+
+        Returns
+        -------
+        float
+            Resistencia inercial en Newtons (N).
         """
         return self.bus.total_mass * self.acceleration
 
     @property
     def grade_resistance(self):
         """
-        Calculate the grade resistance of the section.
+        Calcula la resistencia por inclinación de la sección.
+
+        Returns
+        -------
+        float
+            Resistencia por inclinación en Newtons (N).
         """
         return self.bus.total_mass * GRAVITY * math.sin(math.radians(self.grade_angle))
 
     @property
     def rolling_resistance(self):
         """
-        Calculate the rolling resistance of the section.
+        Calcula la resistencia a la rodadura de la sección.
+
+        Returns
+        -------
+        float
+            Resistencia a la rodadura en Newtons (N).
         """
         return self.bus.rolling_resistance_coefficient * self.bus.total_mass * GRAVITY
 
     @property
     def total_resistance(self):
         """
-        Calculate the total resistance of the section.
+        Calcula la resistencia total de la sección.
+
+        Returns
+        -------
+        float
+            Resistencia total en Newtons (N).
         """
         return (
             self.air_resistance

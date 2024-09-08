@@ -7,7 +7,7 @@ from core.model_config import ModelConfig
 def main():
     """
     Función principal para ejecutar la simulación del modelo.
-    
+
     - Configura los parámetros del modelo en función de si es eléctrico o no.
     - Crea una instancia del modelo con la configuración proporcionada.
     - Ejecuta el modelo durante el número de días especificado.
@@ -47,6 +47,7 @@ def main():
     model = Model(config=model_config)
 
     model.run(n_days=days)
+
 
 if __name__ == "__main__":
     main()

@@ -25,9 +25,9 @@ def main():
             charging_point_id=1,
             min_battery_charge=20,
             max_battery_charge=80,
-            initial_capacity_kWh=98 * 4,
+            initial_capacity_kWh=98 * 4, # se otpa por expresarlo como múltiplos de 98
             engine_max_power=230,  # kW
-            bus_mass=20000,
+            bus_mass=15000, # masa sin contar la batería
         )
 
     else:
@@ -37,7 +37,7 @@ def main():
             filepath=data,
             simulation=True,
             engine_max_power=230,  # kW
-            bus_mass=20000,
+            bus_mass=18000, # masa total del bus, para hacer comparaciones justas con el bus eléctrico, poner una masa ligeramente mayor (1500-3000 kg)
         )
 
     model = Model(config=model_config)

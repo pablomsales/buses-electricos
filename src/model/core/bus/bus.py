@@ -33,11 +33,14 @@ class Bus:
             Engine object representing the bus engine.
         """
         self.num_travellers = self.update_num_travellers()
-        self.bus_mass = bus_mass
         self._drag_coefficient = drag_coefficient
         self._frontal_area = frontal_area
         self._rolling_resistance_coefficient = rolling_resistance_coefficient
         self.engine = engine
+        if self.engine.electric:
+            self._bus_mass = bus_mass + self.engine.battery.initial_capacity_kWh * 6 # 6 kg per kWh
+        else:
+            self._bus_mass = bus_mass
 
     @property
     def total_mass(self):

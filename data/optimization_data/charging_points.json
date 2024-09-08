@@ -9,7 +9,7 @@
                 "latitude": 43.35145929577654,
                 "longitude": -5.881024970883337
             },
-            "power_watts": 500000,
+            "power_watts": 220000,
             "distance_km": 1.3,
             "time_min": 3
         },
@@ -21,7 +21,7 @@
                 "latitude": 43.3766411347457757,
                 "longitude": -5.80963111500399
             },
-            "power_watts": 150000,
+            "power_watts": 500000,
             "distance_km": 7.5,
             "time_min": 12
         },
@@ -33,7 +33,7 @@
                 "latitude": 43.35433254486923,
                 "longitude": -5.872322233001909
             },
-            "power_watts": 220000,
+            "power_watts": 150000,
             "distance_km": 0.053,
             "time_min": 0.5
         },
@@ -45,7 +45,7 @@
                 "latitude": 43.34056754073066,
                 "longitude": -5.869265369100843
             },
-            "power_watts": 400000,
+            "power_watts": 350000,
             "distance_km": 3.9,
             "time_min": 7
         }

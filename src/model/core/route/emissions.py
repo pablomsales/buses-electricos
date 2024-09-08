@@ -3,19 +3,20 @@ from utils.constants import CO2_CONVERSION_FACTOR, euro_standards
 
 class Emissions:
     """
-    Class to calculate emissions based on the EURO standard.
+    Clase para calcular las emisiones basadas en el estándar EURO.
     """
 
     def __init__(self, euro_standard: str, electric: bool):
         """
-        Initialize an Emissions instance with the EURO standard.
+        Inicializa una instancia de Emissions con el estándar EURO.
 
-        Parameters
+        Parámetros
         ----------
         euro_standard : str
-            The EURO standard for emissions.
+            El estándar EURO para las emisiones.
+        electric : bool
+            Indica si el vehículo es eléctrico.
         """
-
         self._validate_euro_standard(euro_standard)
         self.euro_standard = euro_standard
         self.standards = euro_standards[euro_standard]
@@ -24,12 +25,23 @@ class Emissions:
     @staticmethod
     def _validate_euro_standard(euro_standard):
         if euro_standard not in euro_standards:
-            raise ValueError(f"Invalid EURO standard: {euro_standard}")
+            raise ValueError(f"Estándar EURO inválido: {euro_standard}")
 
     def calculate_emissions(self, power_kw, fuel_consumption_rate):
         """
-        Calculate emissions based on the given power in kW.
-        Returns a dictionary with the emissions for NOx, CO, HC, PM, and CO2 in grams per second.
+        Calcula las emisiones basadas en la potencia dada en kW.
+
+        Parámetros
+        ----------
+        power_kw : float
+            La potencia en kW.
+        fuel_consumption_rate : float
+            La tasa de consumo de combustible en litros por segundo.
+
+        Returns
+        -------
+        dict
+            Un diccionario con las emisiones para NOx, CO, HC, PM y CO2 en gramos por segundo.
         """
         # Si el vehículo es eléctrico, todas las emisiones son cero
         if self._electric:
@@ -37,7 +49,7 @@ class Emissions:
 
         emissions = self._calculate_pollutant_emissions(power_kw)
 
-        # Add CO2 emissions
+        # Agregar emisiones de CO2
         if fuel_consumption_rate != 0:
             emissions["CO2"] = self._calculate_co2_emissions(fuel_consumption_rate)
         else:
@@ -47,36 +59,53 @@ class Emissions:
 
     def _calculate_pollutant_emissions(self, power_kw):
         """
-        Calculate emissions for NOx, CO, HC, and PM based on the given power in kW.
+        Calcula las emisiones de NOx, CO, HC y PM basadas en la potencia dada en kW.
+
+        Parámetros
+        ----------
+        power_kw : float
+            La potencia en kW.
+
+        Returns
+        -------
+        dict
+            Un diccionario con las emisiones para NOx, CO, HC y PM en gramos por segundo.
         """
         # Si el vehículo es eléctrico, todas las emisiones son cero
         if self._electric:
             return {"NOx": 0, "CO": 0, "HC": 0, "PM": 0}
 
-        # Si la potencia del motor es negativa, la ajustamos para evitar valores inválidos.
+        # Ajustar potencia negativa
         if power_kw < 0:
             if self._electric:
                 power_kw = 0
             else:
-                # NOTE: Para motores de combustión interna, se puede considerar una constante
-                # para representar el motor en ralentí. Por simplicidad, la ajustamos a 0.
-                # En el futuro, se debe modificar este valor para reflejar mejor el ralenti.
-                power_kw = 0
+                power_kw = 0  # Ajuste simplificado para motores en ralentí
 
         return {
-            pollutant: value * power_kw / 3600  # converting g/kWh to g/s
+            pollutant: value * power_kw / 3600  # convertir g/kWh a g/s
             for pollutant, value in self.standards.items()
         }
 
     def _calculate_co2_emissions(self, fuel_consumption_rate):
         """
-        Calculate CO2 emissions based on the fuel consumption rate in liters per second.
+        Calcula las emisiones de CO2 basadas en la tasa de consumo de combustible en litros por segundo.
+
+        Parámetros
+        ----------
+        fuel_consumption_rate : float
+            La tasa de consumo de combustible en litros por segundo.
+
+        Returns
+        -------
+        float
+            Emisiones de CO2 en gramos por segundo.
         """
         co2_kg_per_second = fuel_consumption_rate * CO2_CONVERSION_FACTOR
         co2_g_per_second = co2_kg_per_second * 1000
         return co2_g_per_second
 
     def __str__(self):
-        return f"Emissions Standards: {self.euro_standard}\n" + "\n".join(
+        return f"Estándares de Emisiones: {self.euro_standard}\n" + "\n".join(
             [f"{k}: {v} g/kWh" for k, v in self.standards.items()]
         )

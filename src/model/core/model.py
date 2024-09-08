@@ -2,6 +2,7 @@ import csv
 import os
 
 import pandas as pd
+from config import PROJECT_ROOT
 from core.model_config import ModelConfig
 from core.route.route import Route
 from tqdm import tqdm
@@ -214,7 +215,9 @@ class Model:
 
         # Guardar los resultados finales en un archivo CSV
         with open(
-            os.path.join("simulation_results", "electric_simulation_results.csv"),
+            os.path.join(
+                PROJECT_ROOT, "simulation_results", "electric_simulation_results.csv"
+            ),
             mode="w",
             newline="",
         ) as file:
@@ -314,7 +317,9 @@ class Model:
 
         # Guardar los resultados finales en un archivo CSV
         with open(
-            os.path.join("simulation_results", "combustion_simulation_results.csv"),
+            os.path.join(
+                PROJECT_ROOT, "simulation_results", "combustion_simulation_results.csv"
+            ),
             mode="w",
             newline="",
         ) as file:

@@ -1,5 +1,6 @@
 import os
 
+from config import PROJECT_ROOT
 from core.model import Model
 from core.model_config import ModelConfig
 
@@ -14,9 +15,9 @@ def main():
     """
     name = "linea_d2_simulation"
 
-    data = os.path.join("data", "linea_d2", "linea_d2_simulation.csv")
+    data = os.path.join(PROJECT_ROOT, "data", "linea_d2", "linea_d2_simulation.csv")
 
-    ELECTRIC = True
+    ELECTRIC = False
 
     days = 1
 

@@ -4,6 +4,7 @@ import os
 import folium
 import matplotlib.pyplot as plt
 import pandas as pd
+from config import PROJECT_ROOT
 from core.route.section.real_section import RealSection
 from core.route.section.simulated_section import SimulatedSection
 
@@ -30,7 +31,9 @@ class Route:
         self.length_km = 10.61
         self.duration_time = self._route_duration_time()
         self.charging_points = self._load_charging_points(
-            os.path.join("data", "optimization_data", "charging_points.json")
+            os.path.join(
+                PROJECT_ROOT, "data", "optimization_data", "charging_points.json"
+            )
         )
 
     def _create_sections(self, df: pd.DataFrame) -> list:
@@ -157,7 +160,7 @@ class Route:
 
         # Devuelve los resultados consolidados junto con los tiempos de inicio y fin de las secciones
         return secciones
-    
+
     def _route_duration_time(self):
         """
         Calcula la duración total de la ruta en segundos.
@@ -368,7 +371,9 @@ class Route:
 
         # Crear el gráfico
         plt.figure(figsize=(10, 5))
-        plt.plot(distances, accelerations, label="Recorrido")  # Añadir el gráfico de líneas
+        plt.plot(
+            distances, accelerations, label="Recorrido"
+        )  # Añadir el gráfico de líneas
         plt.scatter(
             markers_distance,
             markers_acceleration,

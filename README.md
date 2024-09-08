@@ -14,11 +14,5 @@ Antes de ejecutar el código, asegúrate de instalar las dependencias necesarias
 ```bash
 pip install -r requirements.txt
 ```
-Una vez hecho esto, sitúate en el directorio del proyecto y ejecuta el código con:
+Una vez hecho esto, ejecuta el código de `main.py`.
 
-```python
-python src/model/main.py
-```
-Es importante que te ubiques en el directorio del proyecto a la hora de ejecutarlo porque, de no hacerlo, no se manejarán adecuadamente las rutas de los distintos ficheros de los que se hace uso.
-
-Si estás utilizando algún IDE conocido, hacer click en el icono de ejecución debería ser suficiente.

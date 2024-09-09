@@ -1,6 +1,4 @@
-import os
-
-from config import PROJECT_ROOT
+from config import DATA, DAYS, ELECTRIC, NAME
 from core.model import Model
 from core.model_config import ModelConfig
 
@@ -13,19 +11,12 @@ def main():
     - Crea una instancia del modelo con la configuración proporcionada.
     - Ejecuta el modelo durante el número de días especificado.
     """
-    name = "linea_d2_simulation"
-
-    data = os.path.join(PROJECT_ROOT, "data", "linea_d2", "linea_d2_simulation.csv")
-
-    ELECTRIC = True
-
-    days = 1
 
     if ELECTRIC:
         model_config = ModelConfig(
             electric=ELECTRIC,
-            name=name,
-            filepath=data,
+            name=NAME,
+            filepath=DATA,
             simulation=True,
             charging_point_id=1,
             min_battery_charge=20,
@@ -38,8 +29,8 @@ def main():
     else:
         model_config = ModelConfig(
             electric=ELECTRIC,
-            name=name,
-            filepath=data,
+            name=NAME,
+            filepath=DATA,
             simulation=True,
             engine_max_power=230,  # kW
             bus_mass=18000,  # masa total del bus, para hacer comparaciones justas con el bus eléctrico, poner una masa ligeramente mayor (1500-3000 kg)
@@ -47,7 +38,7 @@ def main():
 
     model = Model(config=model_config)
 
-    model.run(n_days=days)
+    model.run(n_days=DAYS)
 
 
 if __name__ == "__main__":

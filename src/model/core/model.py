@@ -15,7 +15,6 @@ Fecha de creación: 12/07/2024
 Última modificación: 09/09/2024
 """
 
-
 import csv
 import os
 
@@ -227,6 +226,8 @@ class Model:
 
         # Configurar el tiempo final de disponibilidad
         availability_time_s -= unavailability_time_s
+        # Cambiar el formato de degradacion de bateria para que sea un % en vez de rango 0-1
+        battery_degradation *= 100
 
         bus_cost, consumption_cost = self.cost_calculator.calculate_costs(consumption)
         total_time_below_min_soc_s = self.bus.get_total_time_below_min_soc()

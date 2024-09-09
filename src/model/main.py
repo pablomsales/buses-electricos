@@ -38,8 +38,7 @@ def main():
             charging_point_id=1,
             min_battery_charge=20,
             max_battery_charge=80,
-            initial_capacity_kWh=98 * 4,  # se opta por expresarlo como múltiplos de 98
-            engine_max_power=230,  # kW
+            initial_capacity_kWh=392,
         )
 
     else:
@@ -48,7 +47,6 @@ def main():
             name=NAME,
             filepath=DATA,
             simulation=True,
-            engine_max_power=230,  # kW
         )
 
     model = Model(config=model_config)

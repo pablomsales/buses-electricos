@@ -34,4 +34,4 @@ DATA = os.path.join(PROJECT_ROOT, "data", "line_data", "line_data_simulation.csv
 ELECTRIC = True
 
 # Numero de dias de simulacion
-DAYS = 1
+DAYS = 365

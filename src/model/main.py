@@ -8,7 +8,7 @@ Autores:
   LinkedIn: https://www.linkedin.com/in/chakhoyanrazmik
 
 - Menéndez Sales, Pablo
-  Correo: pablomenendezsales@ejemplo.com
+  Correo: pablomenendezsales@gmail.com
   LinkedIn: https://www.linkedin.com/in/pablo-m-sales
 
 Fecha de creación: 12/07/2024

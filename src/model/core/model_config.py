@@ -33,7 +33,7 @@ class ModelConfig:
         electric: bool,
         name: str,
         filepath: str,
-        simulation: bool = True, # NO CAMBIAR
+        simulation: bool = True,  # NO CAMBIAR
         charging_point_id: int = 1,
         min_battery_charge: float = 20,
         max_battery_charge: float = 80,
@@ -187,7 +187,7 @@ class ModelConfig:
             voltage_v=400,  # parametro estatico para datathon
             max_cycles=3000,  # parametro estatico para datathon
             initial_soc_percent=100,  # parametro estatico para datathon
-            min_state_of_health=80,  # parametro estatico para datathon
+            min_state_of_health=75,  # parametro estatico para datathon
             min_battery_charge=self.min_battery_charge,
         )
 

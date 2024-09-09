@@ -15,6 +15,7 @@ Fecha de creación: 12/07/2024
 Última modificación: 09/09/2024
 """
 
+
 from config import DATA, DAYS, ELECTRIC, NAME
 from core.model import Model
 from core.model_config import ModelConfig

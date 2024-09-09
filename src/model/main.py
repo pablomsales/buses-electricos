@@ -1,3 +1,20 @@
+"""
+Proyecto: Optimización de Rutas y Análisis de Sostenibilidad en Autobuses Eléctricos Urbanos
+
+Autores:
+
+- Chakhoyan Grigoryan, Razmik
+  Correo: chakhoyanrazmik@gmail.com
+  LinkedIn: https://www.linkedin.com/in/chakhoyanrazmik
+
+- Menéndez Sales, Pablo
+  Correo: pablomenendezsales@ejemplo.com
+  LinkedIn: https://www.linkedin.com/in/pablo-m-sales
+
+Fecha de creación: 12/07/2024
+Última modificación: 09/09/2024
+"""
+
 from config import DATA, DAYS, ELECTRIC, NAME
 from core.model import Model
 from core.model_config import ModelConfig

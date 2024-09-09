@@ -1,5 +1,5 @@
 {
-    "description": "Breve descripcion de este fichero.",
+    "description": "Puntos de carga para autobuses eléctricos, con información sobre la potencia de carga, la distancia a la parada y el tiempo de carga.",
     "charging_points": 
     [
         {

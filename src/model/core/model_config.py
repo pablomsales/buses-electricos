@@ -15,7 +15,6 @@ Fecha de creación: 12/07/2024
 Última modificación: 09/09/2024
 """
 
-
 import os
 
 import pandas as pd
@@ -40,7 +39,6 @@ class ModelConfig:
         max_battery_charge: float = 80,
         initial_capacity_kWh: float = 392,
         engine_max_power: float = 240,  # kW
-        bus_mass: float = 20000,
         euro_standard: str = "EURO_6",  # NO CAMBIAR
     ):
         """
@@ -66,8 +64,6 @@ class ModelConfig:
             Capacidad inicial de la batería en kWh. Por defecto es 392.
         engine_max_power : float, optional
             Potencia máxima del motor en kW. Por defecto es 240.
-        bus_mass : float, optional
-            Masa del autobús en kg. Por defecto es 20000.
         euro_standard : str, optional
             Norma EURO del autobús. Por defecto es "EURO_6". NO CAMBIAR.
 
@@ -103,7 +99,7 @@ class ModelConfig:
         self.electric = electric
         self.min_battery_charge = min_battery_charge
         self.max_battery_charge = max_battery_charge
-        self.bus = self._create_bus(initial_capacity_kWh, engine_max_power, bus_mass)
+        self.bus = self._create_bus(initial_capacity_kWh, engine_max_power)
         self.emissions = self._create_emissions(euro_standard)
         if self.electric:
             self.cost_calculator = CostCalculator(
@@ -155,7 +151,7 @@ class ModelConfig:
         else:
             return self._process_real_data(df)
 
-    def _create_bus(self, initial_capacity_kWh, max_power, bus_mass):
+    def _create_bus(self, initial_capacity_kWh, max_power):
         """
         Crea una instancia de la clase Bus dependiendo de si el autobús es eléctrico o de combustible.
 
@@ -165,8 +161,6 @@ class ModelConfig:
             Capacidad inicial de la batería en kWh (solo se usa si el autobús es eléctrico).
         max_power : float
             Potencia máxima del motor en kW.
-        bus_mass : float
-            Masa del autobús en kg.
 
         Returns
         -------
@@ -174,11 +168,11 @@ class ModelConfig:
             Instancia de la clase Bus, ya sea eléctrica o de combustible.
         """
         if self.electric:
-            return self._create_electric_bus(initial_capacity_kWh, max_power, bus_mass)
+            return self._create_electric_bus(initial_capacity_kWh, max_power)
         else:
-            return self._create_fuel_bus(max_power, bus_mass)
+            return self._create_fuel_bus(max_power)
 
-    def _create_electric_bus(self, initial_capacity_kWh, max_power, bus_mass):
+    def _create_electric_bus(self, initial_capacity_kWh, max_power):
         """
         Create an electric bus instance with the battery and electrical engine selected.
 
@@ -206,7 +200,7 @@ class ModelConfig:
 
         # Create a bus instance
         bus_instance = Bus(
-            bus_mass=bus_mass,
+            bus_mass=15000,  # mas adelante se le agrega la masa de bateria
             drag_coefficient=0.8,  # parametro estatico para datathon
             frontal_area=9.0,  # parametro estatico para datathon
             rolling_resistance_coefficient=0.01,  # parametro estatico para datathon
@@ -215,7 +209,7 @@ class ModelConfig:
 
         return bus_instance
 
-    def _create_fuel_bus(self, max_power, bus_mass):
+    def _create_fuel_bus(self, max_power):
         """
         Create a fuel bus instance with the fuel engine selected.
 
@@ -236,7 +230,7 @@ class ModelConfig:
 
         # Create a bus instance
         bus_instance = Bus(
-            bus_mass=bus_mass,
+            bus_mass=18000,  # Mayor que en el eléctrico para una comparación justa
             drag_coefficient=0.8,
             frontal_area=9.0,
             rolling_resistance_coefficient=0.01,

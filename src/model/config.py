@@ -15,7 +15,6 @@ Fecha de creación: 12/07/2024
 Última modificación: 09/09/2024
 """
 
-
 import os
 import sys
 
@@ -29,7 +28,7 @@ sys.path.append(PROJECT_ROOT)
 NAME = "linea_d2_simulation"
 
 # Ruta al archivo CSV con los datos de la simulación.
-DATA = os.path.join(PROJECT_ROOT, "data", "linea_d2", "linea_d2_simulation.csv")
+DATA = os.path.join(PROJECT_ROOT, "data", "line_data", "line_data_simulation.csv")
 
 # Bool para indicar si el modelo de autobus es electrico o de combustion
 ELECTRIC = True

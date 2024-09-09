@@ -1,3 +1,20 @@
+"""
+Proyecto: Optimización de Rutas y Análisis de Sostenibilidad en Autobuses Eléctricos Urbanos
+
+Autores:
+
+- Chakhoyan Grigoryan, Razmik
+  Correo: chakhoyanrazmik@gmail.com
+  LinkedIn: https://www.linkedin.com/in/chakhoyanrazmik
+
+- Menéndez Sales, Pablo
+  Correo: pablomenendezsales@ejemplo.com
+  LinkedIn: https://www.linkedin.com/in/pablo-m-sales
+
+Fecha de creación: 12/07/2024
+Última modificación: 09/09/2024
+"""
+
 import os
 
 from config import PROJECT_ROOT
@@ -15,7 +32,7 @@ def main():
     """
     name = "linea_d2_simulation"
 
-    data = os.path.join(PROJECT_ROOT, "data", "linea_d2", "linea_d2_simulation.csv")
+    data = os.path.join(PROJECT_ROOT, "data", "line_data", "line_data_simulation.csv")
 
     ELECTRIC = True
 

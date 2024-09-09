@@ -4,7 +4,6 @@
     [
         {
             "id": "1",
-            "description": "Estacion servicio cercana a la parada",
             "coordinates": {
                 "latitude": 43.35145929577654,
                 "longitude": -5.881024970883337
@@ -16,7 +15,6 @@
 
         {
             "id": "2",
-            "description": "Cochera del Poligono del Espiritu Santo",
             "coordinates": {
                 "latitude": 43.3766411347457757,
                 "longitude": -5.80963111500399
@@ -28,7 +26,6 @@
 
         {
             "id": "3",
-            "description": "Estacion de carga al lado de la parada",
             "coordinates": {
                 "latitude": 43.35433254486923,
                 "longitude": -5.872322233001909
@@ -40,7 +37,6 @@
 
         {
             "id": "4",
-            "description": "Estacion de servicio Ruta de la Plata",
             "coordinates": {
                 "latitude": 43.34056754073066,
                 "longitude": -5.869265369100843

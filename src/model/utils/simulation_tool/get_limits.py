@@ -1,3 +1,8 @@
+################################################
+#################   OBSOLETO   #################
+################################################
+
+
 import pandas as pd
 import os
 from geopy.distance import great_circle

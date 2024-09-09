@@ -1,20 +1,23 @@
 # Optimización de Rutas y Análisis de Sostenibilidad en Autobuses Eléctricos Urbanos
 
-
-## Autores
-- Chakhoyan Grigoryan, Razmik
-  - Correo: chakhoyanrazmik@gmail.com
-  - LinkedIn: https://www.linkedin.com/in/chakhoyanrazmik
-
-- Menéndez Sales, Pablo
-  - Correo: pablomenendezsales@gmail.com
-  - LinkedIn: https://www.linkedin.com/in/pablo-m-sales
-
 Fecha de creación: 12/07/2024
 
 Última modificación: 09/09/2024
 
+
+
+## Autores
+
+| Nombre   | Chakhoyan Grigoryan, Razmik                 | Menéndez Sales, Pablo                     |
+|----------|---------------------------------------------|-------------------------------------------|
+| Correo   | chakhoyanrazmik@gmail.com                   | pablomenendezsales@gmail.com              |
+| LinkedIn | https://www.linkedin.com/in/chakhoyanrazmik | https://www.linkedin.com/in/pablo-m-sales |
+
 ---
+
+    NOTA: Se recomienda visualizar este archivo desde un visor de Markdown adecuado (si se utiliza VSCode existen múltiples extensiones disponibles).
+
+### Descripción
 
 Este proyecto simula el comportamiento de autobuses eléctricos y no eléctricos en rutas predefinidas, evaluando carácterísticas como eficiencia energética, el costo de operación o su emisión de contaminates. Para configurar el modelo, el usuario tan solo debe limitarse a modificar los ficheros `config.py` y `main.py`.
 
@@ -43,13 +46,7 @@ Puedes modificar estos valores según tus necesidades antes de ejecutar la simul
 
 ### Ejecución
 
-Una vez instaladas las dependencias y configurado el archivo `config.py`, puedes ejecutar la simulación con el siguiente comando:
-
-```bash
-python main.py
-```
-
-Esto iniciará la simulación y ejecutará el modelo durante el número de días especificado en config.py. También se puede ejecutar utilizando el icono de ejecución del IDE que estés utilizando.
+Una vez instaladas las dependencias y configurado el archivo `config.py`, puedes ejecutar la simulación desde el fichero `main.py`.Esto ejecutará el modelo durante el número de días especificado.
 
 Dentro de `main.py` ocurre lo siguiente:
 

@@ -33,7 +33,7 @@ class ModelConfig:
         electric: bool,
         name: str,
         filepath: str,
-        simulation: bool,
+        simulation: bool = True, # NO CAMBIAR
         charging_point_id: int = 1,
         min_battery_charge: float = 20,
         max_battery_charge: float = 80,

@@ -34,7 +34,6 @@ def main():
             electric=ELECTRIC,
             name=NAME,
             filepath=DATA,
-            simulation=True,
             charging_point_id=1,
             min_battery_charge=20,
             max_battery_charge=80,
@@ -46,7 +45,6 @@ def main():
             electric=ELECTRIC,
             name=NAME,
             filepath=DATA,
-            simulation=True,
         )
 
     model = Model(config=model_config)
